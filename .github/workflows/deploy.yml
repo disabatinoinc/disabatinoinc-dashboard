@@ -46,9 +46,9 @@ jobs:
 
           # Free up space before deployment
           docker system prune -a -f || true
-
-          # Write .env file from GitHub Secret (preserves newlines)
-          echo "${{ secrets.ENV_FILE }}" | base64 --decode > .env
+          
+          # Write .env file from GitHub Secret
+          echo "${{ secrets.ENV_FILE }}" | tr -d '\r' > .env
 
           # Load the Docker image
           docker load -i disabatinoinc-dashboard.tar
