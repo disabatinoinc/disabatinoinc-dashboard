@@ -1,95 +1,56 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client"; // Ensures this is a Client Component
 
-export default function Home() {
+import { useEffect, useState } from "react";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Paper from "@mui/material/Paper";
+import CircularProgress from "@mui/material/CircularProgress";
+import api from "@/utils/apiClient";
+import { Project } from "@/types/project";
+
+export default function Dashboard() {
+  const [projects, setProjects] = useState<Project[]>([]); // ✅ Ensure it's an array
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get("/collections/summary/work-in-progress")
+      .then((response) => {
+        const data = response.data;
+        if (Array.isArray(data)) {
+          setProjects(data); // ✅ If it's an array, set state normally
+        } else if (data && Array.isArray(data.data)) {
+          setProjects(data.data); // ✅ If it's inside an object, extract it
+        } else {
+          console.error("Unexpected API response:", data);
+          setProjects([]); // Prevent map() error
+        }
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
+  }, []);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <Container maxWidth="md" sx={{ mt: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Projects Dashboard
+      </Typography>
+      {loading ? (
+        <CircularProgress />
+      ) : Array.isArray(projects) && projects.length > 0 ? (
+        projects.map((project, index) => (
+          <Paper key={index} sx={{ p: 2, mb: 2, bgcolor: "#121212" }}>
+            <Typography variant="h6">{project.opportunityName}</Typography>
+            <Typography>Manager: {project.projectManager}</Typography>
+            <Typography>Billed: ${project.totalBilled}</Typography>
+            <Typography>Paid: ${project.totalPaid}</Typography>
+          </Paper>
+        ))
+      ) : (
+        <Typography>No projects available.</Typography>
+      )}
+    </Container>
   );
 }

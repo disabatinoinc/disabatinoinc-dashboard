@@ -1,42 +1,118 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* globals.css */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html,
+/* Apply styles to the entire page */
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
+  background-color: #030712;
+  color: #cbd5e1;
+  /* Regular text color */
+  font-family: 'Inter', sans-serif;
   margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Headings (h1, h2, h3, etc.) */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #f9fafb;
+  /* Heading font color */
+  font-weight: 600;
+}
+
+/* Regular text */
+p,
+span,
+li,
+a,
+button {
+  color: #cbd5e1;
+  /* Regular text color */
+}
+
+/* Subtext / Descriptions */
+.subtext,
+.description,
+small,
+caption {
+  color: #94a3b8;
+  /* Subtext color */
+}
+
+/* Links */
 a {
-  color: inherit;
+  color: #f9fafb;
   text-decoration: none;
+  transition: color 0.2s ease-in-out;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+a:hover {
+  color: #cbd5e1;
+}
+
+/* Buttons */
+button {
+  background-color: transparent;
+  border: 1px solid #cbd5e1;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: #1e293b;
+  border-color: #f9fafb;
+  color: #f9fafb;
+}
+
+/* Containers and Cards */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.card {
+  background-color: #121826;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Input Fields */
+input,
+textarea {
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  padding: 10px;
+  border-radius: 6px;
+  color: #f9fafb;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  p {
+    font-size: 14px;
   }
 }
