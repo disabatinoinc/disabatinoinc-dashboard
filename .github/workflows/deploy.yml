@@ -28,6 +28,10 @@ jobs:
       run: |
         docker save disabatinoinc-dashboard -o disabatinoinc-dashboard.tar
 
+    - name: Ensure Remote Directory Exists
+      run: |
+        ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} "mkdir -p ~/disabatinoinc-dashboard"
+
     - name: SCP the Docker Image and Files to EC2
       run: |
         scp -C -i ~/.ssh/id_rsa \
