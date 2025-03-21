@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
 import api from "@/utils/apiClient";
-import { Project } from "@/types/project";
+import { Project } from "@/types/CollectionSummary";
 
 export default function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]); // ✅ Ensure it's an array

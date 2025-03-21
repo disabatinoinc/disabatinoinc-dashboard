@@ -1,43 +1,14 @@
 "use client"
 
 import React, { useEffect, useState } from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, TableSortLabel, Tooltip, ToggleButtonGroup, ToggleButton, Divider, Skeleton, CircularProgress } from "@mui/material";
+import {
+    Table, TableBody, TableCell, TableContainer, TableHead,
+    TableRow, Paper, Typography, Box, TableSortLabel, Tooltip,
+    ToggleButtonGroup, ToggleButton, CircularProgress
+} from "@mui/material";
 import { formatCurrency } from "@/utils/formatters";
 import { CollectionSummary } from "@/types/CollectionSummary";
 import api from "@/utils/apiClient";
-
-const sampleData: CollectionSummary[] = [
-    {
-        opportunityName: "Pennock, Brett Residence-Pool Deck 2022 - v.3 - v.4",
-        projectNumber: "S-005616",
-        stageName: "Work in Progress",
-        jobState: "PA",
-        projectManager: "Vinny Esposito",
-        originalOpportunityAmount: 28563,
-        changeRequestAmount: -789,
-        totalOpportunityAmount: 27774,
-        totalBilled: 1976,
-        totalPaid: 0,
-        billedOutstanding: 1976,
-        totalOppOutstanding: 27774,
-        nextBillingMilestone: "Initial",
-    },
-    {
-        opportunityName: "Boesen, Joshua Residence- Pool 2024 - v.3",
-        projectNumber: "S-006230",
-        stageName: "Work in Progress",
-        jobState: "PA",
-        projectManager: "Vinny Esposito",
-        originalOpportunityAmount: 139218,
-        changeRequestAmount: 13420,
-        totalOpportunityAmount: 152638,
-        totalBilled: 64537,
-        totalPaid: 64537,
-        billedOutstanding: 0,
-        totalOppOutstanding: 88101,
-        nextBillingMilestone: "Initial",
-    },
-];
 
 const headCells: { id: keyof CollectionSummary; label: string }[] = [
     { id: "opportunityName", label: "Opportunity Name" },
