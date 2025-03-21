@@ -7,7 +7,6 @@ README.md
 npm-debug.log
 Dockerfile
 .next/cache
-.next/standalone
 .next/static
 .dockerignore
 .git
