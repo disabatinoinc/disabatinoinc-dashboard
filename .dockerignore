@@ -3,11 +3,9 @@ node_modules
 .next
 Dockerfile
 README.md
-.env
 npm-debug.log
 Dockerfile
 .next/cache
 .next/static
 .dockerignore
-.git
 .gitignore
