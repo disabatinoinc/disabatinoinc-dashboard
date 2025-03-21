@@ -20,6 +20,9 @@ jobs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
+    - name: Write .env to disk
+      run: echo "${{ secrets.ENV_FILE }}" > .env
+
     - name: Build Docker Image
       run: |
         docker build -t disabatinoinc-dashboard .
