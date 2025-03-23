@@ -25,20 +25,40 @@ const headCells: { id: keyof CollectionSummary; label: string }[] = [
 const CollectionsSummary = () => {
     const [order, setOrder] = useState("asc");
     const [orderBy, setOrderBy] = useState<keyof CollectionSummary>("opportunityName");
+    const [sorting, setSorting] = useState(false);
 
     const handleRequestSort = (property: keyof CollectionSummary) => {
+        setSorting(true);
         const isAscending = orderBy === property && order === "asc";
         setOrder(isAscending ? "desc" : "asc");
         setOrderBy(property);
+
+        // Simulate delay to reflect actual processing time
+        setTimeout(() => {
+            setSorting(false);
+        }, 500); // Adjust this duration if needed
     };
 
     const milestoneOrder = ["Initial", "Scheduling", "First Day", "Milestone", "Final", "Punch List"];
 
     const [projects, setProjects] = useState<CollectionSummary[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedStage, setSelectedStage] = useState("Work in Progress");
+
+    const stageToEndpoint: Record<string, string> = {
+        "Closed Won Signed": "closed-won-signed",
+        "Ready to be Scheduled": "ready-to-be-scheduled",
+        "Scheduled": "scheduled",
+        "Work in Progress": "work-in-progress",
+    };
 
     useEffect(() => {
-        api.get("/collections/summary/work-in-progress")
+        const endpoint = stageToEndpoint[selectedStage];
+        if (!endpoint) return;
+
+        setLoading(true);
+
+        api.get(`/collections/summary/${endpoint}`)
             .then((response) => {
                 const data = response.data;
                 if (Array.isArray(data)) {
@@ -55,7 +75,8 @@ const CollectionsSummary = () => {
                 console.error("Error fetching data:", error);
                 setLoading(false);
             });
-    }, []);
+    }, [selectedStage]);
+
 
     const sortedData = [...projects].sort((a, b) => {
         if (orderBy === "nextBillingMilestone") {
@@ -80,15 +101,34 @@ const CollectionsSummary = () => {
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <ToggleButtonGroup
-                    value="Work in Progress"
+                    value={selectedStage}
                     exclusive
+                    onChange={(_, value) => {
+                        if (value !== null) {
+                            setSelectedStage(value);
+                        }
+                    }}
                     sx={{ backgroundColor: '#121929', borderRadius: "12px", border: "1px solid #374151" }}
                 >
-                    <ToggleButton value="Closed Won Signed" sx={{ color: '#d1d5db', borderRadius: "12px", fontSize: '0.75rem', '&.Mui-selected': { backgroundColor: 'rgba(255, 255, 255, 0.1) !important', color: 'white' } }}>Closed Won Signed</ToggleButton>
-                    <ToggleButton value="Ready to be Scheduled" sx={{ color: '#d1d5db', borderRadius: "12px", fontSize: '0.75rem', '&.Mui-selected': { backgroundColor: 'rgba(255, 255, 255, 0.1) !important', color: 'white' } }}>Ready to be Scheduled</ToggleButton>
-                    <ToggleButton value="Scheduled" sx={{ color: '#d1d5db', borderRadius: "12px", fontSize: '0.75rem', '&.Mui-selected': { backgroundColor: 'rgba(255, 255, 255, 0.1) !important', color: 'white' } }}>Scheduled</ToggleButton>
-                    <ToggleButton value="Work in Progress" sx={{ color: '#d1d5db', borderRadius: "12px", fontSize: '0.75rem', '&.Mui-selected': { backgroundColor: 'rgba(255, 255, 255, 0.1) !important', color: 'white' } }}>Work in Progress</ToggleButton>
+                    {Object.keys(stageToEndpoint).map((label) => (
+                        <ToggleButton
+                            key={label}
+                            value={label}
+                            sx={{
+                                color: '#d1d5db',
+                                borderRadius: "12px",
+                                fontSize: '0.75rem',
+                                '&.Mui-selected': {
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
+                                    color: 'white'
+                                }
+                            }}
+                        >
+                            {label}
+                        </ToggleButton>
+                    ))}
                 </ToggleButtonGroup>
+
             </Box>
             <TableContainer
                 component={Paper}
@@ -135,7 +175,7 @@ const CollectionsSummary = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {loading ? (
+                        {(loading || sorting) ? (
                             <TableRow>
                                 <TableCell colSpan={headCells.length} align="center">
                                     <CircularProgress color="inherit" />
