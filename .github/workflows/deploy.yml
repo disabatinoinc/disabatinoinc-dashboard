@@ -25,7 +25,7 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        docker build -t disabatinoinc-dashboard .
+        docker build --no-cache -t disabatinoinc-dashboard .
 
     - name: Save Docker Image as Tar File
       run: |
