@@ -24,16 +24,21 @@ FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Copy only necessary files from the builder stage
-# COPY --from=base /app/package*.json ./
-# COPY --from=base /app/next.config.ts ./
+# COPY --from=base /app/.next/standalone ./
 # COPY --from=base /app/public ./public
-# COPY --from=base /app/.next ./.next
-# COPY --from=base /app/node_modules ./node_modules
+# COPY --from=base /app/.next/static ./public/_next/static
 
+# Copy standalone output (includes server.js and server files)
 COPY --from=base /app/.next/standalone ./
+
+# 🔥 Copy static files to correct location
+COPY --from=base /app/.next/static ./.next/static
+
+# 🔥 Copy server files (for middleware + edge runtime)
+COPY --from=base /app/.next/server ./.next/server
+
+# Optional: if you use public folder
 COPY --from=base /app/public ./public
-COPY --from=base /app/.next/static ./public/_next/static
 
 # Expose the port
 EXPOSE 3010
