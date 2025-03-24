@@ -4,11 +4,12 @@ import React, { useEffect, useState } from "react";
 import {
     Table, TableBody, TableCell, TableContainer, TableHead,
     TableRow, Paper, Typography, Box, TableSortLabel, Tooltip,
-    ToggleButtonGroup, ToggleButton, CircularProgress
+    ToggleButtonGroup, ToggleButton, CircularProgress, Button
 } from "@mui/material";
 import { formatCurrency } from "@/utils/formatters";
 import { CollectionSummary } from "@/types/CollectionSummary";
 import api from "@/utils/apiClient";
+import { exportToCSV } from "@/utils/exportCSV";
 
 const headCells: { id: keyof CollectionSummary; label: string }[] = [
     { id: "opportunityName", label: "Opportunity Name" },
@@ -129,6 +130,27 @@ const CollectionsSummary = () => {
                     ))}
                 </ToggleButtonGroup>
 
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() =>
+                        exportToCSV("collections-summary", sortedData, headCells.map(h => ({
+                            label: h.label,
+                            key: h.id
+                        })))
+                    }
+                    sx={{
+                        color: "#d1d5db",
+                        borderColor: "#374151",
+                        '&:hover': { borderColor: "#6b7280", backgroundColor: "#1f2937" },
+                        textTransform: "none",
+                        fontSize: "0.75rem",
+                    }}
+                >
+                    Export CSV
+                </Button>
             </Box>
             <TableContainer
                 component={Paper}
