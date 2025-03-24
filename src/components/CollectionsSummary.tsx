@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
     Table, TableBody, TableCell, TableContainer, TableHead,
     TableRow, Paper, Typography, Box, TableSortLabel, Tooltip,
@@ -46,12 +46,12 @@ const CollectionsSummary = () => {
     const [loading, setLoading] = useState(true);
     const [selectedStage, setSelectedStage] = useState("Work in Progress");
 
-    const stageToEndpoint: Record<string, string> = {
+    const stageToEndpoint = useMemo<Record<string, string>>(() => ({
         "Closed Won Signed": "closed-won-signed",
         "Ready to be Scheduled": "ready-to-be-scheduled",
         "Scheduled": "scheduled",
         "Work in Progress": "work-in-progress",
-    };
+    }), []);
 
     useEffect(() => {
         const endpoint = stageToEndpoint[selectedStage];
@@ -76,7 +76,7 @@ const CollectionsSummary = () => {
                 console.error("Error fetching data:", error);
                 setLoading(false);
             });
-    }, [selectedStage]);
+    }, [selectedStage, stageToEndpoint]);
 
 
     const sortedData = [...projects].sort((a, b) => {
@@ -136,7 +136,7 @@ const CollectionsSummary = () => {
                     variant="outlined"
                     size="small"
                     onClick={() =>
-                        exportToCSV("collections-summary", sortedData, headCells.map(h => ({
+                        exportToCSV<CollectionSummary>("collections-summary", sortedData, headCells.map(h => ({
                             label: h.label,
                             key: h.id
                         })))

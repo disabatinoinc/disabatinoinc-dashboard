@@ -1,9 +1,9 @@
-type CSVColumn = { label: string; key: string };
+type CSVColumn<T> = { label: string; key: keyof T };
 
-export const exportToCSV = (
+export const exportToCSV = <T extends Record<string, unknown>>(
     baseFilename: string,
-    rows: any[],
-    columns: CSVColumn[]
+    rows: T[],
+    columns: CSVColumn<T>[]
 ) => {
     if (!rows || rows.length === 0) return;
 
@@ -12,10 +12,12 @@ export const exportToCSV = (
 
     const csvContent = [
         headers.join(","),
-        ...rows.map((row) => keys.map((k) => `"${row[k] ?? ""}"`).join(","))
+        ...rows.map((row) =>
+            keys.map((key) => `"${row[key] ?? ""}"`).join(",")
+        ),
     ].join("\n");
 
-    const today = new Date().toISOString().split("T")[0]; // e.g., 2025-03-24
+    const today = new Date().toISOString().split("T")[0];
     const filename = `${baseFilename}-${today}.csv`;
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
