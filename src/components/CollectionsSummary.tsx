@@ -23,7 +23,7 @@ const headCells: { id: keyof CollectionSummary; label: string }[] = [
 ];
 
 const CollectionsSummary = () => {
-    const [order, setOrder] = useState("asc");
+    const [order, setOrder] = useState("desc");
     const [orderBy, setOrderBy] = useState<keyof CollectionSummary>("opportunityName");
     const [sorting, setSorting] = useState(false);
 
