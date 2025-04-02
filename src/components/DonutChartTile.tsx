@@ -54,7 +54,7 @@ const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target }
                             </Pie>
                             <Tooltip
                                 formatter={(value: number, name: string) => [`$${value.toLocaleString()}`, name]}
-                                contentStyle={{ backgroundColor: "#1f2937", borderColor: "#4b5563", color: "white" }}
+                                contentStyle={{ backgroundColor: "#1f2937", borderColor: "#374151", color: "white" }}
                                 itemStyle={{ color: "#d1d5db" }}
                             />
                         </PieChart>

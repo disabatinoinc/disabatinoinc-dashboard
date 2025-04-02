@@ -24,6 +24,7 @@ const SalesSummary = () => {
     return (
         <Box>
             <Typography variant="h4" sx={{ color: "white" }}>Sales Summary</Typography>
+            <Typography variant="h6" sx={{ color: "#d1d5db" }}>Live sales data coming soon!</Typography>
 
             <Grid maxWidth="100%" container spacing={2} marginTop={2} justifyContent="space-between">
                 {salesData.map((item) => (
