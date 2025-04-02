@@ -15,7 +15,7 @@ const navItems = [
 ];
 
 const Page = () => {
-    const [activeTab, setActiveTab] = useState("sales");
+    const [activeTab, setActiveTab] = useState("collections");
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 2 }}>
