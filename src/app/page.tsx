@@ -1,16 +1,22 @@
-import React from "react";
+"use client"
+
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import CollectionsSummary from "@/components/CollectionsSummary";
+import SalesSummary from "@/components/SalesSummary";
 
 const navItems = [
-    { label: "Collections", href: "#" }
+    { label: "Collections", value: "collections" },
+    { label: "Sales", value: "sales" },
 ];
 
 const Page = () => {
+    const [activeTab, setActiveTab] = useState("sales");
+
     return (
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 2 }}>
             <Box sx={{ width: "100%", maxWidth: "1200px" }}>
@@ -23,14 +29,24 @@ const Page = () => {
                             disabatinoinc dashboard
                         </Typography>
                         {navItems.map((item) => (
-                            <Button key={item.label} color="inherit" href={item.href} sx={{ color: "#d1d5db", '&:hover': { color: 'white' } }}>
+                            <Button
+                                key={item.value}
+                                onClick={() => setActiveTab(item.value)}
+                                color="inherit"
+                                sx={{
+                                    color: activeTab === item.value ? "white" : "#d1d5db",
+                                    textTransform: "uppercase",
+                                    '&:hover': { color: "white" },
+                                }}
+                            >
                                 {item.label}
                             </Button>
                         ))}
                     </Toolbar>
                 </AppBar>
                 <Box sx={{ padding: 2 }}>
-                    <CollectionsSummary />
+                    {activeTab === "collections" && <CollectionsSummary />}
+                    {activeTab === "sales" && <SalesSummary />}
                 </Box>
             </Box>
         </Box>
