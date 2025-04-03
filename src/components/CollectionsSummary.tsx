@@ -156,7 +156,7 @@ const CollectionsSummary = () => {
                 component={Paper}
                 sx={{
                     marginTop: 2,
-                    padding: 2,
+                    padding: "4px",
                     background: "linear-gradient(to bottom right, #121929 0%, #0c111c 50%, #000000 100%)",
                     border: "1px solid #374151",
                     borderRadius: "12px",
@@ -170,11 +170,14 @@ const CollectionsSummary = () => {
                             {headCells.map((headCell) => (
                                 <TableCell
                                     key={headCell.id}
+                                    size={headCell.id !== 'opportunityName' ? "small" : "medium"}
                                     sx={{
                                         color: "#d1d5db",
                                         textTransform: "uppercase",
                                         padding: '4px',
                                         width: headCell.id !== 'opportunityName' ? "75px" : "120px",
+                                        textOverflow: 'ellipsis',
+                                        fontSize: '0.75rem',
 
                                     }}
                                 >
@@ -183,8 +186,16 @@ const CollectionsSummary = () => {
                                             {
                                                 color: '#d1d5db',
                                                 '&.Mui-active': { color: 'white' },
-                                                '& .MuiTableSortLabel-icon': { color: 'white !important' },
-                                                '&:hover': { color: 'white' }
+                                                "& .MuiTableSortLabel-icon": {
+                                                    color: "white !important",
+                                                    "@media (max-width:600px)": {
+                                                        display: "none",
+                                                    },
+                                                },
+                                                '&:hover': { color: 'white' },
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                "max-width": "100%",
                                             }}
                                         active={orderBy === headCell.id}
                                         direction={orderBy === headCell.id ? (order as 'asc' | 'desc') : 'asc'}
@@ -211,17 +222,19 @@ const CollectionsSummary = () => {
                                     cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' }
                                 }} onClick={() => console.log('Row clicked:', row)}>
                                     {headCells.map((headCell) => (
-                                        <TableCell key={headCell.id} sx={{
-                                            borderTop: "none",
-                                            borderBottom: "none",
-                                            width: headCell.id !== 'opportunityName' ? "75px" : "120px",
-                                            color: headCell.id === 'totalPaid' || headCell.id === 'totalOpportunityAmount' ? '#42de80' : '#d1d5db',
-                                            paddingLeft: '4px',
-                                            fontSize: '0.75rem',
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                        }} >
+                                        <TableCell key={headCell.id}
+                                            size={headCell.id !== 'opportunityName' ? "small" : "medium"}
+                                            sx={{
+                                                borderTop: "none",
+                                                borderBottom: "none",
+                                                width: headCell.id !== 'opportunityName' ? "75px" : "120px",
+                                                color: headCell.id === 'totalPaid' || headCell.id === 'totalOpportunityAmount' ? '#42de80' : '#d1d5db',
+                                                paddingLeft: '4px',
+                                                fontSize: '0.75rem',
+                                                whiteSpace: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                            }} >
                                             <Tooltip title={row[headCell.id]} arrow>
                                                 <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                     {typeof row[headCell.id] === "number" ? formatCurrency(row[headCell.id] as number) : row[headCell.id]}
