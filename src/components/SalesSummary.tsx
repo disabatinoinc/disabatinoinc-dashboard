@@ -35,7 +35,10 @@ const SalesSummary = () => {
             .then((response) => {
                 const data = response.data;
                 setTargetData(data.data);
-                setLoading(false);
+                // Delay loading false to allow for mount/animation/setup time
+                setTimeout(() => {
+                    setLoading(false);
+                }, 800); // adjust the delay as needed (300ms–500ms is typical)
             })
             .catch((error) => {
                 console.error("Error fetching data:", error);

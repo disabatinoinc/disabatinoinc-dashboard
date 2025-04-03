@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -19,12 +19,12 @@ const navItems = [
 ];
 
 const Page = () => {
-    const [activeTab, setActiveTab] = useState(() => {
-        if (typeof window !== "undefined") {
-            return localStorage.getItem("activeTab") || "collections";
-        }
-        return "collections";
-    });
+    const [activeTab, setActiveTab] = useState<string | null>(null);
+    // Sync with localStorage after mount
+    useEffect(() => {
+        const stored = localStorage.getItem("activeTab");
+        setActiveTab(stored || "collections");
+    }, []);
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 2 }}>
@@ -56,10 +56,12 @@ const Page = () => {
                         ))}
                     </Toolbar>
                 </AppBar>
-                <Box sx={{ padding: 2 }}>
-                    {activeTab === "collections" && <CollectionsSummary />}
-                    {activeTab === "sales" && <SalesSummary />}
-                </Box>
+                {activeTab && (
+                    <Box sx={{ padding: 2 }}>
+                        {activeTab === "collections" && <CollectionsSummary />}
+                        {activeTab === "sales" && <SalesSummary />}
+                    </Box>
+                )}
             </Box>
         </Box>
     );
