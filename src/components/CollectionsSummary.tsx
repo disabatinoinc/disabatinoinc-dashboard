@@ -147,6 +147,10 @@ const CollectionsSummary = () => {
                         '&:hover': { borderColor: "#6b7280", backgroundColor: "#1f2937" },
                         textTransform: "none",
                         fontSize: "0.75rem",
+                        display: {
+                            xs: "none", // hide on mobile
+                            sm: "inline-flex", // show on tablet and up
+                        },
                     }}
                 >
                     Export CSV
@@ -175,7 +179,7 @@ const CollectionsSummary = () => {
                                         color: "#d1d5db",
                                         textTransform: "uppercase",
                                         padding: '4px',
-                                        width: headCell.id !== 'opportunityName' ? "75px" : "120px",
+                                        width: headCell.id !== 'opportunityName' ? "100px" : "150px",
                                         textOverflow: 'ellipsis',
                                         fontSize: '0.75rem',
 
@@ -188,11 +192,18 @@ const CollectionsSummary = () => {
                                                 '&.Mui-active': { color: 'white' },
                                                 "& .MuiTableSortLabel-icon": {
                                                     color: "white !important",
-                                                    "@media (max-width:600px)": {
-                                                        display: "none",
-                                                    },
+                                                    // "@media (max-width:600px)": {
+                                                    //     display: "none",
+                                                    // },
                                                 },
                                                 '&:hover': { color: 'white' },
+                                                // 👇 Apply flexbox layout
+                                                display: "flex",
+                                                flexDirection: {
+                                                    xs: "column", // stack text & icon vertically on mobile
+                                                    sm: "row",    // default horizontal layout on larger screens
+                                                },
+                                                alignItems: "center", // center icon under label
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                                 "max-width": "100%",
