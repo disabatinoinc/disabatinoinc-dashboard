@@ -26,7 +26,6 @@ export const findCurrentMonthlyTarget = (targets: SalesTargetWithActuals[]): Sal
 
 // QUARTERLY
 export const findCurrentQuarterlyTarget = (targets: SalesTargetWithActuals[]): SalesTargetWithActuals | undefined => {
-    debugger;
     const monthIndex = new Date().getMonth(); // 0 = Jan
     const fiscalQuarter = (() => {
         if (monthIndex >= 3 && monthIndex <= 5) return "Q1 (Apr-Jun)";
