@@ -15,7 +15,12 @@ const navItems = [
 ];
 
 const Page = () => {
-    const [activeTab, setActiveTab] = useState("collections");
+    const [activeTab, setActiveTab] = useState(() => {
+        if (typeof window !== "undefined") {
+            return localStorage.getItem("activeTab") || "collections";
+        }
+        return "collections";
+    });
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 2 }}>
@@ -31,7 +36,10 @@ const Page = () => {
                         {navItems.map((item) => (
                             <Button
                                 key={item.value}
-                                onClick={() => setActiveTab(item.value)}
+                                onClick={() => {
+                                    localStorage.setItem("activeTab", item.value);
+                                    setActiveTab(item.value);
+                                }}
                                 color="inherit"
                                 sx={{
                                     color: activeTab === item.value ? "white" : "#d1d5db",

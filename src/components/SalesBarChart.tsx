@@ -19,33 +19,53 @@ import {
     Select,
     SelectChangeEvent,
 } from "@mui/material";
+import { format, parseISO, isValid } from "date-fns";
+import { TargetBucket } from "@/types/TargetBucket";
+import SalesBarChartTooltip from "./SalesBarChartTooltip";
+import { fillWeeklyBuckets } from "@/utils/fillWeeklyBuckets";
+import { fillMonthlyBuckets } from "@/utils/fillMonthlyBuckets";
+import { fillQuarterlyBuckets } from "@/utils/fillQuarterlyBuckets";
+import { getFiscalQuarterLabel } from "@/utils/getFiscalQuarterLabel";
 
-// Sample data for each period
-const sampleData = {
-    WTD: [
-        { name: "Mon", sales: 12000 },
-        { name: "Tue", sales: 18000 },
-        { name: "Wed", sales: 14000 },
-        { name: "Thu", sales: 16000 },
-        { name: "Fri", sales: 20000 },
-    ],
-    MTD: [
-        { name: "Week 1", sales: 42000 },
-        { name: "Week 2", sales: 37000 },
-        { name: "Week 3", sales: 48000 },
-        { name: "Week 4", sales: 29000 },
-    ],
-    QTD: [
-        { name: "Jan", sales: 65000 },
-        { name: "Feb", sales: 72000 },
-        { name: "Mar", sales: 81000 },
-    ],
-    YTD: [
-        { name: "Q1", sales: 218000 },
-        { name: "Q2", sales: 174000 },
-        { name: "Q3", sales: 199000 },
-        { name: "Q4", sales: 135000 },
-    ],
+
+const formatBucketLabel = (bucketName: string): string => {
+    // Try parsing as a date
+    const parsed = parseISO(bucketName);
+    if (isValid(parsed)) {
+        return format(parsed, "MMM d"); // e.g. Apr 1
+    }
+
+    // If not a date, try month abbreviation
+    const monthMap: Record<string, string> = {
+        January: "Jan",
+        February: "Feb",
+        March: "Mar",
+        April: "Apr",
+        May: "May",
+        June: "Jun",
+        July: "Jul",
+        August: "Aug",
+        September: "Sep",
+        October: "Oct",
+        November: "Nov",
+        December: "Dec",
+    };
+
+    if (bucketName in monthMap) {
+        return monthMap[bucketName];
+    }
+
+    // Default: return as-is
+    return bucketName;
+};
+
+type SalesBarChartProps = {
+    data: {
+        WTD: TargetBucket[];
+        MTD: TargetBucket[];
+        QTD: TargetBucket[];
+        YTD: TargetBucket[];
+    };
 };
 
 const periods = [
@@ -55,12 +75,40 @@ const periods = [
     { label: "Year to Date", value: "YTD" },
 ];
 
-const SalesBarChart = () => {
-    const [period, setPeriod] = useState<keyof typeof sampleData>("WTD");
+const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
+    const [period, setPeriod] = useState<keyof typeof data>("WTD");
 
     const handleChange = (event: SelectChangeEvent) => {
-        setPeriod(event.target.value as keyof typeof sampleData);
+        setPeriod(event.target.value as keyof typeof data);
     };
+
+    const selectedData = data[period];
+    const filledData = (() => {
+        if (period === "WTD") {
+            return fillWeeklyBuckets(selectedData);
+        }
+
+        if (period === "MTD") {
+            const firstBucketDate = selectedData[0]?.bucketName;
+            if (firstBucketDate) {
+                return fillMonthlyBuckets(selectedData, firstBucketDate);
+            }
+        }
+
+        if (period === "QTD") {
+            const quarterLabel = selectedData[0]?.bucketName
+                ? getFiscalQuarterLabel(selectedData[0].bucketName)
+                : "";
+            if (quarterLabel) {
+                return fillQuarterlyBuckets(selectedData, quarterLabel);
+            }
+        }
+
+        return selectedData.map((b) => ({
+            ...b,
+            label: formatBucketLabel(b.bucketName),
+        }));
+    })();
 
     return (
         <Card
@@ -75,7 +123,9 @@ const SalesBarChart = () => {
         >
             <CardContent>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                    <Typography variant="h6" sx={{ textTransform: "uppercase", color: "#d1d5db" }} >Sales by Period</Typography>
+                    <Typography variant="h6" sx={{ textTransform: "uppercase", color: "#d1d5db" }}>
+                        Sales by Period
+                    </Typography>
                     <Select
                         value={period}
                         onChange={handleChange}
@@ -107,16 +157,15 @@ const SalesBarChart = () => {
 
                 <Box sx={{ width: "100%", height: 300 }}>
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={sampleData[period]}>
+                        <BarChart data={filledData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                            <XAxis dataKey="name" stroke="#d1d5db" />
+                            <XAxis dataKey="label" stroke="#d1d5db" />
                             <YAxis stroke="#d1d5db" />
                             <Tooltip
-                                contentStyle={{ backgroundColor: "#1f2937", borderColor: "#4b5563", color: "white" }}
-                                labelStyle={{ color: "#d1d5db" }}
+                                content={<SalesBarChartTooltip />}
                                 cursor={{ fill: "#374151" }}
                             />
-                            <Bar dataKey="sales" fill="#10b981" radius={[4, 4, 0, 0]} />
+                            <Bar dataKey="totalAmount" fill="#10b981" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </Box>
