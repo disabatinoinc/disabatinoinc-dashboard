@@ -2,10 +2,13 @@
 
 import React from "react";
 import { Box, Typography } from "@mui/material";
+import { TargetBucket } from "@/types/sales";
 
 type CustomTooltipProps = {
     active?: boolean;
-    payload?: any[];
+    payload?: {
+        payload: TargetBucket;
+    }[];
     label?: string;
 };
 

@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import api from "@/utils/apiClient";
 import { DonutSkeleton } from "./DonutSkeleton";
 import SalesBarChartSkeleton from "./SalesBarChartSkeleton";
+import { SalesTargetSummary, TargetPeriodKey } from "@/types/sales";
 
 const DonutChartTile = dynamic(() => import("@/components/DonutChartTile"), {
     ssr: false,
@@ -16,16 +17,9 @@ const SalesBarChart = dynamic(() => import("@/components/SalesBarChart"), {
     ssr: false,
 });
 
-const salesData = [
-    { label: "Week to Date", actual: 25000, target: 50000 },
-    { label: "Month to Date", actual: 110000, target: 200000 },
-    { label: "Quarter to Date", actual: 320000, target: 500000 },
-    { label: "Year to Date", actual: 870000, target: 1200000 },
-];
-
 const SalesSummary = () => {
     const [loading, setLoading] = useState(true);
-    const [targetData, setTargetData] = useState<any | null>(null);
+    const [targetData, setTargetData] = useState<SalesTargetSummary | null>(null);
     const fiscalYear = "2025"; // You can make this dynamic later
 
     useEffect(() => {
@@ -43,12 +37,13 @@ const SalesSummary = () => {
             });
     }, []);
 
-    const tiles = [
+    const tiles: { label: string; key: TargetPeriodKey }[] = [
         { label: "Week to Date", key: "weekly" },
         { label: "Month to Date", key: "monthly" },
         { label: "Quarter to Date", key: "quarterly" },
         { label: "Year to Date", key: "yearly" },
     ];
+
     return (
         <Box>
             <Typography variant="h4" sx={{ color: "white" }}>Sales Summary</Typography>

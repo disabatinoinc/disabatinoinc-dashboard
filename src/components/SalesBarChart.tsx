@@ -20,12 +20,12 @@ import {
     SelectChangeEvent,
 } from "@mui/material";
 import { format, parseISO, isValid } from "date-fns";
-import { TargetBucket } from "@/types/TargetBucket";
 import SalesBarChartTooltip from "./SalesBarChartTooltip";
 import { fillWeeklyBuckets } from "@/utils/fillWeeklyBuckets";
 import { fillMonthlyBuckets } from "@/utils/fillMonthlyBuckets";
 import { fillQuarterlyBuckets } from "@/utils/fillQuarterlyBuckets";
 import { getFiscalQuarterLabel } from "@/utils/getFiscalQuarterLabel";
+import { TargetBucket } from "@/types/sales";
 
 
 const formatBucketLabel = (bucketName: string): string => {

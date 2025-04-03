@@ -1,4 +1,5 @@
-import { TargetBucket } from "@/types/TargetBucket";
+
+import { TargetBucket } from "@/types/sales";
 import { format, parseISO } from "date-fns";
 
 

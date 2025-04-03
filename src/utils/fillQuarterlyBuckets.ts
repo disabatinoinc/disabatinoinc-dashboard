@@ -1,11 +1,5 @@
-import { TargetBucket } from "@/types/TargetBucket";
+import { TargetBucket } from "@/types/sales";
 
-const fiscalMonthOrder = [
-    "April", "May", "June",
-    "July", "August", "September",
-    "October", "November", "December",
-    "January", "February", "March"
-];
 
 const getQuarterMonths = (quarterLabel: string): string[] => {
     switch (quarterLabel) {

@@ -4,16 +4,6 @@
 
 import React from "react";
 import { Card, CardContent, Skeleton, Box } from "@mui/material";
-import { TargetBucket } from "@/types/TargetBucket";
-
-type SalesBarChartProps = {
-    data: {
-        WTD: TargetBucket[];
-        MTD: TargetBucket[];
-        QTD: TargetBucket[];
-        YTD: TargetBucket[];
-    };
-};
 
 const SalesBarChartSkeleton = () => {
     return (

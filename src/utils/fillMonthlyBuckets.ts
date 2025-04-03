@@ -1,5 +1,6 @@
 
-import { TargetBucket } from "@/types/TargetBucket";
+
+import { TargetBucket } from "@/types/sales";
 import {
     endOfMonth,
     startOfWeek,
