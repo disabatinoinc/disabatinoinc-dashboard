@@ -7,7 +7,13 @@ import dynamic from "next/dynamic";
 import api from "@/utils/apiClient";
 import { DonutSkeleton } from "./DonutSkeleton";
 import SalesBarChartSkeleton from "./SalesBarChartSkeleton";
-import { SalesTargetSummary, TargetPeriodKey } from "@/types/sales";
+import { SalesTargetSummary, SalesTargetWithActuals, TargetPeriodKey } from "@/types/sales";
+import {
+    findCurrentWeeklyTarget,
+    findCurrentMonthlyTarget,
+    findCurrentQuarterlyTarget,
+    findCurrentYearlyTarget
+} from "@/utils/selectCurrentTarget";
 
 const DonutChartTile = dynamic(() => import("@/components/DonutChartTile"), {
     ssr: false,
@@ -57,7 +63,22 @@ const SalesSummary = () => {
                         </Grid>
                     ))
                     : tiles.map(({ label, key }) => {
-                        const data = targetData?.[key]?.[0]; // just use first target for now
+                        let data: SalesTargetWithActuals | undefined;
+
+                        switch (key) {
+                            case "weekly":
+                                data = targetData?.weekly && findCurrentWeeklyTarget(targetData.weekly);
+                                break;
+                            case "monthly":
+                                data = targetData?.monthly && findCurrentMonthlyTarget(targetData.monthly);
+                                break;
+                            case "quarterly":
+                                data = targetData?.quarterly && findCurrentQuarterlyTarget(targetData.quarterly);
+                                break;
+                            case "yearly":
+                                data = targetData?.yearly && findCurrentYearlyTarget(targetData.yearly);
+                                break;
+                        }
 
                         if (!data) return null;
 

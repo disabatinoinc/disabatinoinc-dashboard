@@ -15,7 +15,7 @@ type DonutChartTileProps = {
 const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target }) => {
 
     const data = [
-        { name: "Achieved", value: actual },
+        { name: "Sold", value: actual },
         { name: "Remaining", value: Math.max(target - actual, 0) },
     ];
 

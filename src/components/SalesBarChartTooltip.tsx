@@ -31,7 +31,7 @@ const SalesBarChartTooltip: React.FC<CustomTooltipProps> = ({ active, payload, l
                 {label}
             </Typography>
             <Typography variant="body2">
-                {recordCount} {recordCount === 1 ? "record" : "records"}
+                {recordCount} {recordCount === 1 ? "contract" : "contracts"}
             </Typography>
             <Typography variant="body2">
                 ${totalAmount.toLocaleString()}

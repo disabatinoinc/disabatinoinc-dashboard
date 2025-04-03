@@ -7,7 +7,11 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import CollectionsSummary from "@/components/CollectionsSummary";
-import SalesSummary from "@/components/SalesSummary";
+import dynamic from "next/dynamic";
+
+const SalesSummary = dynamic(() => import("@/components/SalesSummary"), {
+    ssr: false,
+});
 
 const navItems = [
     { label: "Collections", value: "collections" },

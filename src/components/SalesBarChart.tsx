@@ -26,38 +26,7 @@ import { fillMonthlyBuckets } from "@/utils/fillMonthlyBuckets";
 import { fillQuarterlyBuckets } from "@/utils/fillQuarterlyBuckets";
 import { getFiscalQuarterLabel } from "@/utils/getFiscalQuarterLabel";
 import { TargetBucket } from "@/types/sales";
-
-
-const formatBucketLabel = (bucketName: string): string => {
-    // Try parsing as a date
-    const parsed = parseISO(bucketName);
-    if (isValid(parsed)) {
-        return format(parsed, "MMM d"); // e.g. Apr 1
-    }
-
-    // If not a date, try month abbreviation
-    const monthMap: Record<string, string> = {
-        January: "Jan",
-        February: "Feb",
-        March: "Mar",
-        April: "Apr",
-        May: "May",
-        June: "Jun",
-        July: "Jul",
-        August: "Aug",
-        September: "Sep",
-        October: "Oct",
-        November: "Nov",
-        December: "Dec",
-    };
-
-    if (bucketName in monthMap) {
-        return monthMap[bucketName];
-    }
-
-    // Default: return as-is
-    return bucketName;
-};
+import { fillYearlyBuckets } from "@/utils/fillYearlyBuckets";
 
 type SalesBarChartProps = {
     data: {
@@ -96,18 +65,18 @@ const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
         }
 
         if (period === "QTD") {
-            const quarterLabel = selectedData[0]?.bucketName
-                ? getFiscalQuarterLabel(selectedData[0].bucketName)
-                : "";
+            const firstMonth = selectedData[0]?.bucketName;
+            const quarterLabel = firstMonth ? getFiscalQuarterLabel(firstMonth) : "";
             if (quarterLabel) {
                 return fillQuarterlyBuckets(selectedData, quarterLabel);
             }
         }
 
-        return selectedData.map((b) => ({
-            ...b,
-            label: formatBucketLabel(b.bucketName),
-        }));
+        if (period === "YTD") {
+            return fillYearlyBuckets(selectedData);
+        }
+
+        return selectedData;
     })();
 
     return (
