@@ -35,7 +35,7 @@ export const findCurrentQuarterlyTarget = (targets: SalesTargetWithActuals[]): S
         return "Q4 (Jan-Mar)";
     })();
 
-    let currentQuarter = targets.find((t) => t.quarter === fiscalQuarter);
+    const currentQuarter = targets.find((t) => t.quarter === fiscalQuarter);
     return currentQuarter;
 };
 
