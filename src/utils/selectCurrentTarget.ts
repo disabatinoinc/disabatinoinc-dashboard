@@ -9,13 +9,14 @@ import {
 export const findCurrentWeeklyTarget = (targets: SalesTargetWithActuals[]): SalesTargetWithActuals | undefined => {
     const today = new Date();
 
-    return targets.find((t) => {
+    const filteredTargets = targets.find((t) => {
         if (!t.weekStartDate || !t.weekEndDate) return false;
 
         const start = parseISO(t.weekStartDate);
         const end = parseISO(t.weekEndDate);
         return isWithinInterval(today, { start, end });
     });
+    return filteredTargets;
 };
 
 // MONTHLY

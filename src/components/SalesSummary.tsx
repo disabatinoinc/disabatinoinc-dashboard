@@ -100,10 +100,10 @@ const SalesSummary = () => {
                 <SalesBarChart
 
                     data={{
-                        WTD: targetData?.weekly?.[0]?.buckets || [],
-                        MTD: targetData?.monthly?.[0]?.buckets || [],
-                        QTD: targetData?.quarterly?.[0]?.buckets || [],
-                        YTD: targetData?.yearly?.[0]?.buckets || [],
+                        WTD: targetData?.weekly && findCurrentWeeklyTarget(targetData?.weekly)?.buckets || [],
+                        MTD: targetData?.monthly && findCurrentMonthlyTarget(targetData?.monthly)?.buckets || [],
+                        QTD: targetData?.quarterly && findCurrentQuarterlyTarget(targetData?.quarterly)?.buckets || [],
+                        YTD: targetData?.yearly && findCurrentYearlyTarget(targetData?.yearly)?.buckets || [],
                     }} />}
 
         </Box>

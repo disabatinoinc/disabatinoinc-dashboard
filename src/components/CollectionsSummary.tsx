@@ -206,7 +206,7 @@ const CollectionsSummary = () => {
                                                 alignItems: "center", // center icon under label
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
-                                                "max-width": "100%",
+                                                maxWidth: "100%",
                                             }}
                                         active={orderBy === headCell.id}
                                         direction={orderBy === headCell.id ? (order as 'asc' | 'desc') : 'asc'}
