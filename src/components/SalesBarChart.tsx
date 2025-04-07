@@ -26,7 +26,6 @@ import { fillQuarterlyBuckets } from "@/utils/fillQuarterlyBuckets";
 import { getFiscalQuarterLabel } from "@/utils/getFiscalQuarterLabel";
 import { TargetBucket } from "@/types/sales";
 import { fillYearlyBuckets } from "@/utils/fillYearlyBuckets";
-import { findCurrentWeeklyTarget } from "@/utils/selectCurrentTarget";
 
 type SalesBarChartProps = {
     data: {
