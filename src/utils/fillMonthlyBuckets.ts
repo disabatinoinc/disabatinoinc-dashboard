@@ -14,7 +14,7 @@ import {
 export const fillMonthlyBuckets = (
     buckets: TargetBucket[],
     monthStart: string,
-    fiscalYearStart: string = "2025-04-01" // default, can be overridden
+    fiscalYearStart: string = "2025-04-01"
 ): TargetBucket[] => {
     const start = parseISO(monthStart);
     const end = endOfMonth(start);
@@ -27,9 +27,10 @@ export const fillMonthlyBuckets = (
         current = fiscalStart; // ⛔ don't start before fiscal year
     }
 
+    let isFirstBucket = true;
+
     while (current <= end) {
         const bucketName = format(current, "yyyy-MM-dd");
-
         const match = buckets.find((b) => b.bucketName === bucketName);
         const weekEnd = addDays(current, 6);
 
@@ -46,7 +47,13 @@ export const fillMonthlyBuckets = (
                 }
         );
 
-        current = addWeeks(current, 1);
+        if (isFirstBucket) {
+            // 🛠 After first bucket (which may start mid-week), reset to next Sunday
+            current = startOfWeek(addWeeks(current, 1), { weekStartsOn: 0 });
+            isFirstBucket = false;
+        } else {
+            current = addWeeks(current, 1);
+        }
     }
 
     return filled;

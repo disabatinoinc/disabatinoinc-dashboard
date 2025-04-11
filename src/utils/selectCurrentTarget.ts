@@ -21,8 +21,10 @@ export const findCurrentWeeklyTarget = (targets: SalesTargetWithActuals[]): Sale
 
 // MONTHLY
 export const findCurrentMonthlyTarget = (targets: SalesTargetWithActuals[]): SalesTargetWithActuals | undefined => {
+    debugger;
     const thisMonthName = format(new Date(), "MMMM");
-    return targets.find((t) => t.month === thisMonthName);
+    const filteredTargets = targets.find((t) => t.month === thisMonthName);
+    return filteredTargets;
 };
 
 // QUARTERLY
