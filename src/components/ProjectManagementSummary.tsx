@@ -8,8 +8,6 @@ import {
     Button
 } from "@mui/material";
 import { useSnackbar } from 'notistack';
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
 import api from "@/utils/apiClient";
 import { exportToCSV } from "@/utils/exportCSV";
 import ProjectRow from "./ProjectRow";
@@ -152,7 +150,7 @@ const ProjectManagementSummary = () => {
 
             const refetch = await api.get("/salesforce/buildertrend-mappings");
             setRows(refetch.data);
-        } catch (error: any) {
+        } catch (error) {
             console.error("Error creating Buildertrend jobs:", error);
             enqueueSnackbar("Unexpected error creating Buildertrend jobs.", {
                 variant: 'error',
