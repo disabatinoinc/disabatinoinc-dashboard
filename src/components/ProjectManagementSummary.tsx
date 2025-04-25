@@ -7,6 +7,7 @@ import {
     CircularProgress, Tooltip, Checkbox, Toolbar,
     Button
 } from "@mui/material";
+import { useSnackbar } from 'notistack';
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import api from "@/utils/apiClient";
@@ -99,16 +100,63 @@ const ProjectManagementSummary = () => {
         });
     };
 
+    const handleSelectAll = () => {
+        const unmappedRows = sortedRows.filter(row => !row.jobMapped);
+        const allUnmappedIds = unmappedRows.map(row => row.opportunityId);
+
+        if (allUnmappedIds.every(id => selectedRowsSet.has(id))) {
+            setSelectedRowsSet(new Set()); // deselect all
+        } else {
+            setSelectedRowsSet(new Set(allUnmappedIds)); // select only unmapped
+        }
+    };
+
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     const handleCreateJobs = async () => {
+        const selectedIds = Array.from(selectedRowsSet);
+
+        if (selectedIds.length === 0) return;
+
         try {
             const res = await api.post("/buildertrend/create-jobs", {
-                opportunityIds: Array.from(selectedRowsSet),
+                opportunityIds: selectedIds,
             });
-            console.log("Created jobs:", res.data);
-            setSelectedRowsSet(new Set()); // Reset after creation
-            // Optional: re-fetch data
-        } catch (error) {
+
+            const { successful, errors } = res.data;
+
+            if (successful.length > 0) {
+                enqueueSnackbar(`${successful.length} job${successful.length > 1 ? 's' : ''} created successfully.`, {
+                    variant: 'success',
+                });
+            }
+
+            if (errors.length > 0) {
+                const messageLines = errors.map(
+                    (err: { opportunityId: string; message: string }) =>
+                        `• ${err.opportunityId}: ${err.message}`
+                );
+
+                enqueueSnackbar(`Errors occurred for ${errors.length} job(s):\n${messageLines.join('\n')}`, {
+                    variant: 'error',
+                    persist: true,
+                    action: (key) => (
+                        <Button onClick={() => closeSnackbar(key)} sx={{ color: 'white', fontSize: '0.75rem' }}>
+                            Dismiss
+                        </Button>
+                    )
+                });
+            }
+
+            setSelectedRowsSet(new Set());
+
+            const refetch = await api.get("/salesforce/buildertrend-mappings");
+            setRows(refetch.data);
+        } catch (error: any) {
             console.error("Error creating Buildertrend jobs:", error);
+            enqueueSnackbar("Unexpected error creating Buildertrend jobs.", {
+                variant: 'error',
+            });
         }
     };
 
@@ -146,19 +194,39 @@ const ProjectManagementSummary = () => {
                 <Typography variant="body2" sx={{ color: "#9ca3af" }}>
                     {selectedRowsSet.size} selected
                 </Typography>
-                <Button
-                    onClick={handleCreateJobs}
-                    variant="contained"
-                    disabled={selectedRowsSet.size === 0}
-                    sx={{
-                        backgroundColor: "#42de80",
-                        textTransform: "none",
-                        fontSize: "0.75rem",
-                        "&:hover": { backgroundColor: "#3ac06f" },
-                    }}
-                >
-                    Create Job(s) in Buildertrend
-                </Button>
+                <Box>
+                    <Button
+                        onClick={() => setSelectedRowsSet(new Set())}
+                        disabled={selectedRowsSet.size === 0}
+                        variant="outlined"
+                        sx={{
+                            color: "#d1d5db",
+                            borderColor: "#374151",
+                            fontSize: "0.75rem",
+                            textTransform: "none",
+                            mr: 1
+                        }}
+                    >
+                        Clear All
+                    </Button>
+                    <Button
+                        onClick={handleCreateJobs}
+                        variant="contained"
+                        disabled={selectedRowsSet.size === 0}
+                        sx={{
+                            backgroundColor: "#42de80",
+                            textTransform: "none",
+                            fontSize: "0.75rem",
+                            "&:hover": {
+                                backgroundColor: "#3ac06f",
+                                outline: "white"
+                            },
+                            borderColor: "#374151",
+                        }}
+                    >
+                        Create ({selectedRowsSet.size}) Job{selectedRowsSet.size === 1 ? "" : "s"} in Buildertrend
+                    </Button>
+                </Box>
             </Toolbar>
             <TableContainer
                 component={Paper}
@@ -175,7 +243,25 @@ const ProjectManagementSummary = () => {
                 <Table sx={{ tableLayout: 'fixed' }}>
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="checkbox" />
+                            <TableCell padding="checkbox">
+                                <Tooltip title="Select All" arrow>
+                                    <Checkbox
+                                        checked={
+                                            sortedRows.filter(row => !row.jobMapped)
+                                                .every(row => selectedRowsSet.has(row.opportunityId)) &&
+                                            sortedRows.some(row => !row.jobMapped)
+                                        }
+                                        indeterminate={
+                                            sortedRows.some(row => !row.jobMapped && selectedRowsSet.has(row.opportunityId)) &&
+                                            !sortedRows.filter(row => !row.jobMapped)
+                                                .every(row => selectedRowsSet.has(row.opportunityId))
+                                        }
+                                        onChange={handleSelectAll}
+                                        sx={{ color: "#9ca3af" }}
+                                        disableRipple
+                                    />
+                                </Tooltip>
+                            </TableCell>
                             {headCells.map((cell) => (
                                 <TableCell
                                     key={cell.id}
