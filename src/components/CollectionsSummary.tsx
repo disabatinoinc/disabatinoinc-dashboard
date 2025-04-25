@@ -242,12 +242,11 @@ const CollectionsSummary = () => {
                                                 color: headCell.id === 'totalPaid' || headCell.id === 'totalOpportunityAmount' ? '#42de80' : '#d1d5db',
                                                 paddingLeft: '4px',
                                                 fontSize: '0.75rem',
-                                                whiteSpace: 'nowrap',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
                                             }} >
                                             <Tooltip title={row[headCell.id]} arrow>
-                                                <Box sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                <Box>
                                                     {typeof row[headCell.id] === "number" ? formatCurrency(row[headCell.id] as number) : row[headCell.id]}
                                                 </Box>
                                             </Tooltip>

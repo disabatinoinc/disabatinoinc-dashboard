@@ -13,6 +13,7 @@ import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import CollectionsSummary from "@/components/CollectionsSummary";
 import dynamic from "next/dynamic";
+import ProjectManagementSummary from "@/components/ProjectManagementSummary";
 
 const SalesSummary = dynamic(() => import("@/components/SalesSummary"), {
     ssr: false,
@@ -21,6 +22,7 @@ const SalesSummary = dynamic(() => import("@/components/SalesSummary"), {
 const navItems = [
     { label: "Collections", value: "collections" },
     { label: "Sales", value: "sales" },
+    { label: "Project Management", value: "projectManagement" }
 ];
 
 const Page = () => {
@@ -98,6 +100,7 @@ const Page = () => {
                     <Box sx={{ padding: 2 }}>
                         {activeTab === "collections" && <CollectionsSummary />}
                         {activeTab === "sales" && <SalesSummary />}
+                        {activeTab === "projectManagement" && <ProjectManagementSummary />}
                     </Box>
                 )}
             </Box>
