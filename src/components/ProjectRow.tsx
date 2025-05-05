@@ -45,6 +45,7 @@ const ProjectRow: React.FC<RowProps> = ({ row, isSelected, onSelect, headCells }
             {headCells.map((cell) => (
                 <TableCell
                     key={cell.id}
+                    size={(cell.id !== 'opportunityName' && cell.id !== 'buildertrendJobName' && cell.id !== 'projectManager') ? "small" : "medium"}
                     sx={{
                         color:
                             cell.id === "jobMapped"
@@ -53,9 +54,10 @@ const ProjectRow: React.FC<RowProps> = ({ row, isSelected, onSelect, headCells }
                                     : "#ef4444" // red for false
                                 : "#d1d5db",
                         fontSize: "0.75rem",
-                        padding: "6px",
+                        paddingLeft: "4px",
                         overflow: "hidden",
-                        textOverflow: "ellipsis"
+                        textOverflow: "ellipsis",
+                        width: (cell.id !== 'opportunityName' && cell.id !== 'buildertrendJobName' && cell.id !== 'projectManager') ? "75px" : "120px",
                     }}
                 >
                     {cell.id === "jobMapped"
