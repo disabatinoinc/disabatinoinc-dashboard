@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Projects Dashboard",
+  title: "DiSabatinoinc Dashboard",
   description: "Dashboard displaying project data for Disabatino Inc.",
 };
 
