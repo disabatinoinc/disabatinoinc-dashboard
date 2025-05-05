@@ -160,12 +160,14 @@ const CollectionsSummary = () => {
                 component={Paper}
                 sx={{
                     marginTop: 2,
-                    padding: "4px",
+                    padding: "0px 4px 4px 4px",
                     background: "linear-gradient(to bottom right, #121929 0%, #0c111c 50%, #000000 100%)",
                     border: "1px solid #374151",
                     borderRadius: "12px",
                     width: "100%",
-                    maxWidth: "100%"
+                    maxWidth: "100%",
+                    maxHeight: "600px", // 👈 LIMIT HEIGHT
+                    overflowY: "auto"
                 }}
             >
                 <Table sx={{ tableLayout: 'fixed', width: '100%' }}>
@@ -177,6 +179,10 @@ const CollectionsSummary = () => {
                                     size={headCell.id !== 'opportunityName' ? "small" : "medium"}
                                     sx={{
                                         color: "#d1d5db",
+                                        position: 'sticky',
+                                        top: 0,
+                                        zIndex: 10,
+                                        backgroundColor: '#121929',
                                         textTransform: "uppercase",
                                         padding: '4px',
                                         width: headCell.id !== 'opportunityName' ? "100px" : "150px",
