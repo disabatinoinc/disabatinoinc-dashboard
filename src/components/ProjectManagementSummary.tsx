@@ -230,18 +230,25 @@ const ProjectManagementSummary = () => {
                 component={Paper}
                 sx={{
                     marginTop: 2,
-                    padding: "4px",
+                    padding: "0px 4px 4px 4px",
                     background: "linear-gradient(to bottom right, #121929, #0c111c, #000000)",
                     border: "1px solid #374151",
                     borderRadius: "12px",
                     width: "100%",
-                    maxWidth: "100%"
+                    maxWidth: "100%",
+                    maxHeight: "800px", // 👈 LIMIT HEIGHT
+                    overflowY: "auto"
                 }}
             >
-                <Table sx={{ tableLayout: 'fixed' }}>
+                <Table sx={{ tableLayout: 'fixed', width: '100%' }}>
                     <TableHead>
                         <TableRow>
-                            <TableCell padding="checkbox">
+                            <TableCell padding="checkbox" sx={{
+                                position: 'sticky',
+                                top: 0,
+                                zIndex: 10,
+                                backgroundColor: '#121929'
+                            }}>
                                 <Tooltip title="Select All" arrow>
                                     <Checkbox
                                         checked={
@@ -263,14 +270,18 @@ const ProjectManagementSummary = () => {
                             {headCells.map((cell) => (
                                 <TableCell
                                     key={cell.id}
-                                    size={(cell.id !== 'opportunityName' && cell.id !== 'buildertrendJobName') ? "small" : "medium"}
+                                    size={(cell.id !== 'opportunityName' && cell.id !== 'buildertrendJobName' && cell.id !== 'projectManager') ? "small" : "medium"}
                                     sx={{
                                         color: "#d1d5db",
+                                        position: 'sticky',
+                                        top: 0,
+                                        zIndex: 10,
+                                        backgroundColor: '#121929',
                                         fontSize: "0.75rem",
                                         textTransform: "uppercase",
                                         padding: "6px",
-                                        maxWidth: (cell.id !== 'opportunityName' && cell.id !== 'buildertrendJobName') ? "100px" : "150px",
-                                        textOverflow: 'ellipsis'
+                                        width: (cell.id !== 'opportunityName' && cell.id !== 'buildertrendJobName' && cell.id !== 'projectManager') ? "75px" : "120px",
+                                        textOverflow: 'ellipsis',        // 👈 prevent wrapping
                                     }}
                                 >
                                     <TableSortLabel
@@ -282,7 +293,16 @@ const ProjectManagementSummary = () => {
                                             '&.Mui-active': { color: "white" },
                                             '& .MuiTableSortLabel-icon': { color: "white !important" },
                                             '&:hover': { color: 'white' },
-                                            textOverflow: 'ellipsis'
+                                            // 👇 Apply flexbox layout
+                                            display: "flex",
+                                            flexDirection: {
+                                                xs: "column", // stack text & icon vertically on mobile
+                                                sm: "row",    // default horizontal layout on larger screens
+                                            },
+                                            alignItems: "center", // center icon under label
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            maxWidth: "100%",
                                         }}
                                     >
                                         {cell.label}

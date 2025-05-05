@@ -166,7 +166,7 @@ const CollectionsSummary = () => {
                     borderRadius: "12px",
                     width: "100%",
                     maxWidth: "100%",
-                    maxHeight: "600px", // 👈 LIMIT HEIGHT
+                    maxHeight: "800px", // 👈 LIMIT HEIGHT
                     overflowY: "auto"
                 }}
             >
@@ -187,7 +187,7 @@ const CollectionsSummary = () => {
                                         padding: '4px',
                                         width: headCell.id !== 'opportunityName' ? "100px" : "150px",
                                         textOverflow: 'ellipsis',
-                                        fontSize: '0.75rem',
+                                        fontSize: '0.75rem'
 
                                     }}
                                 >
