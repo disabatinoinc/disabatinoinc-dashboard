@@ -26,7 +26,7 @@ type JobTrackingRow = {
 
 
 
-const ProjectManagementSummary = () => {
+const ProjectManagementDetails = () => {
     const headCells: { id: keyof JobTrackingRow; label: string }[] = useMemo(() => ([
         { id: "projectManager", label: "Project Manager" },
         { id: "opportunityName", label: "Opportunity Name" },
@@ -161,7 +161,7 @@ const ProjectManagementSummary = () => {
     return (
         <Box>
             <Typography variant="h4" sx={{ color: "white", mb: 2 }}>
-                Project Management Summary
+                Project Management Details
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
                 <Button
@@ -336,4 +336,4 @@ const ProjectManagementSummary = () => {
     );
 };
 
-export default ProjectManagementSummary;
+export default ProjectManagementDetails;

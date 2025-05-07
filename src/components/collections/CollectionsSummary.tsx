@@ -4,44 +4,44 @@ import React, { useEffect, useState } from "react";
 import Grid from '@mui/material/Grid2';
 import { Typography, Box } from "@mui/material";
 import dynamic from "next/dynamic";
-import api from "@/utils/apiClient";
-import { DonutSkeleton } from "./DonutSkeleton";
-import SalesBarChartSkeleton from "./SalesBarChartSkeleton";
-import { SalesTargetSummary, SalesTargetWithActuals, TargetPeriodKey } from "@/types/sales";
 import {
     findCurrentWeeklyTarget,
     findCurrentMonthlyTarget,
     findCurrentQuarterlyTarget,
     findCurrentYearlyTarget
-} from "@/utils/selectCurrentTarget";
+} from "@/utils/selectCurrentRevenueTarget";
+import { DonutSkeleton } from "../shared/DonutSkeleton";
+import CollectionsBarChartSkeleton from "../collections/CollectionsBarChartSkeleton";
+import { RevenueTargetSummary, RevenueTargetWithActuals, TargetPeriodKey } from "@/types/collections";
+import api from "@/utils/apiClient";
 
-const DonutChartTile = dynamic(() => import("@/components/DonutChartTile"), {
+// Lazy load charts
+const DonutChartTile = dynamic(() => import("@/components/shared/DonutChartTile"), {
+    ssr: false,
+});
+const CollectionsBarChart = dynamic(() => import("@/components/collections/CollectionsBarChart"), {
     ssr: false,
 });
 
-const SalesBarChart = dynamic(() => import("@/components/SalesBarChart"), {
-    ssr: false,
-});
-
-const SalesSummary = () => {
+const CollectionsSummary = () => {
     const [loading, setLoading] = useState(true);
-    const [targetData, setTargetData] = useState<SalesTargetSummary | null>(null);
+    const [targetData, setTargetData] = useState<RevenueTargetSummary | null>(null);
+
     const fiscalYear = "2025"; // You can make this dynamic later
 
     useEffect(() => {
         setLoading(true);
 
-        api.get(`/sales-targets/all?fiscalYear=${fiscalYear}`)
+        api.get(`/revenue-targets/all?fiscalYear=${fiscalYear}`)
             .then((response) => {
                 const data = response.data;
-                setTargetData(data.data);
-                // Delay loading false to allow for mount/animation/setup time
+                setTargetData(data.data); // normalized structure: { weekly, monthly, quarterly, yearly }
                 setTimeout(() => {
                     setLoading(false);
-                }, 800); // adjust the delay as needed (300ms–500ms is typical)
+                }, 800); // optional delay for animation/setup
             })
             .catch((error) => {
-                console.error("Error fetching data:", error);
+                console.error("Error fetching revenue target data:", error);
                 setLoading(false);
             });
     }, []);
@@ -55,7 +55,7 @@ const SalesSummary = () => {
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ color: "white" }}>Sales Summary</Typography>
+            <Typography variant="h4" sx={{ color: "white" }}>Collections Summary</Typography>
 
             <Grid maxWidth="100%" container spacing={2} marginTop={2} justifyContent="space-between">
                 {loading
@@ -65,7 +65,7 @@ const SalesSummary = () => {
                         </Grid>
                     ))
                     : tiles.map(({ label, key }) => {
-                        let data: SalesTargetWithActuals | undefined;
+                        let data: RevenueTargetWithActuals | undefined;
 
                         switch (key) {
                             case "weekly":
@@ -90,24 +90,28 @@ const SalesSummary = () => {
                                     label={label}
                                     actual={data.actualsSummary?.totalAmount || 0}
                                     target={data.targetAmount || 0}
+                                    paidLabelOverride="Collected"
+                                    unpaidLabelOverride="Remaining"
                                 />
                             </Grid>
                         );
                     })}
             </Grid>
-            {loading ? <SalesBarChartSkeleton />
-                :
-                <SalesBarChart
 
+            {loading ? (
+                <CollectionsBarChartSkeleton />
+            ) : (
+                <CollectionsBarChart
                     data={{
                         WTD: targetData?.weekly && findCurrentWeeklyTarget(targetData?.weekly)?.buckets || [],
                         MTD: targetData?.monthly && findCurrentMonthlyTarget(targetData?.monthly)?.buckets || [],
                         QTD: targetData?.quarterly && findCurrentQuarterlyTarget(targetData?.quarterly)?.buckets || [],
                         YTD: targetData?.yearly && findCurrentYearlyTarget(targetData?.yearly)?.buckets || [],
-                    }} />}
-
+                    }}
+                />
+            )}
         </Box>
     );
 };
 
-export default SalesSummary;
+export default CollectionsSummary;

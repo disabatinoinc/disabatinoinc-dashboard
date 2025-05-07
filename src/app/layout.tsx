@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import SnackbarProviderWrapper from "@/components/SnackbarProviderWrapper";
+import ClientLayout from "./clientLayout";
+import SnackbarProviderWrapper from "@/components/shared/SnackbarProviderWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,30 +16,22 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DiSabatinoinc Dashboard",
-  description: "Dashboard displaying project data for Disabatino Inc.",
+  description: "Dashboard displaying project data for DiSabatino Inc.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable}`}
-        style={{
-          backgroundColor: "#030712",
-          color: "white",
-          minHeight: "100vh",
-          margin: 0,
-          padding: 0,
-          display: "flex",
-          flexDirection: "column",
-        }}
+        style={{ backgroundColor: "#030712", color: "white" }}
       >
         <SnackbarProviderWrapper>
-          {children}
+          <ClientLayout>{children}</ClientLayout>
         </SnackbarProviderWrapper>
       </body>
     </html>

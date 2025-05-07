@@ -19,20 +19,20 @@ import {
     Select,
     SelectChangeEvent,
 } from "@mui/material";
-import SalesBarChartTooltip from "./SalesBarChartTooltip";
-import { fillWeeklyBuckets } from "@/utils/fillWeeklyBuckets";
-import { fillMonthlyBuckets } from "@/utils/fillMonthlyBuckets";
-import { fillQuarterlyBuckets } from "@/utils/fillQuarterlyBuckets";
+import { fillWeeklyBuckets } from "@/utils/fillBuckets/fillWeeklyBuckets";
+import { fillMonthlyBuckets } from "@/utils/fillBuckets/fillMonthlyBuckets";
+import { fillQuarterlyBuckets } from "@/utils/fillBuckets/fillQuarterlyBuckets";
 import { getFiscalQuarterLabel } from "@/utils/getFiscalQuarterLabel";
-import { TargetBucket } from "@/types/sales";
-import { fillYearlyBuckets } from "@/utils/fillYearlyBuckets";
+import { RevenueTargetBucket } from "@/types/collections";
+import { fillYearlyBuckets } from "@/utils/fillBuckets/fillYearlyBuckets";
+import CollectionsBarChartTooltip from "./CollectionsBarChartTooltip";
 
-type SalesBarChartProps = {
+type CollectionsBarChartProps = {
     data: {
-        WTD: TargetBucket[];
-        MTD: TargetBucket[];
-        QTD: TargetBucket[];
-        YTD: TargetBucket[];
+        WTD: RevenueTargetBucket[];
+        MTD: RevenueTargetBucket[];
+        QTD: RevenueTargetBucket[];
+        YTD: RevenueTargetBucket[];
     };
 };
 
@@ -43,7 +43,7 @@ const periods = [
     { label: "Year to Date", value: "YTD" },
 ];
 
-const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
+const CollectionsBarChart: React.FC<CollectionsBarChartProps> = ({ data }) => {
     const [period, setPeriod] = useState<keyof typeof data>("WTD");
 
     const handleChange = (event: SelectChangeEvent) => {
@@ -57,10 +57,10 @@ const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
         }
 
         if (period === "MTD") {
-            const firstBucketDate = selectedData[0]?.bucketName;
-            if (firstBucketDate) {
-                return fillMonthlyBuckets(selectedData, firstBucketDate);
-            }
+            const now = new Date();
+            const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const startDate = firstDayOfMonth.toISOString().split("T")[0];
+            return fillMonthlyBuckets(selectedData, startDate);
         }
 
         if (period === "QTD") {
@@ -92,7 +92,7 @@ const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
             <CardContent>
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
                     <Typography variant="h6" sx={{ textTransform: "uppercase", color: "#d1d5db" }}>
-                        Sales by Period
+                        Collections by Period
                     </Typography>
                     <Select
                         value={period}
@@ -130,7 +130,7 @@ const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
                             <XAxis dataKey="label" stroke="#d1d5db" />
                             <YAxis stroke="#d1d5db" />
                             <Tooltip
-                                content={<SalesBarChartTooltip />}
+                                content={<CollectionsBarChartTooltip />}
                                 cursor={{ fill: "#374151" }}
                             />
                             <Bar dataKey="totalAmount" fill="#10b981" radius={[4, 4, 0, 0]} />
@@ -142,4 +142,4 @@ const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
     );
 };
 
-export default SalesBarChart;
+export default CollectionsBarChart;
