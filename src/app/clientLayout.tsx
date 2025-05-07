@@ -19,7 +19,7 @@ import Link from "next/link";
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const router = useRouter();
-    const isMobile = useMediaQuery("(max-width: 600px)");
+    const isMobile = useMediaQuery("(max-width: 600px)", { noSsr: true });
 
     const [collectionsAnchorEl, setCollectionsAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileAnchorEl, setMobileAnchorEl] = useState<null | HTMLElement>(null);
