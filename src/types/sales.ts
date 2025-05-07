@@ -1,11 +1,8 @@
-export type TargetBucket = {
-    bucketName: string;
-    bucketType: "daily" | "weekly" | "monthly" | "quarterly";
-    recordCount: number;
-    totalAmount: number;
+import { TargetBucket } from "./shared";
+
+export interface SalesTargetBucket extends TargetBucket {
     opportunityIds: string[];
-    label?: string; // added by frontend for chart display
-};
+}
 
 export type SalesTargetWithActuals = {
     id: string;
@@ -29,7 +26,7 @@ export type SalesTargetWithActuals = {
         opportunityIds: string[];
     };
 
-    buckets: TargetBucket[];
+    buckets: SalesTargetBucket[];
 };
 
 export type SalesTargetSummary = Record<TargetPeriodKey, SalesTargetWithActuals[]>;

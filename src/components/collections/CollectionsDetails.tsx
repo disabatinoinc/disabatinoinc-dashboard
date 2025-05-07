@@ -23,7 +23,7 @@ const headCells: { id: keyof CollectionSummary; label: string }[] = [
     { id: "totalOppOutstanding", label: "Opportunity Outstanding" },
 ];
 
-const CollectionsSummary = () => {
+const CollectionsDetails = () => {
     const [order, setOrder] = useState("desc");
     const [orderBy, setOrderBy] = useState<keyof CollectionSummary>("opportunityName");
     const [sorting, setSorting] = useState(false);
@@ -92,7 +92,7 @@ const CollectionsSummary = () => {
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ color: "white" }}>Collections Summary</Typography>
+            <Typography variant="h4" sx={{ color: "white" }}>Collections Details</Typography>
             <Typography variant="body2" sx={{ marginBottom: 2, color: "#9ca3af" }}>
                 {`Displaying ${projects.length} opportunities totaling 
                 $${projects.reduce((sum, item) => sum + item.totalOpportunityAmount, 0).toLocaleString()} 
@@ -269,4 +269,4 @@ const CollectionsSummary = () => {
     );
 };
 
-export default CollectionsSummary;
+export default CollectionsDetails;

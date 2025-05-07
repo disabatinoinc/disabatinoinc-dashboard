@@ -1,5 +1,4 @@
-import { TargetBucket } from "@/types/sales";
-
+import { TargetBucket } from "@/types/shared";
 
 const getQuarterMonths = (quarterLabel: string): string[] => {
     switch (quarterLabel) {
@@ -11,24 +10,33 @@ const getQuarterMonths = (quarterLabel: string): string[] => {
     }
 };
 
+// Shared bucket type that allows sales or revenue extension
+type BucketWithExtras = TargetBucket & {
+    opportunityIds?: string[];
+    transactionIds?: string[];
+};
+
 export const fillQuarterlyBuckets = (
-    buckets: TargetBucket[],
+    buckets: BucketWithExtras[],
     quarterLabel: string
-): TargetBucket[] => {
+): BucketWithExtras[] => {
     const months = getQuarterMonths(quarterLabel);
 
     return months.map((month) => {
         const match = buckets.find((b) => b.bucketName === month);
 
-        return match
-            ? { ...match, label: month.slice(0, 3) } // e.g. "Jul"
-            : {
-                bucketName: month,
-                bucketType: "monthly",
-                totalAmount: 0,
-                recordCount: 0,
-                opportunityIds: [],
-                label: month.slice(0, 3),
-            };
+        if (match) {
+            return { ...match, label: month.slice(0, 3) };
+        }
+
+        return {
+            bucketName: month,
+            bucketType: "monthly",
+            totalAmount: 0,
+            recordCount: 0,
+            opportunityIds: [],
+            transactionIds: [],
+            label: month.slice(0, 3),
+        };
     });
 };

@@ -25,7 +25,7 @@ const SalesBarChartSkeleton = () => {
                             key={idx}
                             variant="rectangular"
                             width="100%"
-                            height={Math.random() * 200 + 60}
+                            height={160 + idx * 10}
                             sx={{ flex: 1, bgcolor: "#1f2937", borderRadius: "4px" }}
                         />
                     ))}

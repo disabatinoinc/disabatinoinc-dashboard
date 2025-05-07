@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { TargetBucket } from "@/types/sales";
+import { TargetBucket } from "@/types/shared";
 
 type CustomTooltipProps = {
     active?: boolean;
@@ -12,7 +12,7 @@ type CustomTooltipProps = {
     label?: string;
 };
 
-const SalesBarChartTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
+const CollectionsBarChartTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
     if (!active || !payload || payload.length === 0) return null;
 
     const { totalAmount, recordCount } = payload[0].payload;
@@ -31,7 +31,7 @@ const SalesBarChartTooltip: React.FC<CustomTooltipProps> = ({ active, payload, l
                 {label}
             </Typography>
             <Typography variant="body2">
-                {recordCount} {recordCount === 1 ? "contract" : "contracts"}
+                {recordCount} {recordCount === 1 ? "balance paid" : "balances paid"}
             </Typography>
             <Typography variant="body2">
                 ${totalAmount.toLocaleString()}
@@ -40,4 +40,4 @@ const SalesBarChartTooltip: React.FC<CustomTooltipProps> = ({ active, payload, l
     );
 };
 
-export default SalesBarChartTooltip;
+export default CollectionsBarChartTooltip;

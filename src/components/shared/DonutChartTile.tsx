@@ -10,13 +10,17 @@ type DonutChartTileProps = {
     label: string;
     actual: number;
     target: number;
+    paidLabelOverride?: string;
+    unpaidLabelOverride?: string;
 };
 
-const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target }) => {
+const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target, paidLabelOverride, unpaidLabelOverride }) => {
+    const paidLabel = paidLabelOverride || "Sold";
+    const unpaidLabel = unpaidLabelOverride || "Remaining";
 
     const data = [
-        { name: "Sold", value: actual },
-        { name: "Remaining", value: Math.max(target - actual, 0) },
+        { name: paidLabel, value: actual },
+        { name: unpaidLabel, value: Math.max(target - actual, 0) },
     ];
 
     return (

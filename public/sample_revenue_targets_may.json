@@ -1,0 +1,218 @@
+{
+  "success": true,
+  "data": {
+    "weekly": [
+      {
+        "id": "rvt-may-week-1",
+        "name": "RTG-2025-May-Week-1",
+        "targetAmount": 492000,
+        "targetPeriod": "weekly",
+        "targetType": "Revenue",
+        "fiscalYear": "2025",
+        "weekStartDate": "2025-05-01",
+        "weekEndDate": "2025-05-07",
+        "weekNumber": 5,
+        "actualsSummary": {
+          "recordCount": 7,
+          "totalAmount": 171000,
+          "transactionIds": [
+            "TXN-001",
+            "TXN-002",
+            "TXN-003",
+            "TXN-004",
+            "TXN-005",
+            "TXN-006",
+            "TXN-007"
+          ]
+        },
+        "buckets": [
+          {
+            "bucketName": "2025-05-01",
+            "bucketType": "daily",
+            "recordCount": 1,
+            "totalAmount": 12500,
+            "transactionIds": [
+              "TXN-001"
+            ]
+          },
+          {
+            "bucketName": "2025-05-02",
+            "bucketType": "daily",
+            "recordCount": 1,
+            "totalAmount": 15800,
+            "transactionIds": [
+              "TXN-002"
+            ]
+          },
+          {
+            "bucketName": "2025-05-04",
+            "bucketType": "daily",
+            "recordCount": 1,
+            "totalAmount": 22300,
+            "transactionIds": [
+              "TXN-003"
+            ]
+          },
+          {
+            "bucketName": "2025-05-06",
+            "bucketType": "daily",
+            "recordCount": 2,
+            "totalAmount": 75100,
+            "transactionIds": [
+              "TXN-004",
+              "TXN-005"
+            ]
+          },
+          {
+            "bucketName": "2025-05-07",
+            "bucketType": "daily",
+            "recordCount": 1,
+            "totalAmount": 19600,
+            "transactionIds": [
+              "TXN-006"
+            ]
+          },
+          {
+            "bucketName": "2025-05-09",
+            "bucketType": "daily",
+            "recordCount": 1,
+            "totalAmount": 25700,
+            "transactionIds": [
+              "TXN-007"
+            ]
+          }
+        ]
+      }
+    ],
+    "monthly": [
+      {
+        "id": "rvt-may",
+        "name": "RTG-2025-May",
+        "targetAmount": 1968000,
+        "targetPeriod": "monthly",
+        "targetType": "Revenue",
+        "fiscalYear": "2025",
+        "month": "May",
+        "actualsSummary": {
+          "recordCount": 7,
+          "totalAmount": 171000,
+          "transactionIds": [
+            "TXN-001",
+            "TXN-002",
+            "TXN-003",
+            "TXN-004",
+            "TXN-005",
+            "TXN-006",
+            "TXN-007"
+          ]
+        },
+        "buckets": [
+          {
+            "bucketName": "2025-04-27",
+            "bucketType": "weekly",
+            "recordCount": 2,
+            "totalAmount": 28300,
+            "transactionIds": [
+              "TXN-001",
+              "TXN-002"
+            ]
+          },
+          {
+            "bucketName": "2025-05-04",
+            "bucketType": "weekly",
+            "recordCount": 5,
+            "totalAmount": 142700,
+            "transactionIds": [
+              "TXN-003",
+              "TXN-004",
+              "TXN-005",
+              "TXN-006",
+              "TXN-007"
+            ]
+          }
+        ]
+      }
+    ],
+    "quarterly": [
+      {
+        "id": "rvt-q2",
+        "name": "RTG-2025-Q2",
+        "targetAmount": 6789600,
+        "targetPeriod": "quarterly",
+        "targetType": "Revenue",
+        "fiscalYear": "2025",
+        "quarter": "Q1 (Apr-Jun)",
+        "actualsSummary": {
+          "recordCount": 7,
+          "totalAmount": 171000,
+          "transactionIds": [
+            "TXN-001",
+            "TXN-002",
+            "TXN-003",
+            "TXN-004",
+            "TXN-005",
+            "TXN-006",
+            "TXN-007"
+          ]
+        },
+        "buckets": [
+          {
+            "bucketName": "May",
+            "bucketType": "monthly",
+            "recordCount": 7,
+            "totalAmount": 171000,
+            "transactionIds": [
+              "TXN-001",
+              "TXN-002",
+              "TXN-003",
+              "TXN-004",
+              "TXN-005",
+              "TXN-006",
+              "TXN-007"
+            ]
+          }
+        ]
+      }
+    ],
+    "yearly": [
+      {
+        "id": "rvt-2025",
+        "name": "RTG-2025",
+        "targetAmount": 19100000,
+        "targetPeriod": "yearly",
+        "targetType": "Revenue",
+        "fiscalYear": "2025",
+        "actualsSummary": {
+          "recordCount": 7,
+          "totalAmount": 171000,
+          "transactionIds": [
+            "TXN-001",
+            "TXN-002",
+            "TXN-003",
+            "TXN-004",
+            "TXN-005",
+            "TXN-006",
+            "TXN-007"
+          ]
+        },
+        "buckets": [
+          {
+            "bucketName": "Q1 (Apr-Jun)",
+            "bucketType": "quarterly",
+            "recordCount": 7,
+            "totalAmount": 171000,
+            "transactionIds": [
+              "TXN-001",
+              "TXN-002",
+              "TXN-003",
+              "TXN-004",
+              "TXN-005",
+              "TXN-006",
+              "TXN-007"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
