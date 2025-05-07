@@ -5,7 +5,7 @@ import {
     Table, TableBody, TableCell, TableContainer, TableHead,
     TableRow, Paper, Typography, Box, TableSortLabel,
     CircularProgress, Tooltip, Checkbox, Toolbar,
-    Button
+    Button, ToggleButtonGroup, ToggleButton
 } from "@mui/material";
 import { useSnackbar } from 'notistack';
 import api from "@/utils/apiClient";
@@ -24,7 +24,14 @@ type JobTrackingRow = {
     jobMapped: boolean;
 };
 
+const stageOptions = {
+    "Closed Won Signed": "Closed Won - Signed",
+    "Ready to be Scheduled": "Ready to be Scheduled",
+    "Scheduled": "Scheduled",
+    "Work in Progress": "Work in Progress"
+} as const;
 
+type StageDisplayLabel = keyof typeof stageOptions;
 
 const ProjectManagementDetails = () => {
     const headCells: { id: keyof JobTrackingRow; label: string }[] = useMemo(() => ([
@@ -38,13 +45,12 @@ const ProjectManagementDetails = () => {
         { id: "jobMapped", label: "Job Mapped" }
     ]), []);
 
-
     const [order, setOrder] = useState<"asc" | "desc">("asc");
     const [orderBy, setOrderBy] = useState<keyof JobTrackingRow>("opportunityName");
     const [rows, setRows] = useState<JobTrackingRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedRowsSet, setSelectedRowsSet] = useState<Set<string>>(new Set());
-
+    const [selectedStage, setSelectedStage] = useState<StageDisplayLabel>("Work in Progress");
 
     const handleRequestSort = (property: keyof JobTrackingRow) => {
         const isAsc = orderBy === property && order === "asc";
@@ -58,7 +64,6 @@ const ProjectManagementDetails = () => {
         api.get("/salesforce/buildertrend-mappings")
             .then((response) => {
                 const data = response.data;
-
                 if (Array.isArray(data)) {
                     setRows(data);
                 } else if (data && Array.isArray(data.data)) {
@@ -67,7 +72,6 @@ const ProjectManagementDetails = () => {
                     console.error("Unexpected API response:", data);
                     setRows([]);
                 }
-
                 setLoading(false);
             })
             .catch((error) => {
@@ -77,16 +81,19 @@ const ProjectManagementDetails = () => {
             });
     }, []);
 
+    const filteredRows = useMemo(() => {
+        return rows.filter(row => row.stage === stageOptions[selectedStage]);
+    }, [rows, selectedStage]);
+
     const sortedRows = useMemo(() => {
-        return [...rows].sort((a, b) => {
+        return [...filteredRows].sort((a, b) => {
             if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
             if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
             return 0;
         });
-    }, [rows, order, orderBy]);
+    }, [filteredRows, order, orderBy]);
 
     const handleSelectRow = (opportunityId: string) => {
-        performance.mark("row-select-start");
         setSelectedRowsSet((prev) => {
             const updated = new Set(prev);
             if (updated.has(opportunityId)) {
@@ -94,18 +101,17 @@ const ProjectManagementDetails = () => {
             } else {
                 updated.add(opportunityId);
             }
-            return new Set(updated); // return new instance to trigger state update
+            return new Set(updated);
         });
     };
 
     const handleSelectAll = () => {
         const unmappedRows = sortedRows.filter(row => !row.jobMapped);
         const allUnmappedIds = unmappedRows.map(row => row.opportunityId);
-
         if (allUnmappedIds.every(id => selectedRowsSet.has(id))) {
-            setSelectedRowsSet(new Set()); // deselect all
+            setSelectedRowsSet(new Set());
         } else {
-            setSelectedRowsSet(new Set(allUnmappedIds)); // select only unmapped
+            setSelectedRowsSet(new Set(allUnmappedIds));
         }
     };
 
@@ -113,26 +119,19 @@ const ProjectManagementDetails = () => {
 
     const handleCreateJobs = async () => {
         const selectedIds = Array.from(selectedRowsSet);
-
         if (selectedIds.length === 0) return;
 
         try {
-            const res = await api.post("/buildertrend/create-jobs", {
-                opportunityIds: selectedIds,
-            });
-
+            const res = await api.post("/buildertrend/create-jobs", { opportunityIds: selectedIds });
             const { successful, errors } = res.data;
 
             if (successful.length > 0) {
-                enqueueSnackbar(`${successful.length} job${successful.length > 1 ? 's' : ''} created successfully.`, {
-                    variant: 'success',
-                });
+                enqueueSnackbar(`${successful.length} job${successful.length > 1 ? 's' : ''} created successfully.`, { variant: 'success' });
             }
 
             if (errors.length > 0) {
-                const messageLines = errors.map(
-                    (err: { opportunityId: string; message: string }) =>
-                        `• ${err.opportunityId}: ${err.message}`
+                const messageLines = errors.map((err: { opportunityId: string; message: string }) =>
+                    `• ${err.opportunityId}: ${err.message}`
                 );
 
                 enqueueSnackbar(`Errors occurred for ${errors.length} job(s):\n${messageLines.join('\n')}`, {
@@ -147,14 +146,11 @@ const ProjectManagementDetails = () => {
             }
 
             setSelectedRowsSet(new Set());
-
             const refetch = await api.get("/salesforce/buildertrend-mappings");
             setRows(refetch.data);
         } catch (error) {
             console.error("Error creating Buildertrend jobs:", error);
-            enqueueSnackbar("Unexpected error creating Buildertrend jobs.", {
-                variant: 'error',
-            });
+            enqueueSnackbar("Unexpected error creating Buildertrend jobs.", { variant: 'error' });
         }
     };
 
@@ -163,6 +159,47 @@ const ProjectManagementDetails = () => {
             <Typography variant="h4" sx={{ color: "white", mb: 2 }}>
                 Project Management Details
             </Typography>
+
+            <Typography variant="body2" sx={{ marginBottom: 2, color: "#9ca3af" }}>
+                {`In the "${selectedStage}" stage, ${filteredRows.length} job${filteredRows.length !== 1 ? 's are' : ' is'} active — 
+                        ${filteredRows.filter(row => row.jobMapped).length} ${filteredRows.filter(row => row.jobMapped).length === 1 ? 'is' : 'are'} synced to Buildertrend 
+                        (${filteredRows.length > 0
+                        ? Math.round((filteredRows.filter(row => row.jobMapped).length / filteredRows.length) * 100)
+                        : 0}%).`}
+            </Typography>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <ToggleButtonGroup
+                    value={selectedStage}
+                    exclusive
+                    onChange={(_, value) => value && setSelectedStage(value)}
+                    sx={{
+                        backgroundColor: '#121929',
+                        borderRadius: "12px",
+                        border: "1px solid #374151"
+                    }}
+                >
+                    {Object.keys(stageOptions).map((label) => (
+                        <ToggleButton
+                            key={label}
+                            value={label}
+                            sx={{
+                                color: '#d1d5db',
+                                borderRadius: "12px",
+                                fontSize: '0.75rem',
+                                '&.Mui-selected': {
+                                    backgroundColor: 'rgba(255, 255, 255, 0.1) !important',
+                                    color: 'white'
+                                }
+                            }}
+                        >
+                            {label}
+                        </ToggleButton>
+                    ))}
+                </ToggleButtonGroup>
+
+            </Box>
+
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
                 <Button
                     variant="outlined"
@@ -170,7 +207,7 @@ const ProjectManagementDetails = () => {
                     onClick={() =>
                         exportToCSV<JobTrackingRow>("project-management-summary", sortedRows, headCells.map(h => ({
                             label: h.label,
-                            key: h.id as keyof JobTrackingRow
+                            key: h.id
                         })))
                     }
                     sx={{
@@ -180,14 +217,15 @@ const ProjectManagementDetails = () => {
                         textTransform: "none",
                         fontSize: "0.75rem",
                         display: {
-                            xs: "none", // hide on mobile
-                            sm: "inline-flex", // show on tablet and up
+                            xs: "none",
+                            sm: "inline-flex",
                         },
                     }}
                 >
                     Export CSV
                 </Button>
             </Box>
+
             <Toolbar sx={{ display: "flex", justifyContent: "space-between", mb: 1, px: 0 }}>
                 <Typography variant="body2" sx={{ color: "#9ca3af" }}>
                     {selectedRowsSet.size} selected
@@ -226,6 +264,7 @@ const ProjectManagementDetails = () => {
                     </Button>
                 </Box>
             </Toolbar>
+
             <TableContainer
                 component={Paper}
                 sx={{
@@ -234,9 +273,7 @@ const ProjectManagementDetails = () => {
                     background: "linear-gradient(to bottom right, #121929, #0c111c, #000000)",
                     border: "1px solid #374151",
                     borderRadius: "12px",
-                    width: "100%",
-                    maxWidth: "100%",
-                    maxHeight: "800px", // 👈 LIMIT HEIGHT
+                    maxHeight: "800px",
                     overflowY: "auto"
                 }}
             >
@@ -281,25 +318,21 @@ const ProjectManagementDetails = () => {
                                         textTransform: "uppercase",
                                         padding: "6px",
                                         width: (cell.id !== 'opportunityName' && cell.id !== 'buildertrendJobName' && cell.id !== 'projectManager') ? "75px" : "120px",
-                                        textOverflow: 'ellipsis',        // 👈 prevent wrapping
+                                        textOverflow: 'ellipsis',
                                     }}
                                 >
                                     <TableSortLabel
                                         active={orderBy === cell.id}
                                         direction={orderBy === cell.id ? order : "asc"}
-                                        onClick={() => handleRequestSort(cell.id as keyof JobTrackingRow)}
+                                        onClick={() => handleRequestSort(cell.id)}
                                         sx={{
                                             color: "#d1d5db",
                                             '&.Mui-active': { color: "white" },
                                             '& .MuiTableSortLabel-icon': { color: "white !important" },
                                             '&:hover': { color: 'white' },
-                                            // 👇 Apply flexbox layout
                                             display: "flex",
-                                            flexDirection: {
-                                                xs: "column", // stack text & icon vertically on mobile
-                                                sm: "row",    // default horizontal layout on larger screens
-                                            },
-                                            alignItems: "center", // center icon under label
+                                            flexDirection: { xs: "column", sm: "row" },
+                                            alignItems: "center",
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',
                                             maxWidth: "100%",
@@ -314,7 +347,7 @@ const ProjectManagementDetails = () => {
                     <TableBody>
                         {loading ? (
                             <TableRow>
-                                <TableCell colSpan={headCells.length} align="center">
+                                <TableCell colSpan={headCells.length + 1} align="center">
                                     <CircularProgress color="inherit" />
                                 </TableCell>
                             </TableRow>
