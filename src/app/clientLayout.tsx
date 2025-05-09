@@ -14,7 +14,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import Link from "next/link";
 
 const menuPaperStyles = {
     mt: 1,
