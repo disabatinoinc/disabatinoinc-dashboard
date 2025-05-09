@@ -1,7 +1,14 @@
 "use client";
 
-import SalesSummary from "@/components/sales/SalesSummary";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function SalesPage() {
-    return <SalesSummary />;
+export default function SalesRedirectPage() {
+    const router = useRouter();
+
+    useEffect(() => {
+        router.push("/sales/summary");
+    }, [router]);
+
+    return null;
 }
