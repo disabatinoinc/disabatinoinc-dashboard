@@ -16,18 +16,53 @@ import { useRouter, usePathname } from "next/navigation";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Link from "next/link";
 
+const menuPaperStyles = {
+    mt: 1,
+    '& .MuiPaper-root': {
+        backgroundColor: '#111827',
+        border: '1px solid #374151',
+        borderRadius: '8px',
+        color: '#ffffff',
+        fontFamily: 'inherit',
+    }
+};
+
+const menuItemStyles = {
+    textTransform: 'uppercase',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    color: '#d1d5db',
+    letterSpacing: '0.05em',
+    '&:hover': {
+        backgroundColor: '#374151',
+        color: 'white',
+    },
+    px: 2,
+    py: 1.25
+};
+
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const router = useRouter();
     const isMobile = useMediaQuery("(max-width: 600px)", { noSsr: true });
 
+    const [salesAnchorEl, setSalesAnchorEl] = useState<null | HTMLElement>(null);
     const [collectionsAnchorEl, setCollectionsAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileAnchorEl, setMobileAnchorEl] = useState<null | HTMLElement>(null);
 
-    const navItems = [
-        { label: "Sales", href: "/sales" },
-        { label: "Project Management", href: "/project-management" },
-    ];
+    const handleSalesMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setSalesAnchorEl(event.currentTarget);
+    };
+    const handleSalesMenuClose = () => {
+        setSalesAnchorEl(null);
+    };
+
+    const handleCollectionsMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setCollectionsAnchorEl(event.currentTarget);
+    };
+    const handleCollectionsMenuClose = () => {
+        setCollectionsAnchorEl(null);
+    };
 
     return (
         <>
@@ -40,7 +75,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                         <Typography variant="h6" sx={{ flexGrow: 1, textTransform: "uppercase" }}>
                             disabatinoinc dashboard
                         </Typography>
-
                         {isMobile ? (
                             <>
                                 <IconButton
@@ -53,18 +87,23 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     anchorEl={mobileAnchorEl}
                                     open={Boolean(mobileAnchorEl)}
                                     onClose={() => setMobileAnchorEl(null)}
+                                    sx={menuPaperStyles}
                                 >
-                                    <MenuItem onClick={() => router.push("/collections/summary")}>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/summary"); }} sx={menuItemStyles}>
                                         Collections Summary
                                     </MenuItem>
-                                    <MenuItem onClick={() => router.push("/collections/details")}>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/details"); }} sx={menuItemStyles}>
                                         Collections Details
                                     </MenuItem>
-                                    {navItems.map((item) => (
-                                        <MenuItem key={item.href} onClick={() => router.push(item.href)}>
-                                            {item.label}
-                                        </MenuItem>
-                                    ))}
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/summary"); }} sx={menuItemStyles}>
+                                        Sales Summary
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
+                                        Sales Snapshots
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/project-management"); }} sx={menuItemStyles}>
+                                        Project Management
+                                    </MenuItem>
                                 </Menu>
                             </>
                         ) : (
@@ -72,7 +111,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                 <Box>
                                     <Button
                                         color="inherit"
-                                        onClick={(e) => setCollectionsAnchorEl(e.currentTarget)}
+                                        onClick={handleCollectionsMenuOpen}
                                         sx={{
                                             textTransform: "uppercase",
                                             color: pathname.startsWith("/collections") ? "white" : "#d1d5db",
@@ -84,74 +123,59 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     <Menu
                                         anchorEl={collectionsAnchorEl}
                                         open={Boolean(collectionsAnchorEl)}
-                                        onClose={() => setCollectionsAnchorEl(null)}
-                                        sx={{
-                                            mt: 1,
-                                            '& .MuiPaper-root': {
-                                                backgroundColor: '#111827',         // same as dark table background
-                                                border: '1px solid #374151',        // match table border
-                                                borderRadius: '8px',                // consistent rounding
-                                                color: '#ffffff',
-                                                fontFamily: 'inherit',
-                                            }
-                                        }}
+                                        onClose={handleCollectionsMenuClose}
+                                        sx={menuPaperStyles}
                                     >
-                                        <MenuItem onClick={() => router.push("/collections/summary")}
-                                            sx={{
-                                                textTransform: 'uppercase',
-                                                fontSize: '0.875rem',                 // ~14px
-                                                fontWeight: 500,
-                                                color: '#d1d5db',
-                                                letterSpacing: '0.05em',
-                                                '&:hover': {
-                                                    backgroundColor: '#374151',         // dark hover like table rows
-                                                    color: 'white',                   // green hover like paid values
-                                                },
-                                                px: 2,
-                                                py: 1.25
-                                            }}
-                                        >
+                                        <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/summary"); }} sx={menuItemStyles}>
                                             Summary
                                         </MenuItem>
-                                        <MenuItem onClick={() => router.push("/collections/details")}
-                                            sx={{
-                                                textTransform: 'uppercase',
-                                                fontSize: '0.875rem',                 // ~14px
-                                                fontWeight: 500,
-                                                color: '#d1d5db',
-                                                letterSpacing: '0.05em',
-                                                '&:hover': {
-                                                    backgroundColor: '#374151',         // dark hover like table rows
-                                                    color: 'white',                   // green hover like paid values
-                                                },
-                                                px: 2,
-                                                py: 1.25
-                                            }}
-                                        >
+                                        <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/details"); }} sx={menuItemStyles}>
                                             Details
                                         </MenuItem>
                                     </Menu>
                                 </Box>
-                                {navItems.map((item) => (
-                                    <Link key={item.href} href={item.href} passHref>
-                                        <Button
-                                            color="inherit"
-                                            sx={{
-                                                textTransform: "uppercase",
-                                                color: pathname === item.href ? "white" : "#d1d5db",
-                                                "&:hover": { color: "white" },
-                                            }}
-                                        >
-                                            {item.label}
-                                        </Button>
-                                    </Link>
-                                ))}
+
+                                <Button
+                                    color="inherit"
+                                    onClick={handleSalesMenuOpen}
+                                    sx={{
+                                        textTransform: "uppercase",
+                                        color: pathname.startsWith("/sales") ? "white" : "#d1d5db",
+                                        "&:hover": { color: "white" },
+                                    }}
+                                >
+                                    Sales
+                                </Button>
+                                <Menu
+                                    anchorEl={salesAnchorEl}
+                                    open={Boolean(salesAnchorEl)}
+                                    onClose={handleSalesMenuClose}
+                                    sx={menuPaperStyles}
+                                >
+                                    <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/summary"); }} sx={menuItemStyles}>
+                                        Summary
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
+                                        Snapshots
+                                    </MenuItem>
+                                </Menu>
+
+                                <Button color="inherit" href="/project-management"
+                                    sx={{
+                                        textTransform: "uppercase",
+                                        color: pathname.startsWith("/project-management") ? "white" : "#d1d5db",
+                                        '&:hover': {
+                                            backgroundColor: '#374151',
+                                            color: 'white',
+                                        }
+                                    }}>
+                                    Project Management
+                                </Button>
                             </>
                         )}
                     </Toolbar>
                 </Box>
             </AppBar>
-
             <Box sx={{ padding: 2, maxWidth: "1200px", margin: "0 auto" }}>{children}</Box>
         </>
     );
