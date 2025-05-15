@@ -10,6 +10,8 @@ import { formatCurrency } from "@/utils/formatters";
 import { CollectionSummary } from "@/types/CollectionSummary";
 import api from "@/utils/apiClient";
 import { exportToCSV } from "@/utils/exportCSV";
+import PunchListModal from "./PunchListModal";
+
 
 const headCells: { id: keyof CollectionSummary; label: string }[] = [
     { id: "opportunityName", label: "Opportunity Name" },
@@ -27,6 +29,8 @@ const CollectionsDetails = () => {
     const [order, setOrder] = useState("desc");
     const [orderBy, setOrderBy] = useState<keyof CollectionSummary>("opportunityName");
     const [sorting, setSorting] = useState(false);
+    const [openPunchListModal, setOpenPunchListModal] = useState(false);
+    const [selectedProject, setSelectedProject] = useState<CollectionSummary | null>(null);
 
     const handleRequestSort = (property: keyof CollectionSummary) => {
         setSorting(true);
@@ -82,13 +86,40 @@ const CollectionsDetails = () => {
     const sortedData = [...projects].sort((a, b) => {
         if (orderBy === "nextBillingMilestone") {
             return order === "asc"
-                ? milestoneOrder.indexOf(a[orderBy]) - milestoneOrder.indexOf(b[orderBy])
-                : milestoneOrder.indexOf(b[orderBy]) - milestoneOrder.indexOf(a[orderBy]);
+                ? milestoneOrder.indexOf(a[orderBy] || "") - milestoneOrder.indexOf(b[orderBy] || "")
+                : milestoneOrder.indexOf(b[orderBy] || "") - milestoneOrder.indexOf(a[orderBy] || "");
         }
-        if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
-        if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
+        const aValue = a[orderBy] ?? ""; // 🛠 Default to empty string
+        const bValue = b[orderBy] ?? "";
+
+        if (aValue < bValue) return order === "asc" ? -1 : 1;
+        if (aValue > bValue) return order === "asc" ? 1 : -1;
         return 0;
     });
+
+    const refetchCollectionsSummary = async () => {
+        const endpoint = stageToEndpoint[selectedStage];
+        if (!endpoint) return;
+
+        try {
+            setLoading(true);
+            const response = await api.get(`/collections/summary/${endpoint}?skipCache=true`); // 🆕 Force fresh fetch
+            const data = response.data;
+
+            if (Array.isArray(data)) {
+                setProjects(data);
+            } else if (data && Array.isArray(data.data)) {
+                setProjects(data.data);
+            } else {
+                console.error("Unexpected API response:", data);
+                setProjects([]);
+            }
+        } catch (error) {
+            console.error("Error refetching collections summary:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <Box>
@@ -131,7 +162,25 @@ const CollectionsDetails = () => {
                 </ToggleButtonGroup>
 
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mb: 1 }}>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={refetchCollectionsSummary}
+                    sx={{
+                        color: "#d1d5db",
+                        borderColor: "#374151",
+                        '&:hover': { borderColor: "#6b7280", backgroundColor: "#1f2937" },
+                        textTransform: "none",
+                        fontSize: "0.75rem",
+                        display: {
+                            xs: "none",
+                            sm: "inline-flex",
+                        },
+                    }}
+                >
+                    Refresh
+                </Button>
                 <Button
                     variant="outlined"
                     size="small"
@@ -253,7 +302,28 @@ const CollectionsDetails = () => {
                                             }} >
                                             <Tooltip title={row[headCell.id]} arrow>
                                                 <Box>
-                                                    {typeof row[headCell.id] === "number" ? formatCurrency(row[headCell.id] as number) : row[headCell.id]}
+                                                    {headCell.id === "nextBillingMilestone" && row[headCell.id] === "Punch List" ? (
+                                                        <Button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setSelectedProject(row);
+                                                                setOpenPunchListModal(true);
+                                                            }}
+                                                            sx={{
+                                                                textTransform: "none",
+                                                                color: row.hasPunchList ? "#3b82f6" : "#d1d5db",
+                                                                textDecoration: "underline",
+                                                                fontSize: '0.75rem',
+                                                                padding: 0
+                                                            }}
+                                                        >
+                                                            Punch List
+                                                        </Button>
+                                                    ) : (
+                                                        typeof row[headCell.id] === "number"
+                                                            ? formatCurrency(row[headCell.id] as number)
+                                                            : row[headCell.id]
+                                                    )}
                                                 </Box>
                                             </Tooltip>
                                             {/* {typeof row[headCell.id] === "number" ? formatCurrency(row[headCell.id] as number) : row[headCell.id]} */}
@@ -265,6 +335,12 @@ const CollectionsDetails = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <PunchListModal
+                open={openPunchListModal}
+                onClose={() => setOpenPunchListModal(false)}
+                project={selectedProject}
+                onRefetch={refetchCollectionsSummary}
+            />
         </Box>
     );
 };
