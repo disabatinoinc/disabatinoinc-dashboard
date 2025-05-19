@@ -302,7 +302,7 @@ const CollectionsDetails = () => {
                                             }} >
                                             <Tooltip title={row[headCell.id]} arrow>
                                                 <Box>
-                                                    {headCell.id === "nextBillingMilestone" && row[headCell.id] === "Punch List" ? (
+                                                    {headCell.id === "nextBillingMilestone" && ["Final", "Punch List"].includes(row[headCell.id] as string) ? (
                                                         <Button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
@@ -317,7 +317,7 @@ const CollectionsDetails = () => {
                                                                 padding: 0
                                                             }}
                                                         >
-                                                            Punch List
+                                                            {row[headCell.id]}
                                                         </Button>
                                                     ) : (
                                                         typeof row[headCell.id] === "number"
