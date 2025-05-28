@@ -100,8 +100,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
                                         Sales Snapshots
                                     </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/project-management"); }} sx={menuItemStyles}>
-                                        Project Management
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects"); }} sx={menuItemStyles}>
+                                        Projects
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule"); }} sx={menuItemStyles}>
+                                        Schedule
                                     </MenuItem>
                                 </Menu>
                             </>
@@ -159,16 +162,31 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     </MenuItem>
                                 </Menu>
 
-                                <Button color="inherit" href="/project-management"
+                                <Button color="inherit" href="/projects"
                                     sx={{
                                         textTransform: "uppercase",
-                                        color: pathname.startsWith("/project-management") ? "white" : "#d1d5db",
+                                        color: pathname.startsWith("/projects") ? "white" : "#d1d5db",
                                         '&:hover': {
                                             backgroundColor: '#374151',
                                             color: 'white',
                                         }
                                     }}>
-                                    Project Management
+                                    Projects
+                                </Button>
+
+                                <Button
+                                    color="inherit"
+                                    href="/schedule"
+                                    sx={{
+                                        textTransform: "uppercase",
+                                        color: pathname.startsWith("/schedule") ? "white" : "#d1d5db",
+                                        '&:hover': {
+                                            backgroundColor: '#374151',
+                                            color: 'white',
+                                        }
+                                    }}
+                                >
+                                    Schedule
                                 </Button>
                             </>
                         )}

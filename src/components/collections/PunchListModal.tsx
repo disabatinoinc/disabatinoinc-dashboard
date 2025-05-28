@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Box, Typography, Divider, TextField, Button, CircularProgress } from "@mui/material";
 import { CollectionSummary } from "@/types/CollectionSummary";
 import { useSnackbar } from 'notistack';
-import api from "@/utils/apiClient";
+import { api } from "@/utils/apiClient";
 
 interface PunchListModalProps {
     open: boolean;

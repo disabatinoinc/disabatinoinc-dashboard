@@ -13,7 +13,7 @@ import {
 import { DonutSkeleton } from "../shared/DonutSkeleton";
 import CollectionsBarChartSkeleton from "../collections/CollectionsBarChartSkeleton";
 import { RevenueTargetSummary, RevenueTargetWithActuals, TargetPeriodKey } from "@/types/collections";
-import api from "@/utils/apiClient";
+import { api } from "@/utils/apiClient";
 
 // Lazy load charts
 const DonutChartTile = dynamic(() => import("@/components/shared/DonutChartTile"), {
