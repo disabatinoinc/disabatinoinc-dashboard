@@ -49,12 +49,24 @@ export default function TeamupSyncTable() {
         threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
         return formatDate(threeMonthsLater);
     });
-    const [crew, setCrew] = useState<string>("All"); // for single crew
+    const [crew, setCrew] = useState<string>(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem("selectedCrew") || "All";
+        }
+        return "All";
+    });
     const [allCrews, setAllCrews] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem("selectedCrew", crew);
+        }
+    }, [crew]);
 
     useEffect(() => {
         const fetchSyncStatus = async () => {
             try {
+                setLoading(true); // 🔁 Force loading spinner
                 const params: { startDate: string; endDate: string; crews?: string } = { startDate, endDate };
                 if (crew !== "All") {
                     params.crews = crew;
@@ -78,7 +90,11 @@ export default function TeamupSyncTable() {
                 const crewData: CrewResponse[] = res.data;
                 const crewNames = crewData.map((c) => c.crewName);
                 setAllCrews(["All", ...crewNames]);
-                setCrew("All");
+
+                // Only default to "All" if nothing is selected
+                if (!crew || !crewNames.includes(crew)) {
+                    setCrew("All");
+                }
             } catch (err) {
                 console.error("Error fetching crews:", err);
             }
