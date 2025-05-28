@@ -25,6 +25,13 @@ const headCells: { id: keyof TeamupScheduleRow; label: string }[] = [
     { id: "syncMessage", label: "Sync Message" }
 ];
 
+type CrewResponse = {
+    teamupCalendarId: string;
+    buildertrendCrewId: string | null;
+    crewName: string;
+    foremanName: string;
+};
+
 function formatDate(date: Date): string {
     return date.toISOString().split("T")[0];
 }
@@ -48,7 +55,7 @@ export default function TeamupSyncTable() {
     useEffect(() => {
         const fetchSyncStatus = async () => {
             try {
-                const params: any = { startDate, endDate };
+                const params: { startDate: string; endDate: string; crews?: string } = { startDate, endDate };
                 if (crew !== "All") {
                     params.crews = crew;
                 }
@@ -68,7 +75,8 @@ export default function TeamupSyncTable() {
         const fetchCrews = async () => {
             try {
                 const res = await scheduleApi.get("/teamup/crews");
-                const crewNames = res.data.map((c: any) => c.crewName);
+                const crewData: CrewResponse[] = res.data;
+                const crewNames = crewData.map((c) => c.crewName);
                 setAllCrews(["All", ...crewNames]);
                 setCrew("All");
             } catch (err) {
