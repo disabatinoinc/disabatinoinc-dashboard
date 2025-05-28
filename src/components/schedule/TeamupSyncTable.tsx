@@ -158,12 +158,15 @@ export default function TeamupSyncTable() {
 
             // Optionally refetch
             setLoading(true);
+            const refreshParams: { startDate: string; endDate: string; crews?: string } = {
+                startDate,
+                endDate,
+            };
+            if (crew !== "All") {
+                refreshParams.crews = crew;
+            }
             const refresh = await scheduleApi.get("/teamup/sync-status", {
-                params: {
-                    startDate,
-                    endDate,
-                    crews: [crew]
-                }
+                params: refreshParams
             });
             setRows(refresh.data);
             setSelectedIds(new Set());
