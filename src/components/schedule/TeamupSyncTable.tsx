@@ -12,6 +12,7 @@ import {
     OutlinedInput,
     MenuItem
 } from "@mui/material";
+import { useSnackbar } from 'notistack';
 import TeamupSyncRow, { TeamupScheduleRow } from "./TeamupSyncRow";
 import { scheduleApi } from "@/utils/apiClient"; // ✅ your custom Axios instance
 
@@ -43,6 +44,7 @@ export default function TeamupSyncTable() {
     const [rows, setRows] = useState<TeamupScheduleRow[]>([]);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [startDate, setStartDate] = useState(() => formatDate(new Date()));
+    const { enqueueSnackbar } = useSnackbar();
 
     const [endDate, setEndDate] = useState(() => {
         const threeMonthsLater = new Date();
@@ -157,14 +159,13 @@ export default function TeamupSyncTable() {
             const res = await scheduleApi.post("/teamup/sync-to-buildertrend", payload);
 
             console.log("Sync result:", res.data);
-            alert("Sync completed successfully!");
+            enqueueSnackbar("Sync completed successfully!", { variant: "success" });
 
             // Optionally refetch
             await fetchSyncStatus();
             setSelectedIds(new Set());
         } catch (error) {
-            console.error("Sync failed:", error);
-            alert("Something went wrong while syncing.");
+            enqueueSnackbar("Something went wrong while syncing.", { variant: "error" });
         } finally {
             setLoading(false);
         }
