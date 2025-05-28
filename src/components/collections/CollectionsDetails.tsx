@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { formatCurrency } from "@/utils/formatters";
 import { CollectionSummary } from "@/types/CollectionSummary";
-import api from "@/utils/apiClient";
+import { api } from "@/utils/apiClient";
 import { exportToCSV } from "@/utils/exportCSV";
 import PunchListModal from "./PunchListModal";
 

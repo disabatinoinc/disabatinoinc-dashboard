@@ -8,7 +8,7 @@ import {
     Button, ToggleButtonGroup, ToggleButton
 } from "@mui/material";
 import { useSnackbar } from 'notistack';
-import api from "@/utils/apiClient";
+import { api } from "@/utils/apiClient";
 import { exportToCSV } from "@/utils/exportCSV";
 import ProjectRow from "./ProjectRow";
 

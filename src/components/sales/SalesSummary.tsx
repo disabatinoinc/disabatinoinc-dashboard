@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Grid from '@mui/material/Grid2';
 import { Typography, Box } from "@mui/material";
 import dynamic from "next/dynamic";
-import api from "@/utils/apiClient";
+import { api } from "@/utils/apiClient";
 import { DonutSkeleton } from "../shared/DonutSkeleton";
 import SalesBarChartSkeleton from "./SalesBarChartSkeleton";
 import { SalesTargetSummary, SalesTargetWithActuals, TargetPeriodKey } from "@/types/sales";
