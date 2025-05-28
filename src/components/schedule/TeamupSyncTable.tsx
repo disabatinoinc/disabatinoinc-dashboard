@@ -57,6 +57,25 @@ export default function TeamupSyncTable() {
     });
     const [allCrews, setAllCrews] = useState<string[]>([]);
 
+    const fetchSyncStatus = async () => {
+        try {
+            setLoading(true);
+            const params: { startDate: string; endDate: string; crews?: string } = {
+                startDate,
+                endDate,
+            };
+            if (crew !== "All") {
+                params.crews = crew;
+            }
+            const res = await scheduleApi.get("/teamup/sync-status", { params });
+            setRows(res.data);
+        } catch (err) {
+            console.error("Error fetching Teamup sync data:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (typeof window !== 'undefined') {
             localStorage.setItem("selectedCrew", crew);
@@ -64,22 +83,6 @@ export default function TeamupSyncTable() {
     }, [crew]);
 
     useEffect(() => {
-        const fetchSyncStatus = async () => {
-            try {
-                setLoading(true); // 🔁 Force loading spinner
-                const params: { startDate: string; endDate: string; crews?: string } = { startDate, endDate };
-                if (crew !== "All") {
-                    params.crews = crew;
-                }
-                const res = await scheduleApi.get("/teamup/sync-status", { params });
-                setRows(res.data);
-            } catch (err) {
-                console.error("Error fetching Teamup sync data:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchSyncStatus();
     }, [startDate, endDate, crew]);
 
@@ -88,7 +91,7 @@ export default function TeamupSyncTable() {
             try {
                 const res = await scheduleApi.get("/teamup/crews");
                 const crewData: CrewResponse[] = res.data;
-                const crewNames = crewData.map((c) => c.crewName);
+                const crewNames = crewData.map((c) => c.crewName).sort((a, b) => a.localeCompare(b));
                 setAllCrews(["All", ...crewNames]);
 
                 // Only default to "All" if nothing is selected
@@ -157,18 +160,7 @@ export default function TeamupSyncTable() {
             alert("Sync completed successfully!");
 
             // Optionally refetch
-            setLoading(true);
-            const refreshParams: { startDate: string; endDate: string; crews?: string } = {
-                startDate,
-                endDate,
-            };
-            if (crew !== "All") {
-                refreshParams.crews = crew;
-            }
-            const refresh = await scheduleApi.get("/teamup/sync-status", {
-                params: refreshParams
-            });
-            setRows(refresh.data);
+            await fetchSyncStatus();
             setSelectedIds(new Set());
         } catch (error) {
             console.error("Sync failed:", error);
@@ -239,6 +231,23 @@ export default function TeamupSyncTable() {
                         }
                     }}
                 />
+                <Button
+                    onClick={fetchSyncStatus}
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                        color: "#d1d5db",
+                        borderColor: "#374151",
+                        fontSize: "0.75rem",
+                        textTransform: "none",
+                        "&:hover": {
+                            backgroundColor: "#1f2937",
+                            borderColor: "#6b7280"
+                        }
+                    }}
+                >
+                    Refresh
+                </Button>
             </Box>
 
             <Toolbar sx={{ display: "flex", justifyContent: "space-between", mb: 1, px: 0 }}>
