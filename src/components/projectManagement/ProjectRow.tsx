@@ -52,8 +52,8 @@ const ProjectRow: React.FC<RowProps> = ({ row, isSelected, onSelect, headCells }
                         color:
                             cell.id === "jobMapped"
                                 ? row[cell.id]
-                                    ? "#42de80" // green for true
-                                    : "#ef4444" // red for false
+                                    ? "#42de80"
+                                    : "#ef4444"
                                 : "#d1d5db",
                         fontSize: "0.75rem",
                         paddingLeft: "4px",
@@ -64,7 +64,28 @@ const ProjectRow: React.FC<RowProps> = ({ row, isSelected, onSelect, headCells }
                 >
                     {cell.id === "jobMapped"
                         ? row[cell.id] ? "true" : "false"
-                        : row[cell.id]}
+                        : cell.id === "opportunityName" ? (
+                            <a
+                                href={`https://d41000000gobkeao.lightning.force.com/lightning/r/Opportunity/${row.opportunityId}/view`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    color: "#42a5f5",
+                                    textDecoration: "underline",
+                                    fontSize: "0.75rem",
+                                    display: "inline-block",
+                                    maxWidth: "100%",
+                                    // whiteSpace: "nowrap",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    width: "120px"
+                                }}
+                            >
+                                {row.opportunityName}
+                            </a>
+                        ) : (
+                            row[cell.id]
+                        )}
                 </TableCell>
             ))}
         </TableRow>
