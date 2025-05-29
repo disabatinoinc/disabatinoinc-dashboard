@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
     Box, Typography, Paper, TableContainer, Table, TableHead,
     TableRow, TableCell, TableBody, TableSortLabel, CircularProgress,
@@ -59,13 +59,10 @@ export default function TeamupSyncTable() {
     });
     const [allCrews, setAllCrews] = useState<string[]>([]);
 
-    const fetchSyncStatus = async () => {
+    const fetchSyncStatus = useCallback(async () => {
         try {
             setLoading(true);
-            const params: { startDate: string; endDate: string; crews?: string } = {
-                startDate,
-                endDate,
-            };
+            const params: { startDate: string; endDate: string; crews?: string } = { startDate, endDate };
             if (crew !== "All") {
                 params.crews = crew;
             }
@@ -76,7 +73,7 @@ export default function TeamupSyncTable() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [startDate, endDate, crew]);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -86,7 +83,7 @@ export default function TeamupSyncTable() {
 
     useEffect(() => {
         fetchSyncStatus();
-    }, [startDate, endDate, crew]);
+    }, [fetchSyncStatus]);
 
     useEffect(() => {
         const fetchCrews = async () => {
@@ -96,10 +93,8 @@ export default function TeamupSyncTable() {
                 const crewNames = crewData.map((c) => c.crewName).sort((a, b) => a.localeCompare(b));
                 setAllCrews(["All", ...crewNames]);
 
-                // Only default to "All" if nothing is selected
-                if (!crew || !crewNames.includes(crew)) {
-                    setCrew("All");
-                }
+                // Don't override if already valid
+                setCrew(prev => (!prev || !crewNames.includes(prev)) ? "All" : prev);
             } catch (err) {
                 console.error("Error fetching crews:", err);
             }
@@ -165,6 +160,7 @@ export default function TeamupSyncTable() {
             await fetchSyncStatus();
             setSelectedIds(new Set());
         } catch (error) {
+            console.error("Sync failed:", error);
             enqueueSnackbar("Something went wrong while syncing.", { variant: "error" });
         } finally {
             setLoading(false);
