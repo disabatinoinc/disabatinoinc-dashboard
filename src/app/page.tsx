@@ -7,7 +7,7 @@ export default function HomePage() {
     const router = useRouter();
 
     useEffect(() => {
-        router.push("/collections/summary");
+        router.push("/sales/summary");
     }, [router]);
 
     return null;
