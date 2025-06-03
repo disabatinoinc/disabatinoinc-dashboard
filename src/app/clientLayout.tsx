@@ -88,29 +88,78 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     onClose={() => setMobileAnchorEl(null)}
                                     sx={menuPaperStyles}
                                 >
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/summary"); }} sx={menuItemStyles}>
-                                        Collections Summary
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/details"); }} sx={menuItemStyles}>
-                                        Collections Details
-                                    </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/summary"); }} sx={menuItemStyles}>
                                         Sales Summary
                                     </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
                                         Sales Snapshots
                                     </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule"); }} sx={menuItemStyles}>
+                                        Schedule
+                                    </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects"); }} sx={menuItemStyles}>
                                         Projects
                                     </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule"); }} sx={menuItemStyles}>
-                                        Schedule
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/summary"); }} sx={menuItemStyles}>
+                                        Collections Summary
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/details"); }} sx={menuItemStyles}>
+                                        Collections Details
                                     </MenuItem>
                                 </Menu>
                             </>
                         ) : (
                             <>
                                 <Box>
+                                    <Button
+                                        color="inherit"
+                                        onClick={handleSalesMenuOpen}
+                                        sx={{
+                                            textTransform: "uppercase",
+                                            color: pathname.startsWith("/sales") ? "white" : "#d1d5db",
+                                            "&:hover": { color: "white" },
+                                        }}
+                                    >
+                                        Sales
+                                    </Button>
+                                    <Menu
+                                        anchorEl={salesAnchorEl}
+                                        open={Boolean(salesAnchorEl)}
+                                        onClose={handleSalesMenuClose}
+                                        sx={menuPaperStyles}
+                                    >
+                                        <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/summary"); }} sx={menuItemStyles}>
+                                            Summary
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
+                                            Snapshots
+                                        </MenuItem>
+                                    </Menu>
+                                    <Button
+                                        color="inherit"
+                                        href="/schedule"
+                                        sx={{
+                                            textTransform: "uppercase",
+                                            color: pathname.startsWith("/schedule") ? "white" : "#d1d5db",
+                                            '&:hover': {
+                                                backgroundColor: '#374151',
+                                                color: 'white',
+                                            }
+                                        }}
+                                    >
+                                        Schedule
+                                    </Button>
+                                    <Button color="inherit" href="/projects"
+                                        sx={{
+                                            textTransform: "uppercase",
+                                            color: pathname.startsWith("/projects") ? "white" : "#d1d5db",
+                                            '&:hover': {
+                                                backgroundColor: '#374151',
+                                                color: 'white',
+                                            }
+                                        }}>
+                                        Projects
+                                    </Button>
                                     <Button
                                         color="inherit"
                                         onClick={handleCollectionsMenuOpen}
@@ -137,57 +186,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     </Menu>
                                 </Box>
 
-                                <Button
-                                    color="inherit"
-                                    onClick={handleSalesMenuOpen}
-                                    sx={{
-                                        textTransform: "uppercase",
-                                        color: pathname.startsWith("/sales") ? "white" : "#d1d5db",
-                                        "&:hover": { color: "white" },
-                                    }}
-                                >
-                                    Sales
-                                </Button>
-                                <Menu
-                                    anchorEl={salesAnchorEl}
-                                    open={Boolean(salesAnchorEl)}
-                                    onClose={handleSalesMenuClose}
-                                    sx={menuPaperStyles}
-                                >
-                                    <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/summary"); }} sx={menuItemStyles}>
-                                        Summary
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
-                                        Snapshots
-                                    </MenuItem>
-                                </Menu>
 
-                                <Button color="inherit" href="/projects"
-                                    sx={{
-                                        textTransform: "uppercase",
-                                        color: pathname.startsWith("/projects") ? "white" : "#d1d5db",
-                                        '&:hover': {
-                                            backgroundColor: '#374151',
-                                            color: 'white',
-                                        }
-                                    }}>
-                                    Projects
-                                </Button>
 
-                                <Button
-                                    color="inherit"
-                                    href="/schedule"
-                                    sx={{
-                                        textTransform: "uppercase",
-                                        color: pathname.startsWith("/schedule") ? "white" : "#d1d5db",
-                                        '&:hover': {
-                                            backgroundColor: '#374151',
-                                            color: 'white',
-                                        }
-                                    }}
-                                >
-                                    Schedule
-                                </Button>
                             </>
                         )}
                     </Toolbar>
