@@ -58,7 +58,11 @@ export default function TeamupSyncTable() {
         try {
             setLoading(true);
 
-            const params: any = {
+            const params: {
+                startDate: string;
+                endDate: string;
+                crewCalendarIds?: string;
+            } = {
                 startDate,
                 endDate,
             };
