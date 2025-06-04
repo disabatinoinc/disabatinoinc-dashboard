@@ -27,7 +27,7 @@ const headCells: { id: keyof TeamupScheduleRow; label: string }[] = [
 ];
 
 type CrewResponse = {
-    teamupCalendarId: string;
+    teamupCalendarId: string | null;
     buildertrendCrewId: string | null;
     crewName: string;
     foremanName: string;
@@ -51,21 +51,22 @@ export default function TeamupSyncTable() {
         threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
         return formatDate(threeMonthsLater);
     });
-    const [crew, setCrew] = useState<string>(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem("selectedCrew") || "All";
-        }
-        return "All";
-    });
-    const [allCrews, setAllCrews] = useState<string[]>([]);
+    const [crewList, setCrewList] = useState<CrewResponse[]>([]);
+    const [selectedCrewId, setSelectedCrewId] = useState<string>("");
 
     const fetchSyncStatus = useCallback(async () => {
         try {
             setLoading(true);
-            const params: { startDate: string; endDate: string; crews?: string } = { startDate, endDate };
-            if (crew !== "All") {
-                params.crews = crew;
+
+            const params: any = {
+                startDate,
+                endDate,
+            };
+
+            if (selectedCrewId) {
+                params.crewCalendarIds = selectedCrewId;
             }
+
             const res = await scheduleApi.get("/teamup/sync-status", { params });
             setRows(res.data);
         } catch (err) {
@@ -73,13 +74,14 @@ export default function TeamupSyncTable() {
         } finally {
             setLoading(false);
         }
-    }, [startDate, endDate, crew]);
+    }, [startDate, endDate, selectedCrewId]);
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            localStorage.setItem("selectedCrew", crew);
+            const storedId = localStorage.getItem("selectedCrewId");
+            setSelectedCrewId(storedId || "");
         }
-    }, [crew]);
+    }, []);
 
     useEffect(() => {
         fetchSyncStatus();
@@ -90,11 +92,16 @@ export default function TeamupSyncTable() {
             try {
                 const res = await scheduleApi.get("/teamup/crews");
                 const crewData: CrewResponse[] = res.data;
-                const crewNames = crewData.map((c) => c.crewName).sort((a, b) => a.localeCompare(b));
-                setAllCrews(["All", ...crewNames]);
+
+                // Sort and store
+                const sorted = crewData.sort((a, b) => a.crewName.localeCompare(b.crewName));
+                setCrewList([{ crewName: "All", teamupCalendarId: null, buildertrendCrewId: null, foremanName: "" }, ...sorted]);
 
                 // Don't override if already valid
-                setCrew(prev => (!prev || !crewNames.includes(prev)) ? "All" : prev);
+                setSelectedCrewId((prev) => {
+                    const validIds = sorted.map(c => c.teamupCalendarId);
+                    return (!prev || !validIds.includes(prev)) ? "" : prev;
+                });
             } catch (err) {
                 console.error("Error fetching crews:", err);
             }
@@ -178,8 +185,14 @@ export default function TeamupSyncTable() {
                     <InputLabel id="crew-select-label" sx={{ color: "#9ca3af" }}>Crew</InputLabel>
                     <Select
                         labelId="crew-select-label"
-                        value={crew}
-                        onChange={(e) => setCrew(e.target.value)}
+                        value={selectedCrewId}
+                        onChange={(e) => {
+                            const newVal = e.target.value;
+                            setSelectedCrewId(newVal);
+                            if (typeof window !== 'undefined') {
+                                localStorage.setItem("selectedCrewId", newVal);
+                            }
+                        }}
                         input={<OutlinedInput label="Crew" />}
                         sx={{
                             color: "white",
@@ -187,9 +200,9 @@ export default function TeamupSyncTable() {
                             '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#6b7280' },
                         }}
                     >
-                        {allCrews.map((crewName) => (
-                            <MenuItem key={crewName} value={crewName}>
-                                {crewName}
+                        {crewList.map((crew) => (
+                            <MenuItem key={crew.teamupCalendarId ?? "all"} value={crew.teamupCalendarId ?? ""}>
+                                {crew.crewName}
                             </MenuItem>
                         ))}
                     </Select>

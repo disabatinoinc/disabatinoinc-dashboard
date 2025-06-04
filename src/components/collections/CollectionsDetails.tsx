@@ -21,6 +21,7 @@ const headCells: { id: keyof CollectionSummary; label: string }[] = [
     { id: "totalPaid", label: "Paid" },
     { id: "billedOutstanding", label: "Billed Outstanding" },
     { id: "nextBillingMilestone", label: "Next Milestone" },
+    { id: "tentativeStartDate", label: "Scheduled Start Date" },
     { id: "totalOpportunityAmount", label: "Total Opportunity" },
     { id: "totalOppOutstanding", label: "Opportunity Outstanding" },
 ];
@@ -288,7 +289,8 @@ const CollectionsDetails = () => {
                                     cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' }
                                 }} onClick={() => console.log('Row clicked:', row)}>
                                     {headCells.map((headCell) => (
-                                        <TableCell key={headCell.id}
+                                        <TableCell
+                                            key={headCell.id}
                                             size={headCell.id !== 'opportunityName' ? "small" : "medium"}
                                             sx={{
                                                 borderTop: "none",
@@ -299,7 +301,8 @@ const CollectionsDetails = () => {
                                                 fontSize: '0.75rem',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
-                                            }} >
+                                            }}
+                                        >
                                             <Tooltip title={row[headCell.id]} arrow>
                                                 <Box>
                                                     {headCell.id === "nextBillingMilestone" && ["Final", "Punch List"].includes(row[headCell.id] as string) ? (
@@ -319,6 +322,20 @@ const CollectionsDetails = () => {
                                                         >
                                                             {row[headCell.id]}
                                                         </Button>
+                                                    ) : headCell.id === "opportunityName" ? (
+                                                        <a
+                                                            href={`https://d41000000gobkeao.lightning.force.com/lightning/r/Opportunity/${row.opportunityId}/view`}
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            style={{
+                                                                color: "#3b82f6",
+                                                                textDecoration: "underline",
+                                                                fontSize: "0.75rem"
+                                                            }}
+                                                        >
+                                                            {row[headCell.id]}
+                                                        </a>
+                                                    ) : headCell.id === "tentativeStartDate" && row[headCell.id] ? (
+                                                        new Date(row[headCell.id] as string).toLocaleDateString()
                                                     ) : (
                                                         typeof row[headCell.id] === "number"
                                                             ? formatCurrency(row[headCell.id] as number)
@@ -326,7 +343,6 @@ const CollectionsDetails = () => {
                                                     )}
                                                 </Box>
                                             </Tooltip>
-                                            {/* {typeof row[headCell.id] === "number" ? formatCurrency(row[headCell.id] as number) : row[headCell.id]} */}
                                         </TableCell>
                                     ))}
                                 </TableRow>
