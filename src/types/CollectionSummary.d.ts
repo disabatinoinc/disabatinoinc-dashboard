@@ -5,7 +5,9 @@ export type CollectionSummary = {
     stageName: string;
     jobState: string;
     projectManager: string;
+    closedWonSignedDate: string;
     tentativeStartDate: string;
+    workInProgressDate: string;
     originalOpportunityAmount: number;
     changeRequestAmount: number;
     totalOpportunityAmount: number;

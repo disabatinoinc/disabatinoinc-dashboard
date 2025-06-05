@@ -13,7 +13,7 @@ import { exportToCSV } from "@/utils/exportCSV";
 import PunchListModal from "./PunchListModal";
 
 
-const headCells: { id: keyof CollectionSummary; label: string }[] = [
+const headCells: { id: keyof CollectionSummary | "dynamicDate"; label: string }[] = [
     { id: "opportunityName", label: "Opportunity Name" },
     { id: "projectNumber", label: "Project" },
     { id: "projectManager", label: "Project Manager" },
@@ -21,29 +21,39 @@ const headCells: { id: keyof CollectionSummary; label: string }[] = [
     { id: "totalPaid", label: "Paid" },
     { id: "billedOutstanding", label: "Billed Outstanding" },
     { id: "nextBillingMilestone", label: "Next Milestone" },
-    { id: "tentativeStartDate", label: "Scheduled Start Date" },
+    { id: "dynamicDate", label: "Key Date" }, // now valid
     { id: "totalOpportunityAmount", label: "Total Opportunity" },
     { id: "totalOppOutstanding", label: "Opportunity Outstanding" },
 ];
 
+type ExportRow = CollectionSummary & { dynamicDate?: string };
+
 const CollectionsDetails = () => {
     const [order, setOrder] = useState("desc");
-    const [orderBy, setOrderBy] = useState<keyof CollectionSummary>("opportunityName");
+    const [orderBy, setOrderBy] = useState<keyof CollectionSummary | "dynamicDate">("opportunityName");
     const [sorting, setSorting] = useState(false);
     const [openPunchListModal, setOpenPunchListModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState<CollectionSummary | null>(null);
 
-    const handleRequestSort = (property: keyof CollectionSummary) => {
+    const getDynamicDate = (row: CollectionSummary) => {
+        if (selectedStage === "Closed Won Signed" || selectedStage === "Ready to be Scheduled") {
+            return row.closedWonSignedDate;
+        } else if (selectedStage === "Scheduled") {
+            return row.tentativeStartDate;
+        } else if (selectedStage === "Work in Progress") {
+            return row.workInProgressDate;
+        }
+        return null;
+    };
+
+    const handleRequestSort = (property: keyof CollectionSummary | "dynamicDate") => {
         setSorting(true);
         const isAscending = orderBy === property && order === "asc";
         setOrder(isAscending ? "desc" : "asc");
         setOrderBy(property);
-
-        // Simulate delay to reflect actual processing time
-        setTimeout(() => {
-            setSorting(false);
-        }, 500); // Adjust this duration if needed
+        setTimeout(() => setSorting(false), 500);
     };
+
 
     const milestoneOrder = ["Initial", "Scheduling", "First Day", "Milestone", "Final", "Punch List"];
 
@@ -85,13 +95,19 @@ const CollectionsDetails = () => {
 
 
     const sortedData = [...projects].sort((a, b) => {
+        let aValue: any = a[orderBy as keyof CollectionSummary];
+        let bValue: any = b[orderBy as keyof CollectionSummary];
+
         if (orderBy === "nextBillingMilestone") {
             return order === "asc"
-                ? milestoneOrder.indexOf(a[orderBy] || "") - milestoneOrder.indexOf(b[orderBy] || "")
-                : milestoneOrder.indexOf(b[orderBy] || "") - milestoneOrder.indexOf(a[orderBy] || "");
+                ? milestoneOrder.indexOf(aValue || "") - milestoneOrder.indexOf(bValue || "")
+                : milestoneOrder.indexOf(bValue || "") - milestoneOrder.indexOf(aValue || "");
         }
-        const aValue = a[orderBy] ?? ""; // 🛠 Default to empty string
-        const bValue = b[orderBy] ?? "";
+
+        if (orderBy === "dynamicDate") {
+            aValue = getDynamicDate(a) ? new Date(getDynamicDate(a)!).getTime() : -Infinity;
+            bValue = getDynamicDate(b) ? new Date(getDynamicDate(b)!).getTime() : -Infinity;
+        }
 
         if (aValue < bValue) return order === "asc" ? -1 : 1;
         if (aValue > bValue) return order === "asc" ? 1 : -1;
@@ -120,6 +136,30 @@ const CollectionsDetails = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const getHeadCells = (): { id: keyof CollectionSummary | "dynamicDate"; label: string }[] => {
+        let dynamicLabel = "Key Date";
+        if (selectedStage === "Closed Won Signed" || selectedStage === "Ready to be Scheduled") {
+            dynamicLabel = "Closed Won Signed Date";
+        } else if (selectedStage === "Scheduled") {
+            dynamicLabel = "Scheduled Start Date";
+        } else if (selectedStage === "Work in Progress") {
+            dynamicLabel = "Work In Progress Date";
+        }
+
+        return [
+            { id: "opportunityName", label: "Opportunity Name" },
+            { id: "projectNumber", label: "Project" },
+            { id: "projectManager", label: "Project Manager" },
+            { id: "totalBilled", label: "Billed" },
+            { id: "totalPaid", label: "Paid" },
+            { id: "billedOutstanding", label: "Billed Outstanding" },
+            { id: "nextBillingMilestone", label: "Next Milestone" },
+            { id: "dynamicDate", label: dynamicLabel },
+            { id: "totalOpportunityAmount", label: "Total Opportunity" },
+            { id: "totalOppOutstanding", label: "Opportunity Outstanding" },
+        ];
     };
 
     return (
@@ -185,12 +225,21 @@ const CollectionsDetails = () => {
                 <Button
                     variant="outlined"
                     size="small"
-                    onClick={() =>
-                        exportToCSV<CollectionSummary>("collections-summary", sortedData, headCells.map(h => ({
-                            label: h.label,
-                            key: h.id
-                        })))
-                    }
+                    onClick={() => {
+                        const exportRows: ExportRow[] = sortedData.map((row) => ({
+                            ...row,
+                            dynamicDate: getDynamicDate(row) || "",
+                        }));
+
+                        exportToCSV<ExportRow>(
+                            "collections-summary",
+                            exportRows,
+                            getHeadCells().map((h) => ({
+                                label: h.label,
+                                key: h.id as keyof ExportRow,
+                            }))
+                        );
+                    }}
                     sx={{
                         color: "#d1d5db",
                         borderColor: "#374151",
@@ -223,7 +272,7 @@ const CollectionsDetails = () => {
                 <Table sx={{ tableLayout: 'fixed', width: '100%' }}>
                     <TableHead>
                         <TableRow>
-                            {headCells.map((headCell) => (
+                            {getHeadCells().map((headCell) => (
                                 <TableCell
                                     key={headCell.id}
                                     size={headCell.id !== 'opportunityName' ? "small" : "medium"}
@@ -288,7 +337,7 @@ const CollectionsDetails = () => {
                                     borderBottom: "1px solid #374151",
                                     cursor: 'pointer', '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)' }
                                 }} onClick={() => console.log('Row clicked:', row)}>
-                                    {headCells.map((headCell) => (
+                                    {getHeadCells().map((headCell) => (
                                         <TableCell
                                             key={headCell.id}
                                             size={headCell.id !== 'opportunityName' ? "small" : "medium"}
@@ -303,9 +352,14 @@ const CollectionsDetails = () => {
                                                 textOverflow: 'ellipsis',
                                             }}
                                         >
-                                            <Tooltip title={row[headCell.id]} arrow>
+                                            <Tooltip title={String(headCell.id === "dynamicDate" ? getDynamicDate(row) : row[headCell.id] ?? "")} arrow>
                                                 <Box>
-                                                    {headCell.id === "nextBillingMilestone" && ["Final", "Punch List"].includes(row[headCell.id] as string) ? (
+                                                    {headCell.id === "dynamicDate" ? (
+                                                        (() => {
+                                                            const dynamicDate = getDynamicDate(row);
+                                                            return dynamicDate ? new Date(dynamicDate).toLocaleDateString() : null;
+                                                        })()
+                                                    ) : headCell.id === "nextBillingMilestone" && ["Final", "Punch List"].includes(row[headCell.id] as string) ? (
                                                         <Button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
@@ -334,8 +388,6 @@ const CollectionsDetails = () => {
                                                         >
                                                             {row[headCell.id]}
                                                         </a>
-                                                    ) : headCell.id === "tentativeStartDate" && row[headCell.id] ? (
-                                                        new Date(row[headCell.id] as string).toLocaleDateString()
                                                     ) : (
                                                         typeof row[headCell.id] === "number"
                                                             ? formatCurrency(row[headCell.id] as number)
