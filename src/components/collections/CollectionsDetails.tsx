@@ -95,18 +95,24 @@ const CollectionsDetails = () => {
 
 
     const sortedData = [...projects].sort((a, b) => {
-        let aValue: any = a[orderBy as keyof CollectionSummary];
-        let bValue: any = b[orderBy as keyof CollectionSummary];
+        let aValue: string | number | boolean | null = null;
+        let bValue: string | number | boolean | null = null;
 
         if (orderBy === "nextBillingMilestone") {
+            aValue = a.nextBillingMilestone ?? "";
+            bValue = b.nextBillingMilestone ?? "";
+
             return order === "asc"
-                ? milestoneOrder.indexOf(aValue || "") - milestoneOrder.indexOf(bValue || "")
-                : milestoneOrder.indexOf(bValue || "") - milestoneOrder.indexOf(aValue || "");
+                ? milestoneOrder.indexOf(aValue) - milestoneOrder.indexOf(bValue)
+                : milestoneOrder.indexOf(bValue) - milestoneOrder.indexOf(aValue);
         }
 
         if (orderBy === "dynamicDate") {
             aValue = getDynamicDate(a) ? new Date(getDynamicDate(a)!).getTime() : -Infinity;
             bValue = getDynamicDate(b) ? new Date(getDynamicDate(b)!).getTime() : -Infinity;
+        } else {
+            aValue = a[orderBy] ?? "";
+            bValue = b[orderBy] ?? "";
         }
 
         if (aValue < bValue) return order === "asc" ? -1 : 1;
@@ -350,6 +356,7 @@ const CollectionsDetails = () => {
                                                 fontSize: '0.75rem',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
+                                                textAlign: 'center',
                                             }}
                                         >
                                             <Tooltip title={String(headCell.id === "dynamicDate" ? getDynamicDate(row) : row[headCell.id] ?? "")} arrow>
