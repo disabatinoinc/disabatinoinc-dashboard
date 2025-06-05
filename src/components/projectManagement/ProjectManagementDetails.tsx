@@ -24,6 +24,13 @@ type JobTrackingRow = {
     jobMapped: boolean;
 };
 
+const stageQueryMap: Record<StageDisplayLabel, string> = {
+    "Closed Won Signed": "closed-won-signed",
+    "Ready to be Scheduled": "ready-to-be-scheduled",
+    "Scheduled": "scheduled",
+    "Work in Progress": "work-in-progress"
+};
+
 const stageOptions = {
     "Closed Won Signed": "Closed Won - Signed",
     "Ready to be Scheduled": "Ready to be Scheduled",
@@ -60,8 +67,15 @@ const ProjectManagementDetails = () => {
 
     useEffect(() => {
         setLoading(true);
+        const stageParam = stageQueryMap[selectedStage];
 
-        api.get("/salesforce/buildertrend-mappings")
+        api.get("/salesforce/buildertrend-mappings", {
+            params: {
+                stage: stageParam,
+                page: 1,
+                limit: 250
+            }
+        })
             .then((response) => {
                 const data = response.data;
                 if (Array.isArray(data)) {
@@ -79,7 +93,7 @@ const ProjectManagementDetails = () => {
                 setRows([]);
                 setLoading(false);
             });
-    }, []);
+    }, [selectedStage]);
 
     const filteredRows = useMemo(() => {
         return rows.filter(row => row.stage === stageOptions[selectedStage]);
