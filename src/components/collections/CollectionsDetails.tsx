@@ -356,6 +356,7 @@ const CollectionsDetails = () => {
                                                 fontSize: '0.75rem',
                                                 overflow: 'hidden',
                                                 textOverflow: 'ellipsis',
+                                                textAlign: 'center',
                                             }}
                                         >
                                             <Tooltip title={String(headCell.id === "dynamicDate" ? getDynamicDate(row) : row[headCell.id] ?? "")} arrow>
