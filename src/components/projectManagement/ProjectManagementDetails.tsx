@@ -65,7 +65,7 @@ const ProjectManagementDetails = () => {
         setOrderBy(property);
     };
 
-    useEffect(() => {
+    const fetchData = () => {
         setLoading(true);
         const stageParam = stageQueryMap[selectedStage];
 
@@ -73,7 +73,8 @@ const ProjectManagementDetails = () => {
             params: {
                 stage: stageParam,
                 page: 1,
-                limit: 250
+                limit: 250,
+                skipCache: true
             }
         })
             .then((response) => {
@@ -93,6 +94,10 @@ const ProjectManagementDetails = () => {
                 setRows([]);
                 setLoading(false);
             });
+    };
+
+    useEffect(() => {
+        fetchData();
     }, [selectedStage]);
 
     const filteredRows = useMemo(() => {
@@ -170,9 +175,11 @@ const ProjectManagementDetails = () => {
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ color: "white", mb: 2 }}>
-                Project Management Details
-            </Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h4" sx={{ color: "white" }}>
+                    Project Management Details
+                </Typography>
+            </Box>
 
             <Typography variant="body2" sx={{ marginBottom: 2, color: "#9ca3af" }}>
                 {`In the "${selectedStage}" stage, ${filteredRows.length} job${filteredRows.length !== 1 ? 's are' : ' is'} active — 
@@ -214,7 +221,25 @@ const ProjectManagementDetails = () => {
 
             </Box>
 
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mb: 1 }}>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={fetchData}
+                    sx={{
+                        color: "#d1d5db",
+                        borderColor: "#374151",
+                        '&:hover': { borderColor: "#6b7280", backgroundColor: "#1f2937" },
+                        textTransform: "none",
+                        fontSize: "0.75rem",
+                        display: {
+                            xs: "none",
+                            sm: "inline-flex",
+                        },
+                    }}
+                >
+                    Refresh
+                </Button>
                 <Button
                     variant="outlined"
                     size="small"
