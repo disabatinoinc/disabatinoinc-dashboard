@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Grid from '@mui/material/Grid2';
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Button } from "@mui/material";
 import dynamic from "next/dynamic";
 import { api } from "@/utils/apiClient";
 import { DonutSkeleton } from "../shared/DonutSkeleton";
@@ -28,22 +28,30 @@ const SalesSummary = () => {
     const [targetData, setTargetData] = useState<SalesTargetSummary | null>(null);
     const fiscalYear = "2025"; // You can make this dynamic later
 
-    useEffect(() => {
+    const fetchData = () => {
         setLoading(true);
 
-        api.get(`/sales-targets/all?fiscalYear=${fiscalYear}`)
+        api.get(`/sales-targets/all`, {
+            params: {
+                fiscalYear,
+                skipCache: true
+            }
+        })
             .then((response) => {
                 const data = response.data;
                 setTargetData(data.data);
-                // Delay loading false to allow for mount/animation/setup time
                 setTimeout(() => {
                     setLoading(false);
-                }, 800); // adjust the delay as needed (300ms–500ms is typical)
+                }, 800);
             })
             .catch((error) => {
                 console.error("Error fetching data:", error);
                 setLoading(false);
             });
+    };
+
+    useEffect(() => {
+        fetchData();
     }, []);
 
     const tiles: { label: string; key: TargetPeriodKey }[] = [
@@ -55,7 +63,29 @@ const SalesSummary = () => {
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ color: "white" }}>Sales Summary</Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h4" sx={{ color: "white" }}>
+                    Sales Summary
+                </Typography>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={fetchData}
+                    sx={{
+                        color: "#d1d5db",
+                        borderColor: "#374151",
+                        '&:hover': { borderColor: "#6b7280", backgroundColor: "#1f2937" },
+                        textTransform: "none",
+                        fontSize: "0.75rem",
+                        display: {
+                            xs: "none",
+                            sm: "inline-flex",
+                        },
+                    }}
+                >
+                    Refresh
+                </Button>
+            </Box>
 
             <Grid maxWidth="100%" container spacing={2} marginTop={2} justifyContent="space-between">
                 {loading

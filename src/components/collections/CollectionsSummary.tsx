@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Grid from '@mui/material/Grid2';
-import { Typography, Box } from "@mui/material";
+import { Typography, Box, Button } from "@mui/material";
 import dynamic from "next/dynamic";
 import {
     findCurrentWeeklyTarget,
@@ -29,21 +29,30 @@ const CollectionsSummary = () => {
 
     const fiscalYear = "2025"; // You can make this dynamic later
 
-    useEffect(() => {
+    const fetchData = () => {
         setLoading(true);
 
-        api.get(`/revenue-targets/all?fiscalYear=${fiscalYear}`)
+        api.get(`/revenue-targets/all`, {
+            params: {
+                fiscalYear,
+                skipCache: true
+            }
+        })
             .then((response) => {
                 const data = response.data;
-                setTargetData(data.data); // normalized structure: { weekly, monthly, quarterly, yearly }
+                setTargetData(data.data);
                 setTimeout(() => {
                     setLoading(false);
-                }, 800); // optional delay for animation/setup
+                }, 800);
             })
             .catch((error) => {
                 console.error("Error fetching revenue target data:", error);
                 setLoading(false);
             });
+    };
+
+    useEffect(() => {
+        fetchData();
     }, []);
 
     const tiles: { label: string; key: TargetPeriodKey }[] = [
@@ -55,7 +64,29 @@ const CollectionsSummary = () => {
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ color: "white" }}>Collections Summary</Typography>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Typography variant="h4" sx={{ color: "white" }}>
+                    Collections Summary
+                </Typography>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={fetchData}
+                    sx={{
+                        color: "#d1d5db",
+                        borderColor: "#374151",
+                        '&:hover': { borderColor: "#6b7280", backgroundColor: "#1f2937" },
+                        textTransform: "none",
+                        fontSize: "0.75rem",
+                        display: {
+                            xs: "none",
+                            sm: "inline-flex",
+                        },
+                    }}
+                >
+                    Refresh
+                </Button>
+            </Box>
 
             <Grid maxWidth="100%" container spacing={2} marginTop={2} justifyContent="space-between">
                 {loading
