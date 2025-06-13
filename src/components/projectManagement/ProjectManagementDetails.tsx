@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Table, TableBody, TableCell, TableContainer, TableHead,
     TableRow, Paper, Typography, Box, TableSortLabel,
@@ -23,6 +23,15 @@ type JobTrackingRow = {
     buildertrendJobStatus: string;
     jobMapped: boolean;
 };
+
+type BuildertrendJobGroup = {
+    btJobName: string;
+    opportunityIds: string[];
+    combinedProjectNumbers: string[];
+    existingJob: string | null;
+};
+
+type JobTrackingResponse = JobTrackingRow[] | { data: JobTrackingRow[] };
 
 const stageQueryMap: Record<StageDisplayLabel, string> = {
     "Closed Won Signed": "closed-won-signed",
@@ -65,7 +74,7 @@ const ProjectManagementDetails = () => {
         setOrderBy(property);
     };
 
-    const fetchData = () => {
+    const fetchData = useCallback(() => {
         setLoading(true);
         const stageParam = stageQueryMap[selectedStage];
 
@@ -86,11 +95,11 @@ const ProjectManagementDetails = () => {
                 setRows([]);
                 setLoading(false);
             });
-    };
+    }, [selectedStage]);
 
     useEffect(() => {
         fetchData();
-    }, [selectedStage]);
+    }, [fetchData]);
 
     const filteredRows = useMemo(() => {
         debugger;
@@ -130,7 +139,7 @@ const ProjectManagementDetails = () => {
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-    const normalizeResponse = (responseData: any): JobTrackingRow[] => {
+    const normalizeResponse = (responseData: JobTrackingResponse): JobTrackingRow[] => {
         if (Array.isArray(responseData)) return responseData;
         if (responseData && Array.isArray(responseData.data)) return responseData.data;
         console.error("Unexpected API response:", responseData);
@@ -143,10 +152,10 @@ const ProjectManagementDetails = () => {
 
         try {
             const res = await api.post("/buildertrendv2/create-jobs", { opportunityIds: selectedIds });
-            const { status, opportunityCount, accountCount, groups, errors } = res.data;
+            const { opportunityCount, accountCount, groups, errors } = res.data;
 
             if (groups && groups.length > 0) {
-                const successMessages = groups.map((group: any) => {
+                const successMessages = groups.map((group: BuildertrendJobGroup) => {
                     const { btJobName, opportunityIds, combinedProjectNumbers, existingJob } = group;
                     const projectList = combinedProjectNumbers.join(", ");
 
