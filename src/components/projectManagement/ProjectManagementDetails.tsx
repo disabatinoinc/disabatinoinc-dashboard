@@ -141,7 +141,7 @@ const ProjectManagementDetails = () => {
         if (selectedIds.length === 0) return;
 
         try {
-            const res = await api.post("/buildertrend/create-jobs", { opportunityIds: selectedIds });
+            const res = await api.post("/buildertrendv2/create-jobs", { opportunityIds: selectedIds });
             const { successful, errors } = res.data;
 
             if (successful.length > 0) {
