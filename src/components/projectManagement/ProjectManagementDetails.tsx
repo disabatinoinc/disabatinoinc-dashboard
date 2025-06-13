@@ -78,15 +78,7 @@ const ProjectManagementDetails = () => {
             }
         })
             .then((response) => {
-                const data = response.data;
-                if (Array.isArray(data)) {
-                    setRows(data);
-                } else if (data && Array.isArray(data.data)) {
-                    setRows(data.data);
-                } else {
-                    console.error("Unexpected API response:", data);
-                    setRows([]);
-                }
+                setRows(normalizeResponse(response.data));
                 setLoading(false);
             })
             .catch((error) => {
@@ -101,10 +93,12 @@ const ProjectManagementDetails = () => {
     }, [selectedStage]);
 
     const filteredRows = useMemo(() => {
+        debugger;
         return rows.filter(row => row.stage === stageOptions[selectedStage]);
     }, [rows, selectedStage]);
 
     const sortedRows = useMemo(() => {
+        debugger;
         return [...filteredRows].sort((a, b) => {
             if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
             if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
@@ -136,24 +130,53 @@ const ProjectManagementDetails = () => {
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
+    const normalizeResponse = (responseData: any): JobTrackingRow[] => {
+        if (Array.isArray(responseData)) return responseData;
+        if (responseData && Array.isArray(responseData.data)) return responseData.data;
+        console.error("Unexpected API response:", responseData);
+        return [];
+    };
+
     const handleCreateJobs = async () => {
         const selectedIds = Array.from(selectedRowsSet);
         if (selectedIds.length === 0) return;
 
         try {
             const res = await api.post("/buildertrendv2/create-jobs", { opportunityIds: selectedIds });
-            const { successful, errors } = res.data;
+            const { status, opportunityCount, accountCount, groups, errors } = res.data;
 
-            if (successful.length > 0) {
-                enqueueSnackbar(`${successful.length} job${successful.length > 1 ? 's' : ''} created successfully.`, { variant: 'success' });
+            if (groups && groups.length > 0) {
+                const successMessages = groups.map((group: any) => {
+                    const { btJobName, opportunityIds, combinedProjectNumbers, existingJob } = group;
+                    const projectList = combinedProjectNumbers.join(", ");
+
+                    if (existingJob) {
+                        return `• ${btJobName} updated (added ${projectList})`;
+                    } else {
+                        return `• ${btJobName} created for ${opportunityIds.length} opportunit${opportunityIds.length > 1 ? 'ies' : 'y'}`;
+                    }
+                });
+
+                enqueueSnackbar(
+                    `✅ Buildertrend Job Sync Complete\nAccounts: ${accountCount}, Opportunities: ${opportunityCount}\n${successMessages.join('\n')}`,
+                    {
+                        variant: 'success',
+                        persist: true,
+                        action: (key) => (
+                            <Button onClick={() => closeSnackbar(key)} sx={{ color: 'white', fontSize: '0.75rem' }}>
+                                Dismiss
+                            </Button>
+                        )
+                    }
+                );
             }
 
-            if (errors.length > 0) {
+            if (errors && errors.length > 0) {
                 const messageLines = errors.map((err: { opportunityId: string; message: string }) =>
                     `• ${err.opportunityId}: ${err.message}`
                 );
 
-                enqueueSnackbar(`Errors occurred for ${errors.length} job(s):\n${messageLines.join('\n')}`, {
+                enqueueSnackbar(`⚠️ Errors for ${errors.length} job(s):\n${messageLines.join('\n')}`, {
                     variant: 'error',
                     persist: true,
                     action: (key) => (
@@ -166,7 +189,7 @@ const ProjectManagementDetails = () => {
 
             setSelectedRowsSet(new Set());
             const refetch = await api.get("/salesforce/buildertrend-mappings");
-            setRows(refetch.data);
+            setRows(normalizeResponse(refetch.data));
         } catch (error) {
             console.error("Error creating Buildertrend jobs:", error);
             enqueueSnackbar("Unexpected error creating Buildertrend jobs.", { variant: 'error' });
