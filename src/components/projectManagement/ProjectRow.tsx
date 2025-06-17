@@ -83,6 +83,24 @@ const ProjectRow: React.FC<RowProps> = ({ row, isSelected, onSelect, headCells }
                             >
                                 {row.opportunityName}
                             </a>
+                        ) : cell.id === "buildertrendJobName" && row.buildertrendJobId ? (
+                            <a
+                                href={`https://buildertrend.net/app/JobPage/${row.buildertrendJobId}/1`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    color: "#42a5f5",
+                                    textDecoration: "underline",
+                                    fontSize: "0.75rem",
+                                    display: "inline-block",
+                                    maxWidth: "100%",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    width: "120px"
+                                }}
+                            >
+                                {row.buildertrendJobName}
+                            </a>
                         ) : (
                             row[cell.id]
                         )}
