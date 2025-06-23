@@ -48,6 +48,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const [salesAnchorEl, setSalesAnchorEl] = useState<null | HTMLElement>(null);
     const [collectionsAnchorEl, setCollectionsAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileAnchorEl, setMobileAnchorEl] = useState<null | HTMLElement>(null);
+    const [projectsAnchorEl, setProjectsAnchorEl] = useState<null | HTMLElement>(null);
+
 
     const handleSalesMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setSalesAnchorEl(event.currentTarget);
@@ -61,6 +63,13 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     };
     const handleCollectionsMenuClose = () => {
         setCollectionsAnchorEl(null);
+    };
+
+    const handleProjectsMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setProjectsAnchorEl(event.currentTarget);
+    };
+    const handleProjectsMenuClose = () => {
+        setProjectsAnchorEl(null);
     };
 
     return (
@@ -97,8 +106,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule"); }} sx={menuItemStyles}>
                                         Schedule
                                     </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects"); }} sx={menuItemStyles}>
-                                        Projects
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/summary"); }} sx={menuItemStyles}>
+                                        Projects Summary
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/details"); }} sx={menuItemStyles}>
+                                        Projects Details
                                     </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/summary"); }} sx={menuItemStyles}>
                                         Collections Summary
@@ -149,17 +161,30 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     >
                                         Schedule
                                     </Button>
-                                    <Button color="inherit" href="/projects"
+                                    <Button
+                                        color="inherit"
+                                        onClick={handleProjectsMenuOpen}
                                         sx={{
                                             textTransform: "uppercase",
                                             color: pathname.startsWith("/projects") ? "white" : "#d1d5db",
-                                            '&:hover': {
-                                                backgroundColor: '#374151',
-                                                color: 'white',
-                                            }
-                                        }}>
+                                            "&:hover": { color: "white" },
+                                        }}
+                                    >
                                         Projects
                                     </Button>
+                                    <Menu
+                                        anchorEl={projectsAnchorEl}
+                                        open={Boolean(projectsAnchorEl)}
+                                        onClose={handleProjectsMenuClose}
+                                        sx={menuPaperStyles}
+                                    >
+                                        <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/summary"); }} sx={menuItemStyles}>
+                                            Summary
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/details"); }} sx={menuItemStyles}>
+                                            Details
+                                        </MenuItem>
+                                    </Menu>
                                     <Button
                                         color="inherit"
                                         onClick={handleCollectionsMenuOpen}
