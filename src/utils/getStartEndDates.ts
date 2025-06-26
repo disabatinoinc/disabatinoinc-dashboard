@@ -10,7 +10,6 @@ export function getQuarterStartEnd(
     quarter: string,
     fiscalYear: string
 ): { startDate: string; endDate: string } {
-    debugger;
     const fy = parseInt(fiscalYear, 10);
 
     let start: Date;
