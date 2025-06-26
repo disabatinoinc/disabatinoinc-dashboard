@@ -1,16 +1,14 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Paper, Typography, Box, TableSortLabel, CircularProgress, Tooltip, Button,
+    Paper, Typography, Box, TableSortLabel, CircularProgress, Button,
     TextField
 } from "@mui/material";
 import { formatCurrency } from "@/utils/formatters";
 import { api } from "@/utils/apiClient";
 import { exportToCSV } from "@/utils/exportCSV";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 
 interface SalesOpportunity extends Record<string, unknown> {
@@ -23,6 +21,13 @@ interface SalesOpportunity extends Record<string, unknown> {
     originalOpportunityAmount: number;
     changeRequestAmount: number;
     totalOpportunityAmount: number;
+}
+
+interface SalesSummary {
+    totalSigned: number;
+    totalOpportunityAmount: number;
+    totalOriginalAmount: number;
+    totalChangeRequestAmount: number;
 }
 
 const baseCellSx = {
@@ -50,7 +55,7 @@ const headerCellSx = {
 
 const SalesDetails = () => {
     const [data, setData] = useState<SalesOpportunity[]>([]);
-    const [summary, setSummary] = useState<any>(null);
+    const [summary, setSummary] = useState<SalesSummary | null>(null);
     const [loading, setLoading] = useState(true);
     const [orderBy, setOrderBy] = useState<keyof SalesOpportunity>("closedWonSignedDate");
     const [order, setOrder] = useState<"asc" | "desc">("desc");
@@ -68,7 +73,7 @@ const SalesDetails = () => {
     const [fromDate, setFromDate] = useState<Date | null>(startOfWeek);
     const [toDate, setToDate] = useState<Date | null>(endOfWeek);
 
-    const fetchData = () => {
+    const fetchData = useCallback(() => {
         if (fromDate && toDate) {
             setLoading(true);
             const start = fromDate.toISOString().split("T")[0];
@@ -85,11 +90,11 @@ const SalesDetails = () => {
                 })
                 .finally(() => setLoading(false));
         }
-    };
+    }, [fromDate, toDate]);
 
     useEffect(() => {
         fetchData();
-    }, [fromDate, toDate]);
+    }, [fetchData]);
 
     const handleRequestSort = (property: keyof SalesOpportunity) => {
         const isAsc = orderBy === property && order === "asc";
