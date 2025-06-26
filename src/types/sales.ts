@@ -4,11 +4,13 @@ export interface SalesTargetBucket extends TargetBucket {
     opportunityIds: string[];
 }
 
+export type TargetPeriod = "daily" | "weekly" | "monthly" | "quarterly" | "yearly";
+
 export type SalesTargetWithActuals = {
     id: string;
     name: string;
     targetAmount: number;
-    targetPeriod: "weekly" | "monthly" | "quarterly" | "yearly";
+    targetPeriod: TargetPeriod;
     targetType?: string;
     fiscalYear?: string;
     notes?: string;
