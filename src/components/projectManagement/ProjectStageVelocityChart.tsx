@@ -3,10 +3,17 @@
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend, ResponsiveContainer
 } from 'recharts';
-import { Typography, Box, Skeleton, Button, TextField } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Typography, Box, Button, TextField } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from "@/utils/apiClient"; // ✅ Use the helper
 import ProjectStageVelocitySkeleton from './ProjectStageVelocitySkeleton';
+
+type StageFlowItem = {
+    stageName: string;
+    enteredCount: number;
+    stayedCount: number;
+    exitedCount: number;
+};
 
 const COLORS = {
     entered: '#10b981', // green
@@ -38,11 +45,11 @@ const ProjectStageVelocityChart = () => {
         return d.toISOString().split("T")[0];
     });
 
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setLoading(true);
         try {
             const res = await api.get(`/salesforce/opportunities/stage-flow-summary?startDate=${startDate}&endDate=${endDate}`);
-            const formatted = res.data.data.map((item: any) => ({
+            const formatted = res.data.data.map((item: StageFlowItem) => ({
                 stage: item.stageName,
                 entered: item.enteredCount,
                 stayed: item.stayedCount,
@@ -54,11 +61,11 @@ const ProjectStageVelocityChart = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [startDate, endDate]);
 
     useEffect(() => {
         fetchData();
-    }, [startDate, endDate]);
+    }, [fetchData]);
 
     return (
         <Box>

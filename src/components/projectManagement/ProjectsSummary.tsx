@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Typography, CircularProgress, Box, Paper, Skeleton } from '@mui/material';
+import { Typography, Box, Paper } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import Tile from '../shared/Tile';
 import ProjectStageVelocityChart from './ProjectStageVelocityChart';
@@ -19,7 +19,7 @@ const ProjectsSummaryPage = () => {
         setLoading(true);
         try {
             const res = await api.get("/salesforce/opportunities/stage-counts");
-            const formatted = res.data.data.map((stage: any) => ({
+            const formatted = res.data.data.map((stage: StageCount) => ({
                 stageName: stage.stageName,
                 projectCount: stage.projectCount
             }));
