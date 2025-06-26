@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Paper, Typography, Box, TableSortLabel, CircularProgress, Button,
+    Paper, Typography, Box, TableSortLabel, Button,
     TextField
 } from "@mui/material";
 import { formatCurrency } from "@/utils/formatters";
