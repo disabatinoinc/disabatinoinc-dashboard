@@ -1,3 +1,4 @@
+"use client"
 
 import { Skeleton, TableRow, TableCell } from "@mui/material";
 import React from "react";
