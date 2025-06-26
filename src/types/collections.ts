@@ -1,4 +1,4 @@
-import { TargetBucket } from "./shared";
+import { BucketType, TargetBucket, TargetPeriod } from "./shared";
 
 export type TargetPeriodKey = "weekly" | "monthly" | "quarterly" | "yearly";
 
@@ -13,7 +13,7 @@ export interface RevenueTargetWithActuals {
     id: string;
     name: string;
     targetAmount: number;
-    targetPeriod: string; // weekly, monthly, etc.
+    targetPeriod: TargetPeriod; // weekly, monthly, etc.
     targetType?: string; // e.g., "Revenue"
     fiscalYear?: string;
     weekStartDate?: string;
@@ -34,7 +34,7 @@ export interface RevenueActualsSummary {
 
 export interface RevenueBucket {
     bucketName: string;       // date, week start, month, or quarter name
-    bucketType: string;       // "daily", "weekly", "monthly", "quarterly"
+    bucketType: BucketType;       // "daily", "weekly", "monthly", "quarterly"
     recordCount: number;
     totalAmount: number;
     transactionIds: string[];
