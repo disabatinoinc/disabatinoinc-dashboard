@@ -100,6 +100,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/summary"); }} sx={menuItemStyles}>
                                         Sales Summary
                                     </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/details"); }} sx={menuItemStyles}>
+                                        Sales Details
+                                    </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
                                         Sales Snapshots
                                     </MenuItem>
@@ -142,6 +145,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     >
                                         <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/summary"); }} sx={menuItemStyles}>
                                             Summary
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/details"); }} sx={menuItemStyles}>
+                                            Details
                                         </MenuItem>
                                         <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
                                             Snapshots
