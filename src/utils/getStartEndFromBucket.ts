@@ -6,7 +6,6 @@ export function getStartEndFromBucket(bucket: {
     bucketName: string;
     bucketType: BucketType;
 }, fiscalYear: string): { startDate: string; endDate: string } {
-    debugger;
     const { bucketName, bucketType } = bucket;
 
     switch (bucketType) {
