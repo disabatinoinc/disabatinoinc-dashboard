@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import {
     ResponsiveContainer,
@@ -26,6 +27,7 @@ import { fillQuarterlyBuckets } from "@/utils/fillBuckets/fillQuarterlyBuckets";
 import { getFiscalQuarterLabel } from "@/utils/getFiscalQuarterLabel";
 import { SalesTargetBucket } from "@/types/sales";
 import { fillYearlyBuckets } from "@/utils/fillBuckets/fillYearlyBuckets";
+import { getStartEndFromBucket } from "@/utils/getStartEndFromBucket";
 
 type SalesBarChartProps = {
     data: {
@@ -45,6 +47,7 @@ const periods = [
 
 const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
     const [period, setPeriod] = useState<keyof typeof data>("WTD");
+    const router = useRouter();
 
     const handleChange = (event: SelectChangeEvent) => {
         setPeriod(event.target.value as keyof typeof data);
@@ -77,6 +80,13 @@ const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
 
         return selectedData;
     })();
+
+    const handleBarClick = (bucket: SalesTargetBucket) => {
+        if (!bucket.bucketName || !bucket.bucketType) return;
+
+        const { startDate, endDate } = getStartEndFromBucket(bucket, "2025");
+        router.push(`/sales/details?startDate=${startDate}&endDate=${endDate}`);
+    };
 
     return (
         <Card
@@ -133,7 +143,13 @@ const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
                                 content={<SalesBarChartTooltip />}
                                 cursor={{ fill: "#374151" }}
                             />
-                            <Bar dataKey="totalAmount" fill="#10b981" radius={[4, 4, 0, 0]} />
+                            <Bar
+                                dataKey="totalAmount"
+                                fill="#10b981"
+                                radius={[4, 4, 0, 0]}
+                                onClick={({ payload }) => handleBarClick(payload)}
+                                cursor="pointer"
+                            />
                         </BarChart>
                     </ResponsiveContainer>
                 </Box>

@@ -12,9 +12,10 @@ type DonutChartTileProps = {
     target: number;
     paidLabelOverride?: string;
     unpaidLabelOverride?: string;
+    actualOnClick?: () => void;
 };
 
-const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target, paidLabelOverride, unpaidLabelOverride }) => {
+const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target, paidLabelOverride, unpaidLabelOverride, actualOnClick }) => {
     const paidLabel = paidLabelOverride || "Sold";
     const unpaidLabel = unpaidLabelOverride || "Remaining";
 
@@ -53,7 +54,7 @@ const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target, 
                                 isAnimationActive={false}
                             >
                                 {COLORS.map((color, index) => (
-                                    <Cell key={index} fill={color} />
+                                    <Cell key={index} fill={color} onClick={index === 0 && actualOnClick ? actualOnClick : undefined} />
                                 ))}
                             </Pie>
                             <Tooltip

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Grid from '@mui/material/Grid2';
 import { Typography, Box, Button } from "@mui/material";
@@ -14,6 +15,7 @@ import {
     findCurrentQuarterlyTarget,
     findCurrentYearlyTarget
 } from "@/utils/selectCurrentSalesTarget";
+import { getStartEndFromTarget } from "@/utils/getStartEndFromTarget";
 
 const DonutChartTile = dynamic(() => import("@/components/shared/DonutChartTile"), {
     ssr: false,
@@ -24,6 +26,7 @@ const SalesBarChart = dynamic(() => import("@/components/sales/SalesBarChart"), 
 });
 
 const SalesSummary = () => {
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [targetData, setTargetData] = useState<SalesTargetSummary | null>(null);
     const fiscalYear = "2025"; // You can make this dynamic later
@@ -120,6 +123,10 @@ const SalesSummary = () => {
                                     label={label}
                                     actual={data.actualsSummary?.totalAmount || 0}
                                     target={data.targetAmount || 0}
+                                    actualOnClick={() => {
+                                        const { startDate, endDate } = getStartEndFromTarget(data, fiscalYear); // your helper
+                                        router.push(`/sales/details?startDate=${startDate}&endDate=${endDate}`);
+                                    }}
                                 />
                             </Grid>
                         );

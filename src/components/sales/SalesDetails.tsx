@@ -1,5 +1,6 @@
 "use client"
 
+import { useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 import {
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -9,6 +10,7 @@ import {
 import { formatCurrency } from "@/utils/formatters";
 import { api } from "@/utils/apiClient";
 import { exportToCSV } from "@/utils/exportCSV";
+import { SalesDetailsSkeleton } from "./SalesDetailsSkeleton";
 
 
 interface SalesOpportunity extends Record<string, unknown> {
@@ -70,8 +72,26 @@ const SalesDetails = () => {
     endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
     endOfWeek.setHours(23, 59, 59, 999); // optional: end of day
 
-    const [fromDate, setFromDate] = useState<Date | null>(startOfWeek);
-    const [toDate, setToDate] = useState<Date | null>(endOfWeek);
+    const searchParams = useSearchParams();
+
+    const defaultStart = new Date();
+    defaultStart.setDate(defaultStart.getDate() - defaultStart.getDay());
+    defaultStart.setHours(0, 0, 0, 0);
+
+    const defaultEnd = new Date();
+    defaultEnd.setDate(defaultEnd.getDate() + (6 - defaultEnd.getDay()));
+    defaultEnd.setHours(23, 59, 59, 999);
+
+    const getDateParam = (key: string): Date | null => {
+        const param = searchParams.get(key);
+        if (param && !isNaN(Date.parse(param))) {
+            return new Date(param);
+        }
+        return null;
+    };
+
+    const [fromDate, setFromDate] = useState<Date | null>(() => getDateParam("startDate") || defaultStart);
+    const [toDate, setToDate] = useState<Date | null>(() => getDateParam("endDate") || defaultEnd);
 
     const fetchData = useCallback(() => {
         if (fromDate && toDate) {
@@ -259,19 +279,7 @@ const SalesDetails = () => {
                     </TableHead>
                     <TableBody>
                         {loading ? (
-                            <TableRow>
-                                <TableCell
-                                    colSpan={8}
-                                    align="center"
-                                    sx={{
-                                        width: "100%",
-                                        textAlign: "center",
-                                        padding: "32px 32px", // optional: more vertical spacing
-                                    }}
-                                >
-                                    <CircularProgress size={28} sx={{ color: "#9ca3af" }} />
-                                </TableCell>
-                            </TableRow>
+                            <SalesDetailsSkeleton />
                         ) : (
                             sortedData.map((row) => (
                                 <TableRow key={row.opportunityId} sx={{
