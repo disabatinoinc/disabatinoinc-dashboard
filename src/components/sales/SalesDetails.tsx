@@ -56,6 +56,7 @@ const headerCellSx = {
 };
 
 const SalesDetails = () => {
+    const searchParams = useSearchParams();
     const [data, setData] = useState<SalesOpportunity[]>([]);
     const [summary, setSummary] = useState<SalesSummary | null>(null);
     const [loading, setLoading] = useState(true);
@@ -71,8 +72,6 @@ const SalesDetails = () => {
     const endOfWeek = new Date(today);
     endOfWeek.setDate(today.getDate() + (6 - dayOfWeek));
     endOfWeek.setHours(23, 59, 59, 999); // optional: end of day
-
-    const searchParams = useSearchParams();
 
     const defaultStart = new Date();
     defaultStart.setDate(defaultStart.getDate() - defaultStart.getDay());
