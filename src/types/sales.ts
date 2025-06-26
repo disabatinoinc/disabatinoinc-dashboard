@@ -1,10 +1,8 @@
-import { TargetBucket } from "./shared";
+import { TargetBucket, TargetPeriod } from "./shared";
 
 export interface SalesTargetBucket extends TargetBucket {
     opportunityIds: string[];
 }
-
-export type TargetPeriod = "daily" | "weekly" | "monthly" | "quarterly" | "yearly";
 
 export type SalesTargetWithActuals = {
     id: string;
