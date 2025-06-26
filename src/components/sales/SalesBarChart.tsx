@@ -46,8 +46,8 @@ const periods = [
 ];
 
 const SalesBarChart: React.FC<SalesBarChartProps> = ({ data }) => {
-    const [period, setPeriod] = useState<keyof typeof data>("WTD");
     const router = useRouter();
+    const [period, setPeriod] = useState<keyof typeof data>("WTD");
 
     const handleChange = (event: SelectChangeEvent) => {
         setPeriod(event.target.value as keyof typeof data);
