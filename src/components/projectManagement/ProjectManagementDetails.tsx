@@ -102,12 +102,10 @@ const ProjectManagementDetails = () => {
     }, [fetchData]);
 
     const filteredRows = useMemo(() => {
-        debugger;
         return rows.filter(row => row.stage === stageOptions[selectedStage]);
     }, [rows, selectedStage]);
 
     const sortedRows = useMemo(() => {
-        debugger;
         return [...filteredRows].sort((a, b) => {
             if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
             if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
