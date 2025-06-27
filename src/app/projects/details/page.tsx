@@ -1,7 +1,10 @@
 "use client";
 
-import ProjectManagementDetails from "@/components/projectManagement/ProjectManagementDetails";
+import { Suspense } from "react";
 
-export default function ProjectManagementPage() {
-    return <ProjectManagementDetails />;
+export default function ProjectsDetailsPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+        </Suspense>
+    );
 }

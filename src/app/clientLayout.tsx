@@ -115,6 +115,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/details"); }} sx={menuItemStyles}>
                                         Projects Details
                                     </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/buildertrend-sync"); }} sx={menuItemStyles}>
+                                        Buildertrend Sync
+                                    </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/summary"); }} sx={menuItemStyles}>
                                         Collections Summary
                                     </MenuItem>
@@ -192,6 +195,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                         </MenuItem>
                                         <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/details"); }} sx={menuItemStyles}>
                                             Details
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/buildertrend-sync"); }} sx={menuItemStyles}>
+                                            Buildertrend Sync
                                         </MenuItem>
                                     </Menu>
                                     <Button
