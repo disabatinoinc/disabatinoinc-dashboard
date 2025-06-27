@@ -54,7 +54,12 @@ const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target, 
                                 isAnimationActive={false}
                             >
                                 {COLORS.map((color, index) => (
-                                    <Cell key={index} fill={color} onClick={index === 0 && actualOnClick ? actualOnClick : undefined} />
+                                    <Cell
+                                        key={index}
+                                        fill={color}
+                                        onClick={index === 0 && actualOnClick ? actualOnClick : undefined}
+                                        style={index === 0 && actualOnClick ? { cursor: "pointer" } : undefined}
+                                    />
                                 ))}
                             </Pie>
                             <Tooltip

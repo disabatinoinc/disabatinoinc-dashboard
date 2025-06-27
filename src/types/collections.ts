@@ -1,6 +1,4 @@
-import { BucketType, TargetBucket, TargetPeriod } from "./shared";
-
-export type TargetPeriodKey = "weekly" | "monthly" | "quarterly" | "yearly";
+import { BaseTargetWithActuals, TargetBucket } from "./shared";
 
 export interface RevenueTargetSummary {
     weekly: RevenueTargetWithActuals[];
@@ -9,22 +7,10 @@ export interface RevenueTargetSummary {
     yearly: RevenueTargetWithActuals[];
 }
 
-export interface RevenueTargetWithActuals {
-    id: string;
-    name: string;
-    targetAmount: number;
-    targetPeriod: TargetPeriod; // weekly, monthly, etc.
-    targetType?: string; // e.g., "Revenue"
-    fiscalYear?: string;
-    weekStartDate?: string;
-    weekEndDate?: string;
-    weekNumber?: number;
-    month?: string;
-    quarter?: string;
-    notes?: string;
+export type RevenueTargetWithActuals = BaseTargetWithActuals & {
     actualsSummary: RevenueActualsSummary;
-    buckets: RevenueBucket[];
-}
+    buckets: RevenueTargetBucket[];
+};
 
 export interface RevenueActualsSummary {
     recordCount: number;
@@ -32,11 +18,7 @@ export interface RevenueActualsSummary {
     transactionIds: string[];
 }
 
-export interface RevenueBucket {
-    bucketName: string;       // date, week start, month, or quarter name
-    bucketType: BucketType;       // "daily", "weekly", "monthly", "quarterly"
-    recordCount: number;
-    totalAmount: number;
+export interface RevenueTargetBucket extends TargetBucket {
     transactionIds: string[];
 }
 

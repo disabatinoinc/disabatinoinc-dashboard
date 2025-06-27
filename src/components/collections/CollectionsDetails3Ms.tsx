@@ -28,7 +28,7 @@ const headCells: { id: keyof CollectionSummary | "dynamicDate"; label: string }[
 
 type ExportRow = CollectionSummary & { dynamicDate?: string };
 
-const CollectionsDetails = () => {
+const ProjectsCollectionsDetails = () => {
     const [order, setOrder] = useState("desc");
     const [orderBy, setOrderBy] = useState<keyof CollectionSummary | "dynamicDate">("opportunityName");
     const [sorting, setSorting] = useState(false);
@@ -170,7 +170,7 @@ const CollectionsDetails = () => {
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ color: "white" }}>Collections Details</Typography>
+            <Typography variant="h4" sx={{ color: "white" }}>3Ms Collections Details</Typography>
             <Typography variant="body2" sx={{ marginBottom: 2, color: "#9ca3af" }}>
                 {`Displaying ${projects.length} opportunities totaling 
                 $${projects.reduce((sum, item) => sum + item.totalOpportunityAmount, 0).toLocaleString()} 
@@ -420,4 +420,4 @@ const CollectionsDetails = () => {
     );
 };
 
-export default CollectionsDetails;
+export default ProjectsCollectionsDetails;
