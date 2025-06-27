@@ -1,10 +1,10 @@
+import { BaseTargetWithActuals } from "@/types/shared";
 import { formatISO, getMonthIndex, getQuarterStartEnd } from "./getStartEndDates";
-import { SalesTargetWithActuals } from "@/types/sales";
 
-export function getStartEndFromTarget(target: SalesTargetWithActuals, fiscalYear: string): {
-    startDate: string;
-    endDate: string;
-} {
+export function getStartEndFromTarget(
+    target: BaseTargetWithActuals,
+    fiscalYear: string
+): { startDate: string; endDate: string } {
     switch (target.targetPeriod) {
         case "weekly":
             return {

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Grid from '@mui/material/Grid2';
 import { Typography, Box, Button } from "@mui/material";
@@ -12,8 +13,10 @@ import {
 } from "@/utils/selectCurrentRevenueTarget";
 import { DonutSkeleton } from "../shared/DonutSkeleton";
 import CollectionsBarChartSkeleton from "../collections/CollectionsBarChartSkeleton";
-import { RevenueTargetSummary, RevenueTargetWithActuals, TargetPeriodKey } from "@/types/collections";
+import { RevenueTargetSummary, RevenueTargetWithActuals } from "@/types/collections";
 import { api } from "@/utils/apiClient";
+import { getStartEndFromTarget } from "@/utils/getStartEndFromTarget";
+import { TargetPeriodKey } from "@/types/shared";
 
 // Lazy load charts
 const DonutChartTile = dynamic(() => import("@/components/shared/DonutChartTile"), {
@@ -24,6 +27,7 @@ const CollectionsBarChart = dynamic(() => import("@/components/collections/Colle
 });
 
 const CollectionsSummary = () => {
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [targetData, setTargetData] = useState<RevenueTargetSummary | null>(null);
 
@@ -123,6 +127,10 @@ const CollectionsSummary = () => {
                                     target={data.targetAmount || 0}
                                     paidLabelOverride="Collected"
                                     unpaidLabelOverride="Remaining"
+                                    actualOnClick={() => {
+                                        const { startDate, endDate } = getStartEndFromTarget(data, fiscalYear);
+                                        router.push(`/collections/details?startDate=${startDate}&endDate=${endDate}&type=Payment`);
+                                    }}
                                 />
                             </Grid>
                         );

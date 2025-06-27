@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import { api } from "@/utils/apiClient";
 import { DonutSkeleton } from "../shared/DonutSkeleton";
 import SalesBarChartSkeleton from "./SalesBarChartSkeleton";
-import { SalesTargetSummary, SalesTargetWithActuals, TargetPeriodKey } from "@/types/sales";
+import { SalesTargetSummary, SalesTargetWithActuals } from "@/types/sales";
 import {
     findCurrentWeeklyTarget,
     findCurrentMonthlyTarget,
@@ -16,6 +16,7 @@ import {
     findCurrentYearlyTarget
 } from "@/utils/selectCurrentSalesTarget";
 import { getStartEndFromTarget } from "@/utils/getStartEndFromTarget";
+import { TargetPeriodKey } from "@/types/shared";
 
 const DonutChartTile = dynamic(() => import("@/components/shared/DonutChartTile"), {
     ssr: false,
