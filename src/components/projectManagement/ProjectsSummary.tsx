@@ -1,17 +1,27 @@
-import { useEffect, useState } from 'react';
-import { Typography, Box, Paper } from '@mui/material';
-import Grid from '@mui/material/Grid2';
-import Tile from '../shared/Tile';
-import ProjectStageVelocityChart from './ProjectStageVelocityChart';
+import { useEffect, useState } from "react";
+import { Typography, Box } from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import { useRouter } from "next/navigation";
+import Tile from "../shared/Tile";
+import { TileSkeleton } from "../shared/TileSkeleton";
+import ProjectStageVelocityChart from "./ProjectStageVelocityChart";
 import { api } from "@/utils/apiClient";
-import { TileSkeleton } from '../shared/TileSkeleton';
 
 interface StageCount {
     stageName: string;
     projectCount: number;
 }
 
-const ProjectsSummaryPage = () => {
+const PARAM_MAP: Record<string, string> = {
+    "Closed Won - Signed": "closed-won-signed",
+    "Ready to be Scheduled": "ready-to-be-scheduled",
+    Scheduled: "scheduled",
+    "Work in Progress": "work-in-progress",
+    "Closed Won-Paid": "closed-won-paid",
+};
+
+const ProjectsSummary = () => {
+    const router = useRouter();
     const [data, setData] = useState<StageCount[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -19,13 +29,13 @@ const ProjectsSummaryPage = () => {
         setLoading(true);
         try {
             const res = await api.get("/salesforce/opportunities/stage-counts");
-            const formatted = res.data.data.map((stage: StageCount) => ({
-                stageName: stage.stageName,
-                projectCount: stage.projectCount
+            const formatted = res.data.data.map((s: StageCount) => ({
+                stageName: s.stageName,
+                projectCount: s.projectCount,
             }));
             setData(formatted);
-        } catch (error) {
-            console.error("Error fetching stage counts:", error);
+        } catch (err) {
+            console.error("Error fetching stage counts:", err);
         } finally {
             setLoading(false);
         }
@@ -38,12 +48,13 @@ const ProjectsSummaryPage = () => {
     return (
         <Box p={4}>
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                <Typography variant="h4" sx={{ color: 'white' }}>
+                <Typography variant="h4" sx={{ color: "white" }}>
                     Projects Summary
                 </Typography>
             </Box>
 
-            <Grid container spacing={2} marginTop={2} justifyContent="space-between">
+            {/* tiles */}
+            <Grid container spacing={2} mt={2} justifyContent="space-between">
                 {loading
                     ? Array.from({ length: 4 }).map((_, idx) => (
                         <Grid key={idx}>
@@ -52,25 +63,24 @@ const ProjectsSummaryPage = () => {
                     ))
                     : data.map((stage) => (
                         <Grid key={stage.stageName}>
-                            <Tile label={stage.stageName} value={stage.projectCount} />
+                            <Tile
+                                label={stage.stageName}
+                                value={stage.projectCount}
+                                onClick={() => {
+                                    const param = PARAM_MAP[stage.stageName] || "all";
+                                    router.push(`/projects/stage-details?stage=${param}`);
+                                }}
+                            />
                         </Grid>
                     ))}
             </Grid>
+
+            {/* velocity chart */}
             <Box mt={6}>
-                <Paper
-                    elevation={3}
-                    sx={{
-                        p: 3,
-                        background: 'linear-gradient(to bottom right, #121929 0%, #0c111c 50%, #000000 100%)',
-                        border: '1px solid #374151',
-                        borderRadius: '12px'
-                    }}
-                >
-                    <ProjectStageVelocityChart />
-                </Paper>
+                <ProjectStageVelocityChart />
             </Box>
         </Box>
     );
 };
 
-export default ProjectsSummaryPage;
+export default ProjectsSummary;

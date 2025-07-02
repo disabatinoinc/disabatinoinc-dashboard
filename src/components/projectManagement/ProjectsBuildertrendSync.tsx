@@ -49,7 +49,7 @@ const stageOptions = {
 
 type StageDisplayLabel = keyof typeof stageOptions;
 
-const ProjectManagementDetails = () => {
+const ProjectsBuildertrendSync = () => {
     const headCells: { id: keyof JobTrackingRow; label: string }[] = useMemo(() => ([
         { id: "projectManager", label: "Project Manager" },
         { id: "opportunityName", label: "Opportunity Name" },
@@ -438,4 +438,4 @@ const ProjectManagementDetails = () => {
     );
 };
 
-export default ProjectManagementDetails;
+export default ProjectsBuildertrendSync;
