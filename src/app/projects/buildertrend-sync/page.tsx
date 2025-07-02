@@ -2,6 +2,6 @@
 
 import ProjectsBuildertrendSync from "@/components/projectManagement/ProjectsBuildertrendSync";
 
-export default function ProjectManagementPage() {
+export default function ProjectsBuildertrendSyncPage() {
     return <ProjectsBuildertrendSync />;
 }

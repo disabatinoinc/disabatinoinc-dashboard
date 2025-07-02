@@ -112,8 +112,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/summary"); }} sx={menuItemStyles}>
                                         Projects Summary
                                     </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/details"); }} sx={menuItemStyles}>
-                                        Projects Details
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/stage-details"); }} sx={menuItemStyles}>
+                                        Projects Stage Details
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/velocity-details"); }} sx={menuItemStyles}>
+                                        Projects Velocity Details
                                     </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/buildertrend-sync"); }} sx={menuItemStyles}>
                                         Buildertrend Sync
@@ -193,8 +196,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                         <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/summary"); }} sx={menuItemStyles}>
                                             Summary
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/details"); }} sx={menuItemStyles}>
-                                            Details
+                                        <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/stage-details"); }} sx={menuItemStyles}>
+                                            Stage Details
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/velocity-details"); }} sx={menuItemStyles}>
+                                            Velocity Details
                                         </MenuItem>
                                         <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/buildertrend-sync"); }} sx={menuItemStyles}>
                                             Buildertrend Sync

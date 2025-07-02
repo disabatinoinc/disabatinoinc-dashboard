@@ -6,9 +6,10 @@ import { Card, CardContent, Typography, Box } from "@mui/material";
 interface TileProps {
     label: string;
     value: number;
+    onClick?: () => void;
 }
 
-const Tile: React.FC<TileProps> = ({ label, value }) => {
+const Tile: React.FC<TileProps> = ({ label, value, onClick }) => {
     return (
         <Card
             sx={{
@@ -32,7 +33,7 @@ const Tile: React.FC<TileProps> = ({ label, value }) => {
                 </Typography>
 
                 <Box mt={2}>
-                    <Typography variant="h4" sx={{ textAlign: "center" }}>
+                    <Typography variant="h4" onClick={onClick} sx={{ textAlign: "center", cursor: "pointer" }}>
                         {value}
                     </Typography>
                 </Box>
