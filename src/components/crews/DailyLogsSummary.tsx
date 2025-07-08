@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Grid from '@mui/material/Grid2';
 import { Typography, Box, Button, TextField } from "@mui/material";
 import dynamic from "next/dynamic";
@@ -21,7 +21,7 @@ interface CrewSummary {
     addedById: number;
     addedBy: string;
     dailyLogCount: number;
-    dailyLogs: any[];
+    dailyLogs: unknown[];
 }
 
 const DailyLogsSummary: React.FC = () => {
@@ -35,7 +35,7 @@ const DailyLogsSummary: React.FC = () => {
     const [fromDate, setFromDate] = useState<Date>(defaultStart);
     const [toDate, setToDate] = useState<Date>(defaultEnd);
 
-    const fetchData = () => {
+    const fetchData = useCallback(() => {
         setLoading(true);
 
         // Normalize dates to local midnight
@@ -62,23 +62,23 @@ const DailyLogsSummary: React.FC = () => {
 
         setBusinessDays(businessDaysOnly.length);
 
-        api.get('/buildertrend/daily-logs/user-summary', {
+        api.get<{ data: CrewSummary[] }>('/buildertrend/daily-logs/user-summary', {
             params: { startDate, endDate, pageNumber: 1, pageSize: 100 }
         })
-            .then(response => {
+            .then((response) => {
                 setData(response.data.data);
             })
-            .catch(error => {
+            .catch((error: unknown) => {
                 console.error('Error fetching daily logs summary', error);
             })
             .finally(() => {
                 setLoading(false);
             });
-    };
+    }, [fromDate, toDate]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     return (
         <Box>
@@ -142,26 +142,23 @@ const DailyLogsSummary: React.FC = () => {
             {/* Donut charts grid */}
             <Grid container spacing={2} marginTop={2} justifyContent="space-between">
                 {loading
-                    ? Array.from({ length: 4 }).map((_, idx) => (
+                    ? Array.from({ length: 4 }).map((_: unknown, idx: number) => (
                         <Grid key={idx}>
                             <DonutSkeleton />
                         </Grid>
                     ))
-                    : data.map(cs => {
-                        const remaining = Math.max(businessDays - cs.dailyLogCount, 0);
-                        return (
-                            <Grid key={cs.addedById}>
-                                <DonutChartTile
-                                    label={cs.addedBy}
-                                    actual={cs.dailyLogCount}
-                                    target={businessDays}
-                                    paidLabelOverride="Logged"
-                                    unpaidLabelOverride="Remaining"
-                                    isCurrency={false}
-                                />
-                            </Grid>
-                        );
-                    })
+                    : data.map((cs) => (
+                        <Grid key={cs.addedById}>
+                            <DonutChartTile
+                                label={cs.addedBy}
+                                actual={cs.dailyLogCount}
+                                target={businessDays}
+                                paidLabelOverride="Logged"
+                                unpaidLabelOverride="Remaining"
+                                isCurrency={false}
+                            />
+                        </Grid>
+                    ))
                 }
             </Grid>
         </Box>

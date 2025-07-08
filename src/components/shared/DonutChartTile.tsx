@@ -56,7 +56,7 @@ const DonutChartTile: React.FC<DonutChartTileProps> = ({
 
                 <Box sx={{ width: "100%", height: 120 }}>
                     <ResponsiveContainer width="100%" height="100%">
-                        <PieChart key={`pie-${label}`}>{/* eslint-disable-line */}
+                        <PieChart key={`pie-${label}`}>
                             <Pie
                                 data={data}
                                 innerRadius={40}

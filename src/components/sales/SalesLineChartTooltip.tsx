@@ -5,7 +5,7 @@ import { Box, Typography } from "@mui/material";
 /**
  * Custom tooltip for sales line chart showing Actual vs. Target.
  */
-const SalesLineChartTooltip: React.FC<TooltipProps<any, any>> = ({ active, payload, label }) => {
+const SalesLineChartTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload, label }) => {
     if (!active || !payload || payload.length === 0) {
         return null;
     }
@@ -46,7 +46,7 @@ const SalesLineChartTooltip: React.FC<TooltipProps<any, any>> = ({ active, paylo
                         {entry.name}
                     </Typography>
                     <Typography variant="body2">
-                        {formatter.format(entry.value)}
+                        {formatter.format(entry.value ?? 0)}
                     </Typography>
                 </Box>
             ))}
