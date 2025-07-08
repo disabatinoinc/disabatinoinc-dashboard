@@ -17,6 +17,7 @@ import {
 } from "@/utils/selectCurrentSalesTarget";
 import { getStartEndFromTarget } from "@/utils/getStartEndFromTarget";
 import { TargetPeriodKey } from "@/types/shared";
+import SalesLineChartAllPeriods from "./SalesLineChart";
 
 const DonutChartTile = dynamic(() => import("@/components/shared/DonutChartTile"), {
     ssr: false,
@@ -143,6 +144,9 @@ const SalesSummary = () => {
                         QTD: targetData?.quarterly && findCurrentQuarterlyTarget(targetData?.quarterly)?.buckets || [],
                         YTD: targetData?.yearly && findCurrentYearlyTarget(targetData?.yearly)?.buckets || [],
                     }} />}
+            {loading ? <SalesBarChartSkeleton />
+                :
+                <SalesLineChartAllPeriods fiscalYear={fiscalYear} />}
 
         </Box>
     );

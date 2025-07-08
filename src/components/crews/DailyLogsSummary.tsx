@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid2';
 import { Typography, Box, Button, TextField } from "@mui/material";
 import dynamic from "next/dynamic";
 import { api } from "@/utils/apiClient";
-import { subDays, format, eachDayOfInterval, isWeekend } from 'date-fns';
+import { subDays, format, eachDayOfInterval, isWeekend, startOfDay, parseISO } from 'date-fns';
 import Holidays from 'date-holidays';
 import { DonutSkeleton } from "../shared/DonutSkeleton";
 
@@ -37,14 +37,28 @@ const DailyLogsSummary: React.FC = () => {
 
     const fetchData = () => {
         setLoading(true);
-        const startDate = format(fromDate, 'yyyy-MM-dd');
-        const endDate = format(toDate, 'yyyy-MM-dd');
 
-        const days = eachDayOfInterval({ start: fromDate, end: toDate });
+        // Normalize dates to local midnight
+        const start = startOfDay(fromDate);
+        const end = startOfDay(toDate);
+
+        const startDate = format(start, 'yyyy-MM-dd');
+        const endDate = format(end, 'yyyy-MM-dd');
+
+        const days = eachDayOfInterval({ start, end });
         const hd = new Holidays('US');
         const businessDaysOnly = days.filter(day => {
-            return !isWeekend(day) && !hd.isHoliday(day);
+            const isHoliday = hd.isHoliday(day);
+            const isBizDay = !isWeekend(day) && !isHoliday;
+            console.log(
+                `Checking day: ${format(day, 'yyyy-MM-dd')} | Weekend: ${isWeekend(day)} | Holiday: ${!!isHoliday} | Business Day: ${isBizDay}`
+            );
+            return isBizDay;
         });
+
+        console.log("Start Date:", startDate);
+        console.log("End Date:", endDate);
+        console.log("Business Days:", businessDaysOnly.length);
 
         setBusinessDays(businessDaysOnly.length);
 
@@ -78,19 +92,35 @@ const DailyLogsSummary: React.FC = () => {
                         type="date"
                         size="small"
                         label="Start Date"
-                        value={fromDate.toISOString().split("T")[0]}
-                        onChange={(e) => setFromDate(e.target.value ? new Date(e.target.value) : fromDate)}
+                        value={format(fromDate, 'yyyy-MM-dd')}
+                        onChange={e => {
+                            const val = e.target.value;
+                            setFromDate(val ? startOfDay(parseISO(val)) : fromDate);
+                        }}
                         InputLabelProps={{ shrink: true }}
-                        sx={{ input: { color: "white" }, label: { color: "#9ca3af" }, '& fieldset': { borderColor: '#374151' }, '& input::-webkit-calendar-picker-indicator': { filter: 'invert(1)', cursor: 'pointer' } }}
+                        sx={{
+                            input: { color: "white" },
+                            label: { color: "#9ca3af" },
+                            '& fieldset': { borderColor: '#374151' },
+                            '& input::-webkit-calendar-picker-indicator': { filter: 'invert(1)', cursor: 'pointer' }
+                        }}
                     />
                     <TextField
                         type="date"
                         size="small"
                         label="End Date"
-                        value={toDate.toISOString().split("T")[0]}
-                        onChange={(e) => setToDate(e.target.value ? new Date(e.target.value) : toDate)}
+                        value={format(toDate, 'yyyy-MM-dd')}
+                        onChange={e => {
+                            const val = e.target.value;
+                            setToDate(val ? startOfDay(parseISO(val)) : toDate);
+                        }}
                         InputLabelProps={{ shrink: true }}
-                        sx={{ input: { color: "white" }, label: { color: "#9ca3af" }, '& fieldset': { borderColor: '#374151' }, '& input::-webkit-calendar-picker-indicator': { filter: 'invert(1)', cursor: 'pointer' } }}
+                        sx={{
+                            input: { color: "white" },
+                            label: { color: "#9ca3af" },
+                            '& fieldset': { borderColor: '#374151' },
+                            '& input::-webkit-calendar-picker-indicator': { filter: 'invert(1)', cursor: 'pointer' }
+                        }}
                     />
                     <Button
                         variant="outlined"
