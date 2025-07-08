@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import { Card, CardContent, Typography, Box } from "@mui/material";
@@ -13,9 +11,21 @@ type DonutChartTileProps = {
     paidLabelOverride?: string;
     unpaidLabelOverride?: string;
     actualOnClick?: () => void;
+    /**
+     * Whether to prefix values with a dollar sign. Default is true.
+     */
+    isCurrency?: boolean;
 };
 
-const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target, paidLabelOverride, unpaidLabelOverride, actualOnClick }) => {
+const DonutChartTile: React.FC<DonutChartTileProps> = ({
+    label,
+    actual,
+    target,
+    paidLabelOverride,
+    unpaidLabelOverride,
+    actualOnClick,
+    isCurrency = true,
+}) => {
     const paidLabel = paidLabelOverride || "Sold";
     const unpaidLabel = unpaidLabelOverride || "Remaining";
 
@@ -23,6 +33,9 @@ const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target, 
         { name: paidLabel, value: actual },
         { name: unpaidLabel, value: Math.max(target - actual, 0) },
     ];
+
+    const formatValue = (value: number) =>
+        isCurrency ? `$${value.toLocaleString()}` : value.toLocaleString();
 
     return (
         <Card
@@ -43,7 +56,7 @@ const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target, 
 
                 <Box sx={{ width: "100%", height: 120 }}>
                     <ResponsiveContainer width="100%" height="100%">
-                        <PieChart key={`pie-${label}}`}>
+                        <PieChart key={`pie-${label}`}>
                             <Pie
                                 data={data}
                                 innerRadius={40}
@@ -63,7 +76,10 @@ const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target, 
                                 ))}
                             </Pie>
                             <Tooltip
-                                formatter={(value: number, name: string) => [`$${value.toLocaleString()}`, name]}
+                                formatter={(value: number, name: string) => [
+                                    isCurrency ? `$${value.toLocaleString()}` : value.toLocaleString(),
+                                    name,
+                                ]}
                                 contentStyle={{ backgroundColor: "#1f2937", borderColor: "#374151", color: "white" }}
                                 itemStyle={{ color: "#d1d5db" }}
                             />
@@ -75,10 +91,10 @@ const DonutChartTile: React.FC<DonutChartTileProps> = ({ label, actual, target, 
                     {`${((actual / target) * 100).toFixed(0)}%`}
                 </Typography>
                 <Typography variant="body2" sx={{ textAlign: "center", color: "#d1d5db" }}>
-                    ${actual.toLocaleString()} / ${target.toLocaleString()}
+                    {formatValue(actual)} / {formatValue(target)}
                 </Typography>
             </CardContent>
-        </Card >
+        </Card>
     );
 };
 

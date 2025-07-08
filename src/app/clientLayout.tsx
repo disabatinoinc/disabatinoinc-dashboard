@@ -49,6 +49,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const [collectionsAnchorEl, setCollectionsAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileAnchorEl, setMobileAnchorEl] = useState<null | HTMLElement>(null);
     const [projectsAnchorEl, setProjectsAnchorEl] = useState<null | HTMLElement>(null);
+    const [crewsAnchorEl, setCrewsAnchorEl] = useState<null | HTMLElement>(null);
 
 
     const handleSalesMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -71,6 +72,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const handleProjectsMenuClose = () => {
         setProjectsAnchorEl(null);
     };
+    const handleCrewsMenuOpen = (e: React.MouseEvent<HTMLButtonElement>) => setCrewsAnchorEl(e.currentTarget);
+    const handleCrewsMenuClose = () => setCrewsAnchorEl(null);
 
     return (
         <>
@@ -129,6 +132,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/3ms"); }} sx={menuItemStyles}>
                                         Collections 3Ms
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/crews/daily-logs"); }} sx={menuItemStyles}>
+                                        Daily Logs
                                     </MenuItem>
                                 </Menu>
                             </>
@@ -231,6 +237,27 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                         </MenuItem>
                                         <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/3ms"); }} sx={menuItemStyles}>
                                             3Ms
+                                        </MenuItem>
+                                    </Menu>
+                                    <Button
+                                        color="inherit"
+                                        onClick={handleCrewsMenuOpen}
+                                        sx={{
+                                            textTransform: "uppercase",
+                                            color: pathname.startsWith("/crews") ? "white" : "#d1d5db",
+                                            "&:hover": { color: "white" },
+                                        }}
+                                    >
+                                        Crews
+                                    </Button>
+                                    <Menu
+                                        anchorEl={crewsAnchorEl}
+                                        open={Boolean(crewsAnchorEl)}
+                                        onClose={handleCrewsMenuClose}
+                                        sx={menuPaperStyles}
+                                    >
+                                        <MenuItem onClick={() => { handleCrewsMenuClose(); router.push("/crews/daily-logs"); }} sx={menuItemStyles}>
+                                            Daily Logs
                                         </MenuItem>
                                     </Menu>
                                 </Box>
