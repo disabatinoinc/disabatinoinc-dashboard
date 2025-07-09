@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Grid from '@mui/material/Grid2';
 import { Typography, Box, Button, TextField } from "@mui/material";
 import dynamic from "next/dynamic";
@@ -25,6 +26,7 @@ interface CrewSummary {
 }
 
 const DailyLogsSummary: React.FC = () => {
+    const router = useRouter();
     const [data, setData] = useState<CrewSummary[]>([]);
     const [businessDays, setBusinessDays] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
@@ -45,21 +47,14 @@ const DailyLogsSummary: React.FC = () => {
         const startDate = format(start, 'yyyy-MM-dd');
         const endDate = format(end, 'yyyy-MM-dd');
 
+        // calculate business days
         const days = eachDayOfInterval({ start, end });
         const hd = new Holidays('US');
         const businessDaysOnly = days.filter(day => {
             const isHoliday = hd.isHoliday(day);
             const isBizDay = !isWeekend(day) && !isHoliday;
-            console.log(
-                `Checking day: ${format(day, 'yyyy-MM-dd')} | Weekend: ${isWeekend(day)} | Holiday: ${!!isHoliday} | Business Day: ${isBizDay}`
-            );
             return isBizDay;
         });
-
-        console.log("Start Date:", startDate);
-        console.log("End Date:", endDate);
-        console.log("Business Days:", businessDaysOnly.length);
-
         setBusinessDays(businessDaysOnly.length);
 
         api.get<{ data: CrewSummary[] }>('/buildertrend/daily-logs/user-summary', {
@@ -80,6 +75,10 @@ const DailyLogsSummary: React.FC = () => {
         fetchData();
     }, [fetchData]);
 
+    // helpers for routing
+    const formattedFrom = format(fromDate, 'yyyy-MM-dd');
+    const formattedTo = format(toDate, 'yyyy-MM-dd');
+
     return (
         <Box>
             {/* Header */}
@@ -92,7 +91,7 @@ const DailyLogsSummary: React.FC = () => {
                         type="date"
                         size="small"
                         label="Start Date"
-                        value={format(fromDate, 'yyyy-MM-dd')}
+                        value={formattedFrom}
                         onChange={e => {
                             const val = e.target.value;
                             setFromDate(val ? startOfDay(parseISO(val)) : fromDate);
@@ -109,7 +108,7 @@ const DailyLogsSummary: React.FC = () => {
                         type="date"
                         size="small"
                         label="End Date"
-                        value={format(toDate, 'yyyy-MM-dd')}
+                        value={formattedTo}
                         onChange={e => {
                             const val = e.target.value;
                             setToDate(val ? startOfDay(parseISO(val)) : toDate);
@@ -142,7 +141,7 @@ const DailyLogsSummary: React.FC = () => {
             {/* Donut charts grid */}
             <Grid container spacing={2} marginTop={2} justifyContent="space-between">
                 {loading
-                    ? Array.from({ length: 4 }).map((_: unknown, idx: number) => (
+                    ? Array.from({ length: 4 }).map((_, idx) => (
                         <Grid key={idx}>
                             <DonutSkeleton />
                         </Grid>
@@ -156,6 +155,13 @@ const DailyLogsSummary: React.FC = () => {
                                 paidLabelOverride="Logged"
                                 unpaidLabelOverride="Remaining"
                                 isCurrency={false}
+                                actualOnClick={() => {
+                                    router.push(
+                                        `/crews/daily-logs/details?startDate=${formattedFrom}` +
+                                        `&endDate=${formattedTo}` +
+                                        `&userId=${cs.addedById}`
+                                    );
+                                }}
                             />
                         </Grid>
                     ))
