@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
     Table, TableBody, TableCell, TableContainer, TableHead,
     TableRow, Paper, Typography, Box, TableSortLabel, Tooltip,
@@ -31,6 +31,24 @@ const headCells: { id: keyof CollectionSummary | "dynamicDate"; label: string }[
     { id: "totalOppOutstanding", label: "Opportunity Outstanding" },
 ];
 
+// Stable milestone ordering
+const MILESTONE_ORDER = [
+    "Initial",
+    "Scheduling",
+    "First Day",
+    "Milestone",
+    "Final",
+    "Punch List",
+] as const;
+
+// Map of stage → endpoint
+const STAGE_TO_ENDPOINT: Record<string, string> = {
+    "Closed Won Signed": "closed-won-signed",
+    "Ready to be Scheduled": "ready-to-be-scheduled",
+    "Scheduled": "scheduled",
+    "Work in Progress": "work-in-progress",
+};
+
 type ExportRow = CollectionSummary & { dynamicDate?: string };
 
 const ProjectsCollectionsDetails = () => {
@@ -44,16 +62,19 @@ const ProjectsCollectionsDetails = () => {
     const [loading, setLoading] = useState(true);
     const [selectedStage, setSelectedStage] = useState("Work in Progress");
 
-    const getDynamicDate = (row: CollectionSummary) => {
+    // Get the “dynamic” date per row based on the current stage
+    const getDynamicDate = useCallback((row: CollectionSummary): string | null => {
         if (selectedStage === "Closed Won Signed" || selectedStage === "Ready to be Scheduled") {
             return row.closedWonSignedDate;
-        } else if (selectedStage === "Scheduled") {
+        }
+        if (selectedStage === "Scheduled") {
             return row.tentativeStartDate;
-        } else if (selectedStage === "Work in Progress") {
+        }
+        if (selectedStage === "Work in Progress") {
             return row.workInProgressDate;
         }
         return null;
-    };
+    }, [selectedStage]);
 
     // extract distinct PMs
     const uniqueManagers = useMemo(() => {
@@ -69,94 +90,76 @@ const ProjectsCollectionsDetails = () => {
             : projects;
     }, [projects, managerFilter]);
 
-    const handleRequestSort = (property: keyof CollectionSummary | "dynamicDate") => {
-        setSorting(true);
-        const isAscending = orderBy === property && order === "asc";
-        setOrder(isAscending ? "desc" : "asc");
-        setOrderBy(property);
-        setTimeout(() => setSorting(false), 500);
-    };
-
-
-    const milestoneOrder = ["Initial", "Scheduling", "First Day", "Milestone", "Final", "Punch List"];
-
-    const stageToEndpoint = useMemo<Record<string, string>>(() => ({
-        "Closed Won Signed": "closed-won-signed",
-        "Ready to be Scheduled": "ready-to-be-scheduled",
-        "Scheduled": "scheduled",
-        "Work in Progress": "work-in-progress",
-    }), []);
-
+    // Fetch data whenever stage changes
     useEffect(() => {
-        const endpoint = stageToEndpoint[selectedStage];
+        const endpoint = STAGE_TO_ENDPOINT[selectedStage];
         if (!endpoint) return;
 
         setLoading(true);
-
         api.get(`/collections/summary/${endpoint}`)
-            .then((response) => {
-                const data = response.data;
-                if (Array.isArray(data)) {
-                    setProjects(data);
-                } else if (data && Array.isArray(data.data)) {
-                    setProjects(data.data);
-                } else {
-                    console.error("Unexpected API response:", data);
-                    setProjects([]);
-                }
-                setLoading(false);
+            .then(res => {
+                const d = res.data;
+                setProjects(Array.isArray(d) ? d : Array.isArray(d.data) ? d.data : []);
             })
-            .catch((error) => {
-                console.error("Error fetching data:", error);
-                setLoading(false);
-            });
-    }, [selectedStage, stageToEndpoint]);
+            .catch(console.error)
+            .finally(() => setLoading(false));
+    }, [selectedStage]);
 
+    // Sort handler
+    const handleRequestSort = (property: keyof CollectionSummary | "dynamicDate") => {
+        setSorting(true);
+        const isAsc = orderBy === property && order === "asc";
+        setOrder(isAsc ? "desc" : "asc");
+        setOrderBy(property);
+        setTimeout(() => setSorting(false), 300);
+    };
 
-
+    // Sorted & filtered data
     const sortedData = useMemo(() => {
         return [...displayedProjects].sort((a, b) => {
-            let aVal: any, bVal: any;
+            let aVal: string | number;
+            let bVal: string | number;
 
             if (orderBy === "dynamicDate") {
-                aVal = getDynamicDate(a) ? new Date(getDynamicDate(a)!).getTime() : -Infinity;
-                bVal = getDynamicDate(b) ? new Date(getDynamicDate(b)!).getTime() : -Infinity;
+                aVal = getDynamicDate(a)
+                    ? new Date(getDynamicDate(a)!).getTime()
+                    : -Infinity;
+                bVal = getDynamicDate(b)
+                    ? new Date(getDynamicDate(b)!).getTime()
+                    : -Infinity;
             } else if (orderBy === "nextBillingMilestone") {
                 aVal = a.nextBillingMilestone || "";
                 bVal = b.nextBillingMilestone || "";
-                const iA = milestoneOrder.indexOf(aVal);
-                const iB = milestoneOrder.indexOf(bVal);
+                // cast to the literal-union type, not plain string
+                const iA = MILESTONE_ORDER.indexOf(aVal as typeof MILESTONE_ORDER[number]);
+                const iB = MILESTONE_ORDER.indexOf(bVal as typeof MILESTONE_ORDER[number]);
                 return order === "asc" ? iA - iB : iB - iA;
             } else {
-                aVal = a[orderBy] ?? "";
-                bVal = b[orderBy] ?? "";
+                const rawA = a[orderBy] as string | number | undefined;
+                const rawB = b[orderBy] as string | number | undefined;
+                aVal = typeof rawA === "number" ? rawA : rawA ?? "";
+                bVal = typeof rawB === "number" ? rawB : rawB ?? "";
             }
 
             if (aVal < bVal) return order === "asc" ? -1 : 1;
             if (aVal > bVal) return order === "asc" ? 1 : -1;
             return 0;
         });
-    }, [displayedProjects, order, orderBy, selectedStage]);
+    }, [displayedProjects, order, orderBy, getDynamicDate]);
 
+    // Force refetch (skip cache)
     const refetchCollectionsSummary = async () => {
-        const endpoint = stageToEndpoint[selectedStage];
+        const endpoint = STAGE_TO_ENDPOINT[selectedStage];
         if (!endpoint) return;
-
+        setLoading(true);
         try {
-            setLoading(true);
-            const response = await api.get(`/collections/summary/${endpoint}?skipCache=true`); // 🆕 Force fresh fetch
-            const data = response.data;
-
-            if (Array.isArray(data)) {
-                setProjects(data);
-            } else if (data && Array.isArray(data.data)) {
-                setProjects(data.data);
-            } else {
-                console.error("Unexpected API response:", data);
-                setProjects([]);
-            }
-        } catch (error) {
-            console.error("Error refetching collections summary:", error);
+            const res = await api.get(
+                `/collections/summary/${endpoint}?skipCache=true`
+            );
+            const d = res.data;
+            setProjects(Array.isArray(d) ? d : Array.isArray(d.data) ? d.data : []);
+        } catch (err) {
+            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -207,7 +210,7 @@ const ProjectsCollectionsDetails = () => {
                     }}
                     sx={{ backgroundColor: '#121929', borderRadius: "12px", border: "1px solid #374151" }}
                 >
-                    {Object.keys(stageToEndpoint).map((label) => (
+                    {Object.keys(STAGE_TO_ENDPOINT).map(label => (
                         <ToggleButton
                             key={label}
                             value={label}
@@ -227,7 +230,13 @@ const ProjectsCollectionsDetails = () => {
                 </ToggleButtonGroup>
 
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mb: 1 }}>
+            <Box sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-end",
+                gap: 2,
+                mb: 2,
+            }}>
                 {/* ← Project Manager filter */}
                 <FormControl size="small" sx={{ minWidth: 200 }}>
                     <InputLabel sx={{ color: "#9ca3af" }}>Project Manager</InputLabel>
