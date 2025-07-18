@@ -133,6 +133,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/3ms"); }} sx={menuItemStyles}>
                                         Collections 3Ms
                                     </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/schedule"); }} sx={menuItemStyles}>
+                                        Collections Schedule
+                                    </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/crews/daily-logs"); }} sx={menuItemStyles}>
                                         Daily Logs
                                     </MenuItem>
@@ -237,6 +240,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                         </MenuItem>
                                         <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/3ms"); }} sx={menuItemStyles}>
                                             3Ms
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/schedule"); }} sx={menuItemStyles}>
+                                            Schedule
                                         </MenuItem>
                                     </Menu>
                                     <Button
