@@ -4,7 +4,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
     Table, TableBody, TableCell, TableContainer, TableHead,
     TableRow, Paper, Typography, Box, TableSortLabel, Tooltip,
-    ToggleButtonGroup, ToggleButton, CircularProgress, Button
+    ToggleButtonGroup, ToggleButton, CircularProgress, Button,
+    FormControl,
+    InputLabel,
+    Select,
+    OutlinedInput,
+    MenuItem
 } from "@mui/material";
 import { formatCurrency } from "@/utils/formatters";
 import { CollectionSummary } from "@/types/CollectionSummary";
@@ -34,6 +39,10 @@ const ProjectsCollectionsDetails = () => {
     const [sorting, setSorting] = useState(false);
     const [openPunchListModal, setOpenPunchListModal] = useState(false);
     const [selectedProject, setSelectedProject] = useState<CollectionSummary | null>(null);
+    const [managerFilter, setManagerFilter] = useState<string>("");
+    const [projects, setProjects] = useState<CollectionSummary[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedStage, setSelectedStage] = useState("Work in Progress");
 
     const getDynamicDate = (row: CollectionSummary) => {
         if (selectedStage === "Closed Won Signed" || selectedStage === "Ready to be Scheduled") {
@@ -46,6 +55,20 @@ const ProjectsCollectionsDetails = () => {
         return null;
     };
 
+    // extract distinct PMs
+    const uniqueManagers = useMemo(() => {
+        const s = new Set<string>();
+        projects.forEach(p => { if (p.projectManager) s.add(p.projectManager); });
+        return Array.from(s).sort();
+    }, [projects]);
+
+    // apply PM filter before sorting
+    const displayedProjects = useMemo(() => {
+        return managerFilter
+            ? projects.filter(p => p.projectManager === managerFilter)
+            : projects;
+    }, [projects, managerFilter]);
+
     const handleRequestSort = (property: keyof CollectionSummary | "dynamicDate") => {
         setSorting(true);
         const isAscending = orderBy === property && order === "asc";
@@ -56,10 +79,6 @@ const ProjectsCollectionsDetails = () => {
 
 
     const milestoneOrder = ["Initial", "Scheduling", "First Day", "Milestone", "Final", "Punch List"];
-
-    const [projects, setProjects] = useState<CollectionSummary[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [selectedStage, setSelectedStage] = useState("Work in Progress");
 
     const stageToEndpoint = useMemo<Record<string, string>>(() => ({
         "Closed Won Signed": "closed-won-signed",
@@ -94,31 +113,30 @@ const ProjectsCollectionsDetails = () => {
     }, [selectedStage, stageToEndpoint]);
 
 
-    const sortedData = [...projects].sort((a, b) => {
-        let aValue: string | number | boolean | null = null;
-        let bValue: string | number | boolean | null = null;
 
-        if (orderBy === "nextBillingMilestone") {
-            aValue = a.nextBillingMilestone ?? "";
-            bValue = b.nextBillingMilestone ?? "";
+    const sortedData = useMemo(() => {
+        return [...displayedProjects].sort((a, b) => {
+            let aVal: any, bVal: any;
 
-            return order === "asc"
-                ? milestoneOrder.indexOf(aValue) - milestoneOrder.indexOf(bValue)
-                : milestoneOrder.indexOf(bValue) - milestoneOrder.indexOf(aValue);
-        }
+            if (orderBy === "dynamicDate") {
+                aVal = getDynamicDate(a) ? new Date(getDynamicDate(a)!).getTime() : -Infinity;
+                bVal = getDynamicDate(b) ? new Date(getDynamicDate(b)!).getTime() : -Infinity;
+            } else if (orderBy === "nextBillingMilestone") {
+                aVal = a.nextBillingMilestone || "";
+                bVal = b.nextBillingMilestone || "";
+                const iA = milestoneOrder.indexOf(aVal);
+                const iB = milestoneOrder.indexOf(bVal);
+                return order === "asc" ? iA - iB : iB - iA;
+            } else {
+                aVal = a[orderBy] ?? "";
+                bVal = b[orderBy] ?? "";
+            }
 
-        if (orderBy === "dynamicDate") {
-            aValue = getDynamicDate(a) ? new Date(getDynamicDate(a)!).getTime() : -Infinity;
-            bValue = getDynamicDate(b) ? new Date(getDynamicDate(b)!).getTime() : -Infinity;
-        } else {
-            aValue = a[orderBy] ?? "";
-            bValue = b[orderBy] ?? "";
-        }
-
-        if (aValue < bValue) return order === "asc" ? -1 : 1;
-        if (aValue > bValue) return order === "asc" ? 1 : -1;
-        return 0;
-    });
+            if (aVal < bVal) return order === "asc" ? -1 : 1;
+            if (aVal > bVal) return order === "asc" ? 1 : -1;
+            return 0;
+        });
+    }, [displayedProjects, order, orderBy, selectedStage]);
 
     const refetchCollectionsSummary = async () => {
         const endpoint = stageToEndpoint[selectedStage];
@@ -178,7 +196,7 @@ const ProjectsCollectionsDetails = () => {
                 in billed outstanding, and $${projects.reduce((sum, item) => sum + item.totalOppOutstanding, 0).toLocaleString()} 
                 in opportunity outstanding.`}
             </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
                 <ToggleButtonGroup
                     value={selectedStage}
                     exclusive
@@ -210,6 +228,25 @@ const ProjectsCollectionsDetails = () => {
 
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mb: 1 }}>
+                {/* ← Project Manager filter */}
+                <FormControl size="small" sx={{ minWidth: 200 }}>
+                    <InputLabel sx={{ color: "#9ca3af" }}>Project Manager</InputLabel>
+                    <Select
+                        value={managerFilter}
+                        onChange={e => setManagerFilter(e.target.value)}
+                        input={<OutlinedInput label="Project Manager" />}
+                        sx={{
+                            color: "white",
+                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#374151" },
+                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#6b7280" }
+                        }}
+                    >
+                        <MenuItem value="">All</MenuItem>
+                        {uniqueManagers.map(pm => (
+                            <MenuItem key={pm} value={pm}>{pm}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 <Button
                     variant="outlined"
                     size="small"

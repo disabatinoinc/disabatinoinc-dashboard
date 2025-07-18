@@ -172,7 +172,12 @@ export default function CollectionsSchedule() {
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                     InputLabelProps={{ shrink: true }}
-                    sx={{ input: { color: "white" }, label: { color: "#9ca3af" } }}
+                    sx={{
+                        input: { color: "white" },
+                        label: { color: "#9ca3af" },
+                        '& fieldset': { borderColor: '#374151' },
+                        '& input::-webkit-calendar-picker-indicator': { filter: 'invert(1)', cursor: 'pointer' }
+                    }}
                 />
                 <TextField
                     label="End Date"
@@ -181,7 +186,12 @@ export default function CollectionsSchedule() {
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
                     InputLabelProps={{ shrink: true }}
-                    sx={{ input: { color: "white" }, label: { color: "#9ca3af" } }}
+                    sx={{
+                        input: { color: "white" },
+                        label: { color: "#9ca3af" },
+                        '& fieldset': { borderColor: '#374151' },
+                        '& input::-webkit-calendar-picker-indicator': { filter: 'invert(1)', cursor: 'pointer' }
+                    }}
                 />
                 <Button
                     variant="outlined"
