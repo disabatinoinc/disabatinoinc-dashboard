@@ -99,6 +99,8 @@ export default function ProjectsStageDetails() {
         useState<keyof StageOpportunity | "stageStart">("daysInCurrentStage");
     const [order, setOrder] = useState<"asc" | "desc">("desc");
 
+    const [managerFilter, setManagerFilter] = useState<string>("");
+
     // fetch
     const fetchData = useCallback(() => {
         setLoading(true);
@@ -146,6 +148,21 @@ export default function ProjectsStageDetails() {
             return order === "asc" ? (aVal < bVal ? -1 : 1) : aVal > bVal ? -1 : 1;
         });
     }, [data, order, getVal]);
+
+    const uniqueManagers = useMemo(() => {
+        const set = new Set<string>();
+        data.forEach((r) => {
+            if (r.projectManager) set.add(r.projectManager);
+        });
+        return Array.from(set).sort();
+    }, [data]);
+
+    // ← NEW: apply PM filter in-place
+    const displayedData = useMemo(() => {
+        return managerFilter
+            ? sortedData.filter((r) => r.projectManager === managerFilter)
+            : sortedData;
+    }, [sortedData, managerFilter]);
 
     // summary
     const overallTotal = useMemo(
@@ -214,6 +231,30 @@ export default function ProjectsStageDetails() {
                         {STAGE_OPTIONS.map((opt) => (
                             <MenuItem key={opt.value} value={opt.value}>
                                 {opt.label}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl size="small" sx={{ minWidth: 200 }}>
+                    <InputLabel sx={{ color: "#9ca3af" }}>Project Manager</InputLabel>
+                    <Select
+                        value={managerFilter}
+                        onChange={(e) => setManagerFilter(e.target.value)}
+                        input={<OutlinedInput label="Project Manager" />}
+                        sx={{
+                            color: "white",
+                            "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#374151",
+                            },
+                            "&:hover .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#6b7280",
+                            },
+                        }}
+                    >
+                        <MenuItem value="">All</MenuItem>
+                        {uniqueManagers.map((pm) => (
+                            <MenuItem key={pm} value={pm}>
+                                {pm}
                             </MenuItem>
                         ))}
                     </Select>
@@ -310,7 +351,7 @@ export default function ProjectsStageDetails() {
                         {loading ? (
                             <ProjectsStageDetailsSkeleton />
                         ) : (
-                            sortedData.map((row) => (
+                            displayedData.map((row) => (
                                 <TableRow
                                     key={row.opportunityId}
                                     sx={{
