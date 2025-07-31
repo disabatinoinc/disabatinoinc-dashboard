@@ -110,8 +110,11 @@ const ProjectsBuildertrendSync = () => {
 
     const sortedRows = useMemo(() => {
         return [...filteredRows].sort((a, b) => {
-            if (a[orderBy] < b[orderBy]) return order === "asc" ? -1 : 1;
-            if (a[orderBy] > b[orderBy]) return order === "asc" ? 1 : -1;
+            const aValue = a[orderBy] ?? '';
+            const bValue = b[orderBy] ?? '';
+
+            if (aValue < bValue) return order === "asc" ? -1 : 1;
+            if (aValue > bValue) return order === "asc" ? 1 : -1;
             return 0;
         });
     }, [filteredRows, order, orderBy]);
