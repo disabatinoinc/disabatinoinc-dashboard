@@ -15,6 +15,8 @@ export type JobTrackingRow = {
     buildertrendJobId: string;
     buildertrendJobStatus: string;
     jobMapped: boolean;
+    invoicesExpected?: number;
+    invoicesMapped?: number;
 };
 
 export type RowProps = {
@@ -101,6 +103,20 @@ const ProjectRow: React.FC<RowProps> = ({ row, isSelected, onSelect, headCells }
                             >
                                 {row.buildertrendJobName}
                             </a>
+                        ) : cell.id === "invoicesMapped" ? (
+                            row.invoicesExpected && row.invoicesExpected > 0 ? (
+                                (() => {
+                                    const percent = Math.round(((row.invoicesMapped ?? 0) / row.invoicesExpected) * 100);
+                                    const color = percent === 100 ? "#42de80" : "#ef4444";
+                                    return (
+                                        <span style={{ color }}>
+                                            {percent}%
+                                        </span>
+                                    );
+                                })()
+                            ) : (
+                                <span style={{ color: "#9ca3af" }}>—</span>
+                            )
                         ) : (
                             row[cell.id]
                         )}

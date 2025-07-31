@@ -22,6 +22,8 @@ type JobTrackingRow = {
     buildertrendJobId: string;
     buildertrendJobStatus: string;
     jobMapped: boolean;
+    invoicesExpected?: number;
+    invoicesMapped?: number;
 };
 
 type BuildertrendJobGroup = {
@@ -58,7 +60,8 @@ const ProjectsBuildertrendSync = () => {
         { id: "buildertrendJobName", label: "BT Job Name" },
         { id: "buildertrendJobId", label: "BT Job ID" },
         { id: "buildertrendJobStatus", label: "BT Job Status" },
-        { id: "jobMapped", label: "Job Mapped" }
+        { id: "jobMapped", label: "Job Mapped" },
+        { id: "invoicesMapped", label: "% Invoices Mapped" }
     ]), []);
 
     const [order, setOrder] = useState<"asc" | "desc">("asc");
