@@ -9,7 +9,9 @@ const COOKIE_VALUE = 'valid_session' // Optionally use JWT or hash for more secu
 // Public pages that should NOT require auth
 const PUBLIC_PATHS = [
     '/legal/privacy',
-    '/legal/eula'
+    '/legal/eula',
+    "/quickbooks/launch",
+    "/quickbooks/disconnect",
 ]
 
 function isPublic(pathname: string) {
