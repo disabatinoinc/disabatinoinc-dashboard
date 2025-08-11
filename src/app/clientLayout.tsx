@@ -46,7 +46,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const isMobile = useMediaQuery("(max-width: 600px)", { noSsr: true });
 
     // Hide all menu/nav when on privacy pages (e.g., /privacy or /privacy/anything)
-    const HIDE_NAV_PREFIXES = ["/legal"]; // add "/eula" etc. if needed
+    const HIDE_NAV_PREFIXES = ["/legal", "/quickbooks"]; // add "/eula" etc. if needed
     const hideNav = HIDE_NAV_PREFIXES.some(
         (p) => pathname === p || pathname.startsWith(`${p}/`)
     );
