@@ -45,6 +45,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const router = useRouter();
     const isMobile = useMediaQuery("(max-width: 600px)", { noSsr: true });
 
+    // Hide all menu/nav when on privacy pages (e.g., /privacy or /privacy/anything)
+    const HIDE_NAV_PREFIXES = ["/legal"]; // add "/eula" etc. if needed
+    const hideNav = HIDE_NAV_PREFIXES.some(
+        (p) => pathname === p || pathname.startsWith(`${p}/`)
+    );
+
     const [salesAnchorEl, setSalesAnchorEl] = useState<null | HTMLElement>(null);
     const [collectionsAnchorEl, setCollectionsAnchorEl] = useState<null | HTMLElement>(null);
     const [mobileAnchorEl, setMobileAnchorEl] = useState<null | HTMLElement>(null);
@@ -86,7 +92,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                         <Typography variant="h6" sx={{ flexGrow: 1, textTransform: "uppercase" }}>
                             disabatinoinc dashboard
                         </Typography>
-                        {isMobile ? (
+                        {!hideNav && (isMobile ? (
                             <>
                                 <IconButton
                                     color="inherit"
@@ -271,7 +277,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
 
                             </>
-                        )}
+                        ))}
                     </Toolbar>
                 </Box>
             </AppBar>

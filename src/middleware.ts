@@ -6,8 +6,23 @@ const BASIC_PASS = process.env.BASIC_AUTH_PASS
 const COOKIE_NAME = 'auth_token'
 const COOKIE_VALUE = 'valid_session' // Optionally use JWT or hash for more security
 
+// Public pages that should NOT require auth
+const PUBLIC_PATHS = [
+    '/legal/privacy',
+    '/legal/eula'
+]
+
+function isPublic(pathname: string) {
+    return PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(`${p}/`))
+}
+
 export function middleware(req: NextRequest) {
-    console.log('🔒 middleware hit', req.nextUrl.pathname)
+    const { pathname } = req.nextUrl
+    console.log('🔒 middleware hit', pathname)
+
+    // ➜ Skip auth for public routes
+    if (isPublic(pathname)) return NextResponse.next()
+
     const cookie = req.cookies.get(COOKIE_NAME)
 
     // ✅ Already authenticated via cookie
