@@ -51,6 +51,25 @@ const stageOptions = {
 
 type StageDisplayLabel = keyof typeof stageOptions;
 
+const valueForSort = (row: JobTrackingRow, key: keyof JobTrackingRow) => {
+    switch (key) {
+        case "invoicesMapped": {
+            const expected = row.invoicesExpected ?? 0;
+            const mapped = row.invoicesMapped ?? 0;
+            // Treat no expected invoices as -1 so they sort to the bottom
+            return expected > 0 ? mapped / expected : -1;
+        }
+        case "jobMapped":
+            return row.jobMapped ? 1 : 0;
+        case "buildertrendJobId":
+            return Number(row.buildertrendJobId) || 0;
+        default: {
+            const v = row[key] as unknown;
+            return typeof v === "string" ? v.toLowerCase() : v ?? "";
+        }
+    }
+};
+
 const ProjectsBuildertrendSync = () => {
     const headCells: { id: keyof JobTrackingRow; label: string }[] = useMemo(() => ([
         { id: "projectManager", label: "Project Manager" },
@@ -110,12 +129,14 @@ const ProjectsBuildertrendSync = () => {
 
     const sortedRows = useMemo(() => {
         return [...filteredRows].sort((a, b) => {
-            const aValue = a[orderBy] ?? '';
-            const bValue = b[orderBy] ?? '';
+            const av = valueForSort(a, orderBy);
+            const bv = valueForSort(b, orderBy);
 
-            if (aValue < bValue) return order === "asc" ? -1 : 1;
-            if (aValue > bValue) return order === "asc" ? 1 : -1;
-            return 0;
+            // string vs number handling
+            const isStr = typeof av === "string" && typeof bv === "string";
+            const cmp = isStr ? av.localeCompare(bv) : (av as number) - (bv as number);
+
+            return order === "asc" ? cmp : -cmp;
         });
     }, [filteredRows, order, orderBy]);
 
