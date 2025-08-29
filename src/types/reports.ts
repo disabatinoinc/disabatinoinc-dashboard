@@ -1,6 +1,6 @@
 // types/reports.ts
 
-export type SalesSnapshot = {
+export type ReportSnapshot = {
     id: number;
     fileName: string;
     periodStart: string;   // ISO date string
