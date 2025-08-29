@@ -28,12 +28,12 @@ const headCells = [
     { id: "download", label: "Download" },
 ];
 
-export default function SalesSnapshots() {
+export default function CollectionsSnapshots() {
     const [snapshots, setSnapshots] = useState<ReportSnapshot[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get("https://reports.disabatinoinc.io/reports/sales/snapshots")
+        axios.get("https://reports.disabatinoinc.io/reports/collections/snapshots")
             .then((res) => {
                 setSnapshots(res.data.snapshots || []);
                 setLoading(false);
@@ -46,7 +46,7 @@ export default function SalesSnapshots() {
 
     return (
         <Box>
-            <Typography variant="h4" sx={{ color: "white", mb: 2 }}>Sales Snapshots</Typography>
+            <Typography variant="h4" sx={{ color: "white", mb: 2 }}>Collections Snapshots</Typography>
             <TableContainer
                 component={Paper}
                 sx={{
