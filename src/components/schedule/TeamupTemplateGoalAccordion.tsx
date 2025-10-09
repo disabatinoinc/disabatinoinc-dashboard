@@ -1,3 +1,5 @@
+'use client';
+
 import {
     Accordion,
     AccordionSummary,
@@ -12,6 +14,20 @@ import {
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
+
+export interface TeamupGoal {
+    id: string;
+    name: string;
+    pgNumber: string;
+    projectNumber: string;
+    totalLaborHours: number;
+    proposalNotes?: string | null;
+    sortOrder?: number;
+    projectGoalCrews?: string[];
+    projectGoalSubs?: string[];
+    teamupCrewEventSuggestions?: string;
+    teamupSubEventSuggestions?: string[];
+}
 
 function CopyBlock({ label, value }: { label: string; value?: string }) {
     const [copied, setCopied] = useState(false);
@@ -61,7 +77,7 @@ function CopyBlock({ label, value }: { label: string; value?: string }) {
     );
 }
 
-export function ProjectGoalAccordion({ goal }: { goal: any }) {
+export function ProjectGoalAccordion({ goal }: { goal: TeamupGoal }) {
     return (
         <Accordion
             sx={{ backgroundColor: "#111827", border: "1px solid #374151", color: "white" }}

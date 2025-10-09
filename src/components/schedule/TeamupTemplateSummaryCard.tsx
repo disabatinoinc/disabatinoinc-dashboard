@@ -1,7 +1,20 @@
+'use client';
+
 import { Card, CardContent } from "@mui/material";
 import { Typography, Box, IconButton, Tooltip, Grid, Divider } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { useState } from "react";
+
+/* ---------- Types ---------- */
+export interface TeamupTemplateSummary {
+    projectNumber: string;
+    opportunityId: string;
+    opportunityName: string;
+    summary: { zip: string; totalHours: number };
+    owner: { fullName: string; initials: string };
+    projectManager: { fullName: string; initials: string };
+    jobAddress: { street: string; city: string; state: string; postalCode: string };
+}
 
 function CopyBlock({ label, value }: { label: string; value?: string }) {
     const [copied, setCopied] = useState(false);
@@ -51,40 +64,9 @@ function CopyBlock({ label, value }: { label: string; value?: string }) {
     );
 }
 
-const sampleData = {
-    projectNumber: "S-007380",
-    opportunityId: "0065g00000Zh4sXAAR",
-    opportunityName: "S-007380 - Oakwood Landscape + Pool",
-    summary: {
-        zip: "19807",
-        totalHours: 312.5,
-    },
-    owner: {
-        fullName: "Mike McBride",
-        initials: "MM",
-    },
-    projectManager: {
-        fullName: "Pavel Romero",
-        initials: "PR",
-    },
-    jobAddress: {
-        street: "123 Oakwood Drive",
-        city: "Greenville",
-        state: "DE",
-        postalCode: "19807",
-    },
-};
+export default function TeamupTemplateSummaryCard({ data }: { data: TeamupTemplateSummary }) {
+    const { projectNumber, /* opportunityId, */ opportunityName, summary, owner, projectManager, jobAddress } = data;
 
-export default function TeamupTemplateSummaryCard({ data = sampleData }: { data?: any }) {
-    const {
-        projectNumber,
-        opportunityId,
-        opportunityName,
-        summary,
-        owner,
-        projectManager,
-        jobAddress,
-    } = data;
 
     return (
         <Card sx={{ backgroundColor: "#111827", border: "1px solid #374151", color: "white", mt: 4, minWidth: "1200px" }}>
