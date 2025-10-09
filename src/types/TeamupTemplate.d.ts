@@ -3,10 +3,12 @@ export interface TeamupTemplateSummary {
     projectNumber: string;
     opportunityId: string;
     opportunityName: string;
+    accountName: string;
     summary: { zip: string; totalHours: number };
     owner: { fullName: string; initials: string };
     projectManager: { fullName: string; initials: string };
     jobAddress: { street: string; city: string; state: string; postalCode: string };
+    timeline: string;
 }
 
 export interface LaborOpportunityItem {

@@ -55,7 +55,7 @@ function CopyBlock({ label, value }: { label: string; value?: string }) {
 }
 
 export default function TeamupTemplateSummaryCard({ data }: { data: TeamupTemplateSummary }) {
-    const { projectNumber, /* opportunityId, */ opportunityName, summary, owner, projectManager, jobAddress } = data;
+    const { projectNumber, /* opportunityId, */ opportunityName, accountName, summary, owner, projectManager, jobAddress, timeline } = data;
 
 
     return (
@@ -66,19 +66,40 @@ export default function TeamupTemplateSummaryCard({ data }: { data: TeamupTempla
                 </Typography>
 
                 <Grid container spacing={2}>
-                    <Grid item xs={12} md={6}>
-                        <CopyBlock label="Opportunity Name" value={opportunityName} />
-                    </Grid>
                     <Grid item xs={12} md={2}>
                         <CopyBlock label="Project Number" value={projectNumber} />
                     </Grid>
-                    <Grid item xs={12} md={2}>
-                        <CopyBlock label="Zip Code" value={summary?.zip} />
+                    <Grid item xs={12} md={5}>
+                        <CopyBlock label="Opportunity Name" value={opportunityName} />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <CopyBlock label="Account Name" value={accountName} />
                     </Grid>
                     <Grid item xs={12} md={2}>
                         <CopyBlock label="Total Hours" value={summary?.totalHours?.toString()} />
                     </Grid>
                 </Grid>
+                {timeline && (
+                    <Box sx={{ mt: 1 }}>
+                        <Typography variant="subtitle1" sx={{ color: "#d1d5db", mb: 1 }}>
+                            Timeline
+                        </Typography>
+                        <Box sx={{ backgroundColor: "#1f2937", borderRadius: 1, p: 2, border: "1px solid #374151" }}>
+                            {timeline
+                                .split(/\r?\n/)
+                                .filter(line => line.trim() !== "")
+                                .map((line, idx) => (
+                                    <Typography
+                                        key={idx}
+                                        variant="body2"
+                                        sx={{ color: "white", mb: 0.5, whiteSpace: "pre-wrap" }}
+                                    >
+                                        {line}
+                                    </Typography>
+                                ))}
+                        </Box>
+                    </Box>
+                )}
 
                 <Divider sx={{ my: 2, borderColor: "#374151" }} />
                 <Typography variant="subtitle1" sx={{ color: "#d1d5db" }}>Sales Rep & Project Manager</Typography>
