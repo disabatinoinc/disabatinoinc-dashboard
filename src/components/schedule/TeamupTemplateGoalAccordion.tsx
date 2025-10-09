@@ -14,20 +14,7 @@ import {
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
-
-export interface TeamupGoal {
-    id: string;
-    name: string;
-    pgNumber: string;
-    projectNumber: string;
-    totalLaborHours: number;
-    proposalNotes?: string | null;
-    sortOrder?: number;
-    projectGoalCrews?: string[];
-    projectGoalSubs?: string[];
-    teamupCrewEventSuggestions?: string;
-    teamupSubEventSuggestions?: string[];
-}
+import { TeamupGoal } from "@/types/TeamupTemplate";
 
 function CopyBlock({ label, value }: { label: string; value?: string }) {
     const [copied, setCopied] = useState(false);
@@ -104,18 +91,5 @@ export function ProjectGoalAccordion({ goal }: { goal: TeamupGoal }) {
                 </Grid>
             </AccordionDetails>
         </Accordion>
-    );
-}
-
-function LabelValue({ label, value }: { label: string; value: string }) {
-    return (
-        <Box>
-            <Typography variant="caption" sx={{ color: "#9ca3af" }}>
-                {label}
-            </Typography>
-            <Typography variant="body2" sx={{ color: "white" }}>
-                {value || "—"}
-            </Typography>
-        </Box>
     );
 }
