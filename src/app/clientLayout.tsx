@@ -56,6 +56,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const [mobileAnchorEl, setMobileAnchorEl] = useState<null | HTMLElement>(null);
     const [projectsAnchorEl, setProjectsAnchorEl] = useState<null | HTMLElement>(null);
     const [crewsAnchorEl, setCrewsAnchorEl] = useState<null | HTMLElement>(null);
+    const [scheduleAnchorEl, setScheduleAnchorEl] = useState<null | HTMLElement>(null);
 
 
     const handleSalesMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -80,6 +81,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     };
     const handleCrewsMenuOpen = (e: React.MouseEvent<HTMLButtonElement>) => setCrewsAnchorEl(e.currentTarget);
     const handleCrewsMenuClose = () => setCrewsAnchorEl(null);
+
+    const handleScheduleMenuOpen = (e: React.MouseEvent<HTMLButtonElement>) => setScheduleAnchorEl(e.currentTarget);
+    const handleScheduleMenuClose = () => setScheduleAnchorEl(null);
 
     return (
         <>
@@ -115,8 +119,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
                                         Sales Snapshots
                                     </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule"); }} sx={menuItemStyles}>
-                                        Schedule
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/teamup-sync"); }} sx={menuItemStyles}>
+                                        Schedule Teamup Sync
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/teamup-template"); }} sx={menuItemStyles}>
+                                        Schedule Teamup Template
                                     </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/summary"); }} sx={menuItemStyles}>
                                         Projects Summary
@@ -182,18 +189,29 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     </Menu>
                                     <Button
                                         color="inherit"
-                                        href="/schedule"
+                                        onClick={handleScheduleMenuOpen}
                                         sx={{
                                             textTransform: "uppercase",
                                             color: pathname.startsWith("/schedule") ? "white" : "#d1d5db",
-                                            '&:hover': {
-                                                backgroundColor: '#374151',
-                                                color: 'white',
-                                            }
+                                            "&:hover": { color: "white" },
                                         }}
                                     >
                                         Schedule
                                     </Button>
+                                    <Menu
+                                        anchorEl={scheduleAnchorEl}
+                                        open={Boolean(scheduleAnchorEl)}
+                                        onClose={handleScheduleMenuClose}
+                                        sx={menuPaperStyles}
+                                    >
+                                        <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/teamup-sync"); }} sx={menuItemStyles}>
+                                            Teamup Sync
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/teamup-template"); }} sx={menuItemStyles}>
+                                            Teamup Template
+                                        </MenuItem>
+                                    </Menu>
+
                                     <Button
                                         color="inherit"
                                         onClick={handleProjectsMenuOpen}
