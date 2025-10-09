@@ -7,6 +7,15 @@ import { ProjectGoalAccordion } from "./TeamupTemplateGoalAccordion";
 import TeamupTemplateSkeleton from "./TeamupTemplateSkeleton";
 import { scheduleApi } from "@/utils/apiClient";
 import { useRouter, useSearchParams } from "next/navigation";
+import { TeamupTemplateSummary, TeamupGoal } from "@/types/TeamupTemplate";
+
+// Move pattern to module scope so it's stable (no missing-deps warning)
+const PROJECT_PATTERN = /^S-\d{1,6}$/;
+
+// Shape returned by API for this page: top-level summary + goals
+type TeamupTemplateResponse = TeamupTemplateSummary & {
+    goals?: TeamupGoal[];
+};
 
 export default function TeamupTemplate() {
     const router = useRouter();
@@ -14,10 +23,8 @@ export default function TeamupTemplate() {
 
     const [projectNumber, setProjectNumber] = useState("");
     const [error, setError] = useState("");
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<TeamupTemplateResponse | null>(null);
     const [loading, setLoading] = useState(false);
-
-    const pattern = /^S-\d{1,6}$/;
 
     const fetchTeamupTemplate = useCallback(
         async (pn?: string) => {
@@ -26,14 +33,14 @@ export default function TeamupTemplate() {
                 const proj = (pn ?? projectNumber).toUpperCase();
 
                 // validate before calling
-                if (!pattern.test(proj)) {
+                if (!PROJECT_PATTERN.test(proj)) {
                     setError("Project number must be in format S-###### (e.g., S-007380)");
                     setLoading(false);
                     return;
                 }
 
                 const params = { projectNumber: proj };
-                const res = await scheduleApi.get("/salesforce/teamup-template", { params });
+                const res = await scheduleApi.get<TeamupTemplateResponse>("/salesforce/teamup-template", { params });
                 setData(res.data);
                 setProjectNumber(proj);
                 setError("");
@@ -53,8 +60,7 @@ export default function TeamupTemplate() {
     useEffect(() => {
         const pn = searchParams.get("projectNumber");
         if (pn && pn.toUpperCase() !== projectNumber.toUpperCase()) {
-            // Only fetch if valid, otherwise just populate the field + show helper text
-            if (pattern.test(pn.toUpperCase())) {
+            if (PROJECT_PATTERN.test(pn.toUpperCase())) {
                 fetchTeamupTemplate(pn);
             } else {
                 setProjectNumber(pn.toUpperCase());
@@ -68,7 +74,7 @@ export default function TeamupTemplate() {
         const value = e.target.value.toUpperCase();
         setProjectNumber(value);
 
-        if (value && !pattern.test(value)) {
+        if (value && !PROJECT_PATTERN.test(value)) {
             setError("Project number must be in format S-###### (e.g., S-007380)");
         } else {
             setError("");
@@ -178,7 +184,7 @@ export default function TeamupTemplate() {
                         Project Goals
                     </Typography>
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                        {data?.goals?.map((goal: any) => (
+                        {data.goals?.map((goal: TeamupGoal) => (
                             <ProjectGoalAccordion key={goal.id} goal={goal} />
                         ))}
                     </Box>
