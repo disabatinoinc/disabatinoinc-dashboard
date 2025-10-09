@@ -4,17 +4,7 @@ import { Card, CardContent } from "@mui/material";
 import { Typography, Box, IconButton, Tooltip, Grid, Divider } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { useState } from "react";
-
-/* ---------- Types ---------- */
-export interface TeamupTemplateSummary {
-    projectNumber: string;
-    opportunityId: string;
-    opportunityName: string;
-    summary: { zip: string; totalHours: number };
-    owner: { fullName: string; initials: string };
-    projectManager: { fullName: string; initials: string };
-    jobAddress: { street: string; city: string; state: string; postalCode: string };
-}
+import { TeamupTemplateSummary } from "@/types/TeamupTemplate";
 
 function CopyBlock({ label, value }: { label: string; value?: string }) {
     const [copied, setCopied] = useState(false);
