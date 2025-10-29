@@ -46,10 +46,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const isMobile = useMediaQuery("(max-width: 600px)", { noSsr: true });
 
     // Hide all menu/nav when on privacy pages (e.g., /privacy or /privacy/anything)
-    const HIDE_NAV_PREFIXES = ["/legal", "/quickbooks"]; // add "/eula" etc. if needed
+    const HIDE_NAV_PREFIXES = ["/legal", "/quickbooks","/fullscreen/weekly-schedule"]; // add "/eula" etc. if needed
     const hideNav = HIDE_NAV_PREFIXES.some(
         (p) => pathname === p || pathname.startsWith(`${p}/`)
     );
+
+    const isFullscreenRoute = pathname?.startsWith('/fullscreen');
 
     const [salesAnchorEl, setSalesAnchorEl] = useState<null | HTMLElement>(null);
     const [collectionsAnchorEl, setCollectionsAnchorEl] = useState<null | HTMLElement>(null);
@@ -87,6 +89,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
     return (
         <>
+        {!isFullscreenRoute && (
+  
+
             <AppBar
                 position="static"
                 sx={{ backgroundColor: "#030712", boxShadow: "none" }}
@@ -124,6 +129,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                     </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/teamup-template"); }} sx={menuItemStyles}>
                                         Schedule Teamup Template
+                                    </MenuItem>
+                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/weekly-schedule"); }} sx={menuItemStyles}>
+                                        Weekly Schedule
                                     </MenuItem>
                                     <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/summary"); }} sx={menuItemStyles}>
                                         Projects Summary
@@ -209,6 +217,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                                         </MenuItem>
                                         <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/teamup-template"); }} sx={menuItemStyles}>
                                             Teamup Template
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/weekly-schedule"); }} sx={menuItemStyles}>
+                                            Weekly Schedule
                                         </MenuItem>
                                     </Menu>
 
@@ -305,6 +316,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
                     </Toolbar>
                 </Box>
             </AppBar>
+            )}
             <Box sx={{ padding: 2, maxWidth: "1200px", margin: "0 auto" }}>{children}</Box>
         </>
     );
