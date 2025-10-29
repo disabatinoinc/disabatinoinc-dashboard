@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { Box, Typography, Paper, SxProps, Theme, Tooltip, Button } from '@mui/material';
 import Fullscreen from '@mui/icons-material/Fullscreen';
@@ -10,6 +10,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
 import { usePathname } from 'next/navigation';
 import WeeklyScheduleSkeleton from './WeeklyScheduleSkeleton';
+import html2canvas from 'html2canvas';
 
 type DayKey = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
 type Job = {
@@ -98,20 +99,17 @@ const styles: Record<string, SxProps<Theme>> = {
   dash: { color: COLORS.textFaint },
 };
 
-const getPastSunday = () => {
+const getToday = () => {
   const today = new Date();
-  const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
-  const pastSunday = new Date(today);
-  pastSunday.setDate(today.getDate() - dayOfWeek);
-  return pastSunday;
+  today.setHours(0, 0, 0, 0); // optional: normalize to start of day
+  return today;
 };
 
-const getUpcomingSaturday = () => {
-  const today = new Date();
-  const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
-  const upcomingSaturday = new Date(today);
-  upcomingSaturday.setDate(today.getDate() + (6 - dayOfWeek));
-  return upcomingSaturday;
+const getNextWeek = () => {
+  const nextWeek = new Date();
+  nextWeek.setDate(nextWeek.getDate() + 6);
+  nextWeek.setHours(0, 0, 0, 0); // optional: normalize to start of day
+  return nextWeek;
 };
 
 function formatDate(date: Date): string {
@@ -124,11 +122,26 @@ function formatDate(date: Date): string {
 export default function WeeklySchedule() {
   const [crews, setCrews] = useState<Crew[]>([]);
   const [loading, setLoading] = useState(false);
-  const [startDate, setStartDate] = useState(() => formatDate(getPastSunday()));
-  const [endDate, setEndDate] = useState(() => formatDate(getUpcomingSaturday()));
+  const [startDate, setStartDate] = useState(() => formatDate(getToday()));
+  const [endDate, setEndDate] = useState(() => formatDate(getNextWeek()));
   const [selectedCrewId, setSelectedCrewId] = useState<string | undefined>('');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const pathname = usePathname();
+  const scheduleRef = useRef<HTMLDivElement>(null);
+
+  const handleCapture = async () => {
+    if (!scheduleRef.current) return;
+
+    const canvas = await html2canvas(scheduleRef.current, {
+      backgroundColor: "#030712", // Match dark background
+      scale: 2, // Higher quality
+    });
+
+    const link = document.createElement("a");
+    link.download = `schedule-${new Date().toISOString()}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+  };
 
   useEffect(() => {
     setIsFullscreen(pathname?.includes('fullscreen'));
@@ -138,8 +151,10 @@ export default function WeeklySchedule() {
     const start = dayjs(startDate);
     const days: string[] = [];
 
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 0; i <= 7; i++) {
       const day = start.add(i, 'day');
+      if (day.day() === 0) continue; // Skip Sunday
+
       const dayName = day.format('dddd');
       const dateLabel = day.format('MM/DD/YYYY');
       days.push(`${dayName} ${dateLabel}`);
@@ -154,12 +169,10 @@ export default function WeeklySchedule() {
     try {
       setLoading(true);
 
-      const params: { startDate: string; endDate: string; crewCalendarIds?: string } = {
+      const params: { startDate: string; endDate: string; } = {
         startDate,
         endDate,
       };
-
-      if (selectedCrewId) params.crewCalendarIds = selectedCrewId;
 
       const res = await axios.get('https://schedule-api.disabatinoinc.io/teamup/weekly', {
         params,
@@ -171,7 +184,7 @@ export default function WeeklySchedule() {
     } finally {
       setLoading(false);
     }
-  }, [startDate, endDate, selectedCrewId]);
+  }, [startDate, endDate]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -211,19 +224,16 @@ export default function WeeklySchedule() {
       >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <DatePicker
-            label="Week Start (Sunday)"
+            label="Week Start"
             value={dayjs(startDate)}
             onChange={(newValue: Dayjs | null) => {
               if (!newValue) return;
 
-              const selected = newValue.day();
-              if (selected === 0) {
+              if (newValue) {
                 setStartDate(newValue.format('YYYY-MM-DD'));
-                const sat = newValue.add(6, 'day');
-                setEndDate(sat.format('YYYY-MM-DD'));
+                setEndDate(newValue.add(6, 'day').format('YYYY-MM-DD'));
               }
             }}
-            shouldDisableDate={(date) => date.day() !== 0}
             slotProps={{
               textField: {
                 size: 'small',
@@ -240,7 +250,7 @@ export default function WeeklySchedule() {
               openPickerButton: {
                 sx: {
                   color: '#9ca3af',
-                  '&:hover': { color: '#fbbf24' },
+                  '&:hover': { color: 'white' },
                   '& .MuiSvgIcon-root': { color: 'white' },
                 },
               },
@@ -266,6 +276,24 @@ export default function WeeklySchedule() {
             Refresh
           </Button>
         </Tooltip>
+        <Tooltip title="Download screenshot">
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={handleCapture}
+            sx={{
+              color: '#9ca3af',
+              borderColor: '#374151',
+              textTransform: 'none',
+              '&:hover': {
+                borderColor: 'white',
+                backgroundColor: 'rgba(56, 189, 248, 0.08)',
+              },
+            }}
+          >
+            Screenshot
+          </Button>
+        </Tooltip>
 
         {!isFullscreen && (
           <Tooltip title="Open fullscreen view">
@@ -282,7 +310,7 @@ export default function WeeklySchedule() {
                 borderColor: '#374151',
                 textTransform: 'none',
                 '&:hover': {
-                  borderColor: '#fbbf24',
+                  borderColor: 'white',
                   backgroundColor: 'rgba(251, 191, 36, 0.08)',
                 },
               }}
@@ -296,114 +324,146 @@ export default function WeeklySchedule() {
         <Box
           sx={{
             display: 'flex',
-            mb: 1,
-            overflowX: 'visible',
-            position: 'sticky',
-            top: 0,
-            zIndex: 10,
+            flexDirection: 'column',
+            alignItems: 'center', // ⬅️ This centers children horizontally
             backgroundColor: '#030712',
+            color: '#FFFFFF',
+            minHeight: '100vh',
+            px: 3, // Optional side padding
           }}
         >
-          <Box sx={{ width: '180px', flexShrink: 0 }}>
-            <Box sx={{ ...styles.headerCell, backgroundColor: '#030712', border: 'none' }} />
-          </Box>
-          {daysFull.map((d) => {
-            const [day, date] = d.split(' ');
-            return (
-              <Box key={d} sx={{ flex: '0 0 180px' }}>
-                <Box
-                  sx={{
-                    ...styles.headerCell,
-                    backgroundColor: '#0f172a',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    border: `1px solid ${COLORS.border}`,
-                  }}
-                >
-                  <Typography variant="subtitle2" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
-                    {day}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: COLORS.textMuted, textAlign: 'center' }}>
-                    {date}
-                  </Typography>
-                </Box>
-              </Box>
-            );
-          })}
-        </Box>
-
-        {crews.filter((crew) => crew.name !== 'Unknown').map((crew) => (
-          <Box key={crew.name} sx={{ display: 'flex', alignItems: 'stretch', width: '100%' }}>
-            <Box sx={{ width: '180px', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+          <Box
+            sx={{
+              overflowX: 'visible', // ⬅️ Allows horizontal scroll if needed
+            }}
+          >
+            <div ref={scheduleRef}>
               <Box
-                sx={
-                  crew.compact
-                    ? getCrewLabelCompactStyles(crew.color)
-                    : getCrewLabelStyles(crew.color)
-                }
+                sx={{
+                  display: 'flex',
+                  mb: 1,
+                  overflowX: 'visible',
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 10,
+                  backgroundColor: '#030712',
+                }}
               >
-                <Typography variant={crew.compact ? 'subtitle1' : 'h6'} sx={styles.crewName}>
-                  {crew.name}
-                </Typography>
-                {!crew.compact &&
-                  crew.members?.map((m, i) => (
-                    <Typography key={i} variant="body2" sx={styles.crewMember}>
-                      {m}
-                    </Typography>
-                  ))}
-              </Box>
-            </Box>
-
-            {daysFull.map((label) => {
-              const key = dayKeyFromLabel(label);
-              const jobs = crew.jobs.filter((job) => {
-                const jobDay = dayjs(job.date).format('dddd');
-                return jobDay === key;
-              });
-
-              return (
-                <Box key={`${crew.name}-${label}`} sx={{ width: '180px', flexShrink: 0 }}>
-                  <Paper
-                    elevation={0}
-                    sx={{
-                      ...getCellPaperStyles(crew.compact),
-                      flexGrow: 1,
-                      height: '100%',
-                    }}
-                  >
-                    {jobs.length === 0 ? (
-                      <Typography variant="caption" sx={styles.dash}>
-                        —
-                      </Typography>
-                    ) : (
-                      jobs.map((job, idx) => (
-                        <Box key={idx} sx={{ mb: idx < jobs.length - 1 ? 1 : 0 }}>
-                          <Typography variant="body2" sx={styles.jobTitle}>
-                            {job.text}
-                          </Typography>
-                          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                            {!!job.pm && (
-                              <Typography variant="caption" sx={styles.jobPm}>
-                                PM: {job.pm}
-                              </Typography>
-                            )}
-                            {!!job.sp && (
-                              <Typography variant="caption" sx={{ ...styles.jobPm, mt: 0.25 }}>
-                                SP: {job.sp}
-                              </Typography>
-                            )}
-                          </Box>
-                        </Box>
-                      ))
-                    )}
-                  </Paper>
+                <Box sx={{ width: '180px', flexShrink: 0 }}>
+                  <Box sx={{ ...styles.headerCell, backgroundColor: '#030712', border: 'none' }} />
                 </Box>
-              );
-            })}
+                {daysFull.map((d) => {
+                  const [day, date] = d.split(' ');
+                  const isSaturday = day === 'Saturday';
+                  return (
+                    <Box
+                      key={d}
+                      sx={{
+                        flex: '0 0 180px',
+                        borderRight: isSaturday ? '4px solid #fbbf24' : undefined, // ✅ Moved here
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          ...styles.headerCell,
+                          backgroundColor: '#0f172a',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          border: `1px solid ${COLORS.border}`,
+                        }}
+                      >
+                        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+                          {day}
+                        </Typography>
+                        <Typography variant="body2" sx={{ color: COLORS.textMuted, textAlign: 'center' }}>
+                          {date}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  );
+                })}
+              </Box>
+
+              {crews.filter((crew) => crew.name !== 'Unknown').map((crew) => (
+                <Box key={crew.name} sx={{ display: 'flex', alignItems: 'stretch', width: '100%' }}>
+                  <Box sx={{ width: '180px', flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+                    <Box
+                      sx={
+                        crew.compact
+                          ? getCrewLabelCompactStyles(crew.color)
+                          : getCrewLabelStyles(crew.color)
+                      }
+                    >
+                      <Typography variant={crew.compact ? 'subtitle1' : 'h6'} sx={styles.crewName}>
+                        {crew.name}
+                      </Typography>
+                      {!crew.compact &&
+                        crew.members?.map((m, i) => (
+                          <Typography key={i} variant="body2" sx={styles.crewMember}>
+                            {m}
+                          </Typography>
+                        ))}
+                    </Box>
+                  </Box>
+
+                  {daysFull.map((label) => {
+                    const key = dayKeyFromLabel(label);
+                    const [dayName] = label.split(' ');
+                    const isSaturday = dayName === 'Saturday';
+                    const jobs = crew.jobs.filter((job) => {
+                      const jobDay = dayjs(job.date).format('dddd');
+                      return jobDay === key;
+                    });
+
+                    return (
+                      <Box key={`${crew.name}-${label}`} sx={{
+                        width: '180px', flexShrink: 0,
+                        borderRight: isSaturday ? '4px solid #fbbf24' : undefined, // ✨ Gold border on Saturday
+                      }}>
+                        <Paper
+                          elevation={0}
+                          sx={{
+                            ...getCellPaperStyles(crew.compact),
+                            flexGrow: 1,
+                            height: '100%',
+                          }}
+                        >
+                          {jobs.length === 0 ? (
+                            <Typography variant="caption" sx={styles.dash}>
+                              —
+                            </Typography>
+                          ) : (
+                            jobs.map((job, idx) => (
+                              <Box key={idx} sx={{ mb: idx < jobs.length - 1 ? 1 : 0 }}>
+                                <Typography variant="body2" sx={styles.jobTitle}>
+                                  {job.text}
+                                </Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                                  {!!job.pm && (
+                                    <Typography variant="caption" sx={styles.jobPm}>
+                                      PM: {job.pm}
+                                    </Typography>
+                                  )}
+                                  {!!job.sp && (
+                                    <Typography variant="caption" sx={{ ...styles.jobPm, mt: 0.25 }}>
+                                      SP: {job.sp}
+                                    </Typography>
+                                  )}
+                                </Box>
+                              </Box>
+                            ))
+                          )}
+                        </Paper>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              ))}
+            </div>
           </Box>
-        ))}
+        </Box>
       </>
       }
     </Box>
