@@ -124,7 +124,6 @@ export default function WeeklySchedule() {
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState(() => formatDate(getToday()));
   const [endDate, setEndDate] = useState(() => formatDate(getNextWeek()));
-  const [selectedCrewId, setSelectedCrewId] = useState<string | undefined>('');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const pathname = usePathname();
   const scheduleRef = useRef<HTMLDivElement>(null);
@@ -185,13 +184,6 @@ export default function WeeklySchedule() {
       setLoading(false);
     }
   }, [startDate, endDate]);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedId = localStorage.getItem('selectedCrewId');
-      setSelectedCrewId(storedId || '');
-    }
-  }, []);
 
   useEffect(() => {
     fetchWeeklySchedule();
