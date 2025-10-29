@@ -184,6 +184,16 @@ export default function WeeklySchedule() {
     fetchWeeklySchedule();
   }, [fetchWeeklySchedule]);
 
+  // Auto-refresh data every 10 minutes (300,000 ms)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("🔄 Auto-refreshing weekly schedule...");
+      fetchWeeklySchedule();
+    }, 600000); // 10 minutes in milliseconds
+
+    return () => clearInterval(interval); // Cleanup when component unmounts
+  }, [fetchWeeklySchedule]);
+
   return (
     <Box sx={styles.page}>
       <Typography variant="h4" sx={styles.headerTitle}>
