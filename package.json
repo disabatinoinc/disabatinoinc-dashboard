@@ -20,6 +20,7 @@
     "date-holidays": "^3.24.4",
     "dayjs": "^1.11.18",
     "dompurify": "^3.2.7",
+    "html2canvas": "^1.4.1",
     "next": "15.2.3",
     "notistack": "^3.0.2",
     "react": "^19.0.0",
