@@ -151,7 +151,7 @@ export default function WeeklySchedule() {
     const start = dayjs(startDate);
     const days: string[] = [];
 
-    for (let i = 0; i <= 7; i++) {
+    for (let i = 0; i <= 6; i++) {
       const day = start.add(i, 'day');
       if (day.day() === 0) continue; // Skip Sunday
 
