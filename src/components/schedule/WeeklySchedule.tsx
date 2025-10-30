@@ -127,6 +127,7 @@ export default function WeeklySchedule() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const pathname = usePathname();
   const scheduleRef = useRef<HTMLDivElement>(null);
+  const lastRefreshDayRef = useRef(formatDate(getToday()));
 
   const handleCapture = async () => {
     if (!scheduleRef.current) return;
@@ -192,11 +193,27 @@ export default function WeeklySchedule() {
   // Auto-refresh data every 10 minutes (300,000 ms)
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("🔄 Auto-refreshing weekly schedule...");
-      fetchWeeklySchedule();
-    }, 600000); // 10 minutes in milliseconds
+      const currentDay = formatDate(getToday());
 
-    return () => clearInterval(interval); // Cleanup when component unmounts
+      // 🔍 Check if we've crossed over to a new day
+      if (currentDay !== lastRefreshDayRef.current) {
+        console.log("📅 New day detected — updating start and end dates");
+        lastRefreshDayRef.current = currentDay;
+
+        const newStart = formatDate(getToday());
+        const newEnd = formatDate(getNextWeek());
+        setStartDate(newStart);
+        setEndDate(newEnd);
+
+        // Automatically fetch the new week
+        fetchWeeklySchedule();
+      } else {
+        console.log("🔄 Regular auto-refresh (same day)");
+        fetchWeeklySchedule();
+      }
+    }, 600000); // 10 minutes
+
+    return () => clearInterval(interval);
   }, [fetchWeeklySchedule]);
 
   return (
