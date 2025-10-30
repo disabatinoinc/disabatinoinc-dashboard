@@ -30,6 +30,160 @@ type Crew = {
   jobs: Job[];
 };
 
+const generateScheduleHTML = (crews: Crew[], daysFull: string[]) => {
+  // helper to lighten a hex color by a given amount (0–1)
+  const lighten = (hex: string, amount: number) => {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const r = Math.min(255, Math.round(((num >> 16) & 0xff) + (255 - ((num >> 16) & 0xff)) * amount));
+    const g = Math.min(255, Math.round(((num >> 8) & 0xff) + (255 - ((num >> 8) & 0xff)) * amount));
+    const b = Math.min(255, Math.round((num & 0xff) + (255 - (num & 0xff)) * amount));
+    return `rgb(${r},${g},${b})`;
+  };
+
+  // 🗓️ Default to only tomorrow’s data
+  const tomorrow = dayjs().add(1, "day").format("dddd MM/DD/YYYY");
+  const nextDay = daysFull.find((d) => d.startsWith(tomorrow.split(" ")[0])) || tomorrow;
+  const selectedDays = [nextDay];
+
+  // 🎨 Shared constants
+  const borderStyle = "1px solid #d1d5db";
+  const crewWidth = "180px";
+  const dayWidth = "240px";
+  const fontSize = "14px";
+  const textColorDark = "#111827";
+  const textColorMuted = "#4b5563";
+  const textColorLight = "#e5e7eb";
+
+  const tableHeader = `
+    <table border="1" cellspacing="0" cellpadding="6"
+      style="border-collapse:collapse;
+             font-family:Arial, sans-serif;
+             font-size:${fontSize};
+             border:${borderStyle};
+             table-layout:fixed;
+             mso-table-lspace:0pt;
+             mso-table-rspace:0pt;">
+      <colgroup>
+        <col style="width:${crewWidth};" />
+        ${selectedDays.map(() => `<col style="width:${dayWidth};" />`).join("")}
+      </colgroup>
+      <thead style="background-color:#f3f4f6;color:${textColorDark};text-align:center;">
+        <tr>
+          <th style="background:#f3f4f6;
+                     border:${borderStyle};
+                     width:${crewWidth};
+                     color:${textColorDark} !important;
+                     mso-style-textfill-type:solid;
+                     mso-style-textfill-fill-color:${textColorDark};
+                     font-size:${fontSize};">Crew</th>
+          ${selectedDays
+      .map(
+        (day) =>
+          `<th style="background:#f3f4f6;
+                            border:${borderStyle};
+                            width:${dayWidth};
+                            color:${textColorDark} !important;
+                            mso-style-textfill-type:solid;
+                            mso-style-textfill-fill-color:${textColorDark};
+                            font-size:${fontSize};">${day.replace(" ", "<br/>")}</th>`
+      )
+      .join("")}
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  const tableRows = crews
+    .filter((crew) => crew.name !== "Unknown")
+    .map((crew) => {
+      const lightColor = lighten(crew.color, 0.75);
+
+      const rowCells = selectedDays.map((label) => {
+        const dayKey = label.split(" ")[0] as DayKey;
+        const jobs = crew.jobs.filter((j) => dayjs(j.date).format("dddd") === dayKey);
+
+        if (jobs.length === 0) {
+          return `<td style="background-color:${lightColor};
+                             text-align:center;
+                             color:${textColorMuted} !important;
+                             mso-style-textfill-type:solid;
+                             mso-style-textfill-fill-color:${textColorMuted};
+                             border:${borderStyle};
+                             width:${dayWidth};
+                             font-size:${fontSize};">—</td>`;
+        }
+
+        return `
+          <td style="background-color:${lightColor};
+                     vertical-align:top;
+                     border:${borderStyle};
+                     width:${dayWidth};
+                     color:${textColorDark} !important;
+                     mso-style-textfill-type:solid;
+                     mso-style-textfill-fill-color:${textColorDark};
+                     font-size:${fontSize};">
+            ${jobs
+            .map(
+              (job) => `
+                  <div style="margin-bottom:6px;color:${textColorDark};
+                              font-size:${fontSize};
+                              mso-style-textfill-type:solid;
+                              mso-style-textfill-fill-color:${textColorDark};">
+                    <strong>${job.text}</strong><br/>
+                    ${job.pm
+                  ? `<span style="color:${textColorMuted} !important;
+                                      mso-style-textfill-type:solid;
+                                      mso-style-textfill-fill-color:${textColorMuted};">
+                           PM: ${job.pm}
+                         </span><br/>`
+                  : ""}
+                    ${job.sp
+                  ? `<span style="color:${textColorMuted} !important;
+                                      mso-style-textfill-type:solid;
+                                      mso-style-textfill-fill-color:${textColorMuted};">
+                           SP: ${job.sp}
+                         </span>`
+                  : ""}
+                  </div>
+                `
+            )
+            .join("")}
+          </td>
+        `;
+      });
+
+      return `
+        <tr>
+          <td style="background-color:${crew.color};
+                     color:white !important;
+                     mso-style-textfill-type:solid;
+                     mso-style-textfill-fill-color:white;
+                     font-weight:bold;
+                     border:${borderStyle};
+                     width:${crewWidth};
+                     vertical-align:top;
+                     font-size:${fontSize};">
+            ${crew.name}
+            ${crew.members?.length
+          ? `<div style="font-size:12px;
+                               color:${textColorLight} !important;
+                               mso-style-textfill-type:solid;
+                               mso-style-textfill-fill-color:${textColorLight};">
+                     ${crew.members.join("<br/>")}
+                   </div>`
+          : ""
+        }
+          </td>
+          ${rowCells.join("")}
+        </tr>
+      `;
+    })
+    .join("");
+
+  return `${tableHeader}${tableRows}</tbody></table>`;
+};
+
+
 /* =========================
    THEME & STYLE CONSTANTS
    ========================= */
@@ -303,6 +457,34 @@ export default function WeeklySchedule() {
             Screenshot
           </Button>
         </Tooltip>
+        <Tooltip title="Copy formatted schedule for email">
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => {
+              const html = generateScheduleHTML(crews, daysFull);
+              navigator.clipboard.write([
+                new ClipboardItem({
+                  'text/html': new Blob([html], { type: 'text/html' }),
+                  'text/plain': new Blob([html], { type: 'text/plain' }),
+                }),
+              ]);
+              alert('✅ Schedule copied! You can now paste it into your email.');
+            }}
+            sx={{
+              color: '#9ca3af',
+              borderColor: '#374151',
+              textTransform: 'none',
+              '&:hover': {
+                borderColor: 'white',
+                backgroundColor: 'rgba(56, 189, 248, 0.08)',
+              },
+            }}
+          >
+            Copy to Email
+          </Button>
+        </Tooltip>
+
 
         {!isFullscreen && (
           <Tooltip title="Open fullscreen view">
