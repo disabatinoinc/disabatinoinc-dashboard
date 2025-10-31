@@ -12,7 +12,6 @@ import { usePathname } from 'next/navigation';
 import WeeklyScheduleSkeleton from './WeeklyScheduleSkeleton';
 import html2canvas from 'html2canvas';
 
-type DayKey = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
 type Member = {
   name: string;
   btUserId?: string | null;
