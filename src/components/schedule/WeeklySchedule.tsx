@@ -13,20 +13,29 @@ import WeeklyScheduleSkeleton from './WeeklyScheduleSkeleton';
 import html2canvas from 'html2canvas';
 
 type DayKey = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday';
+type Member = {
+  name: string;
+  btUserId?: string | null;
+  sfUserId?: string | null;
+};
+
 type Job = {
   text: string;
   date: string;
-  pm?: string;
-  sp?: string;
-  projectNumber?: string;
+  pm?: string | null;
+  sp?: string | null;
+  pmEmail?: string | null;
+  spEmail?: string | null;
+  projectNumber?: string | null;
   projectGoals?: string[];
-  stageName?: string;
+  stageName?: string | null;
 };
+
 type Crew = {
   name: string;
   color: string;
-  members?: string[];
   compact?: boolean;
+  members?: Member[];
   jobs: Job[];
 };
 
@@ -99,8 +108,8 @@ const generateScheduleHTML = (crews: Crew[], daysFull: string[]) => {
       const lightColor = lighten(crew.color, 0.75);
 
       const rowCells = selectedDays.map((label) => {
-        const dayKey = label.split(" ")[0] as DayKey;
-        const jobs = crew.jobs.filter((j) => dayjs(j.date).format("dddd") === dayKey);
+        const dateLabel = label.split(' ')[1]; // e.g. "10/31/2025"
+        const jobs = crew.jobs.filter((j) => dayjs(j.date).format("MM/DD/YYYY") === dateLabel);
 
         if (jobs.length === 0) {
           return `<td style="background-color:${lightColor};
@@ -169,7 +178,7 @@ const generateScheduleHTML = (crews: Crew[], daysFull: string[]) => {
                                color:${textColorLight} !important;
                                mso-style-textfill-type:solid;
                                mso-style-textfill-fill-color:${textColorLight};">
-                     ${crew.members.join("<br/>")}
+                     ${crew.members?.map(m => m.name).join("<br/>")}
                    </div>`
           : ""
         }
@@ -593,19 +602,19 @@ export default function WeeklySchedule() {
                       {!crew.compact &&
                         crew.members?.map((m, i) => (
                           <Typography key={i} variant="body2" sx={styles.crewMember}>
-                            {m}
+                            {m.name}
                           </Typography>
                         ))}
                     </Box>
                   </Box>
 
                   {daysFull.map((label) => {
-                    const key = dayKeyFromLabel(label);
+                    const dateKey = label.split(' ')[1];
                     const [dayName] = label.split(' ');
                     const isSaturday = dayName === 'Saturday';
                     const jobs = crew.jobs.filter((job) => {
-                      const jobDay = dayjs(job.date).format('dddd');
-                      return jobDay === key;
+                      const jobDate = dayjs(job.date).format('MM/DD/YYYY');
+                      return jobDate === dateKey;
                     });
 
                     return (
