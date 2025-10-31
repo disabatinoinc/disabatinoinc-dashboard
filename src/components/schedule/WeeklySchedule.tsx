@@ -326,8 +326,6 @@ export default function WeeklySchedule() {
     return days;
   }, [startDate]);
 
-  const dayKeyFromLabel = (label: string): DayKey => label.split(' ')[0] as DayKey;
-
   const fetchWeeklySchedule = useCallback(async () => {
     try {
       setLoading(true);
