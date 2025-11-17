@@ -38,6 +38,31 @@ type Crew = {
   jobs: Job[];
 };
 
+type Concern = {
+  id: string;
+  caseNumber: string;
+  subject: string;
+  status: string;
+  priority: string;
+  createdDate: string;
+  dueDate: string | null;
+  projectNumber: string | null;
+  crew: string | null;
+  owner?: {
+    name: string;
+    email: string;
+  };
+  contact?: {
+    name: string;
+    email: string;
+  };
+  daysOpen: number;
+  daysUntilDue: number | null;
+  isOverdue: boolean;
+  slaStatus: string;
+};
+
+
 const generateScheduleHTML = (crews: Crew[], daysFull: string[]) => {
   // helper to lighten a hex color by a given amount (0–1)
   const lighten = (hex: string, amount: number) => {
@@ -48,10 +73,21 @@ const generateScheduleHTML = (crews: Crew[], daysFull: string[]) => {
     return `rgb(${r},${g},${b})`;
   };
 
-  // 🗓️ Default to only tomorrow’s data
-  const tomorrow = dayjs().add(1, "day").format("dddd MM/DD/YYYY");
+  // 🗓️ Default to tomorrow’s data — but if it's Friday, include Monday too
+  const today = dayjs();
+  const tomorrow = today.add(1, "day").format("dddd MM/DD/YYYY");
   const nextDay = daysFull.find((d) => d.startsWith(tomorrow.split(" ")[0])) || tomorrow;
-  const selectedDays = [nextDay];
+
+  // Special handling for Friday → include Monday as well
+  let selectedDays: string[];
+  if (today.day() === 5) { // 5 = Friday
+    const monday = today.add(3, "day").format("dddd MM/DD/YYYY"); // Monday
+    const mondayLabel = daysFull.find((d) => d.startsWith(monday.split(" ")[0])) || monday;
+    selectedDays = [nextDay, mondayLabel];
+  } else {
+    selectedDays = [nextDay];
+  }
+
 
   // 🎨 Shared constants
   const borderStyle = "1px solid #d1d5db";
@@ -287,6 +323,7 @@ export default function WeeklySchedule() {
   const [startDate, setStartDate] = useState(() => formatDate(getToday()));
   const [endDate, setEndDate] = useState(() => formatDate(getNextWeek()));
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [concerns, setConcerns] = useState<Concern[]>([]);
   const pathname = usePathname();
   const scheduleRef = useRef<HTMLDivElement>(null);
   const lastRefreshDayRef = useRef(formatDate(getToday()));
@@ -325,6 +362,35 @@ export default function WeeklySchedule() {
     return days;
   }, [startDate]);
 
+  const concernsByCrew = React.useMemo(() => {
+    const map: Record<string, Concern[]> = {};
+    concerns.forEach(c => {
+      const crewKey = c.crew?.trim();
+      if (!crewKey) return;
+      if (!map[crewKey]) map[crewKey] = [];
+      map[crewKey].push(c);
+    });
+    return map;
+  }, [concerns]);
+
+  const fetchConcerns = useCallback(async () => {
+    try {
+      const res = await axios.get(
+        "https://schedule-api.disabatinoinc.io/salesforce/cases/open",
+        {
+          headers: {
+            "x-disabatinoinc-api-key":
+              "dcaa752e6a78bea4c2c993b0215d021abe2d61d93352fa3adfb046ed1d0edc36",
+          },
+        }
+      );
+
+      setConcerns(res.data.records || []);
+    } catch (err) {
+      console.error("Error fetching concerns:", err);
+    }
+  }, []);
+
   const fetchWeeklySchedule = useCallback(async () => {
     try {
       setLoading(true);
@@ -348,7 +414,8 @@ export default function WeeklySchedule() {
 
   useEffect(() => {
     fetchWeeklySchedule();
-  }, [fetchWeeklySchedule]);
+    fetchConcerns();
+  }, [fetchWeeklySchedule, fetchConcerns]);
 
   // Auto-refresh data every 10 minutes (300,000 ms)
   useEffect(() => {
@@ -581,6 +648,34 @@ export default function WeeklySchedule() {
                     </Box>
                   );
                 })}
+                {/* New "Concerns" column header */}
+                <Box sx={{ width: '180px', flex: '0 0 180px' }}>
+                  <Box
+                    sx={{
+                      ...styles.headerCell,
+                      backgroundColor: '#0f172a',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      border: `1px solid ${COLORS.border}`,
+                    }}
+                  >
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                      Concerns
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        visibility: 'hidden', // <-- keeps space but hides text
+                        userSelect: 'none',
+                      }}
+                    >
+                      placeholder
+                    </Typography>
+                  </Box>
+                </Box>
+
               </Box>
 
               {crews.filter((crew) => crew.name !== 'Unknown').map((crew) => (
@@ -656,6 +751,170 @@ export default function WeeklySchedule() {
                       </Box>
                     );
                   })}
+                  {/* === Concerns Column (NEW) === */}
+                  <Box sx={{ width: '180px', flexShrink: 0 }}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        ...getCellPaperStyles(crew.compact),
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'stretch',
+                        justifyContent: 'flex-start',
+                        p: 1,
+                        gap: 1,
+                      }}
+                    >
+                      {(() => {
+                        const crewConcerns =
+                          (concernsByCrew[crew.name] || []).filter(c => {
+                            const isNew = c.status === "New";
+                            const farOut = typeof c.daysUntilDue === "number" && c.daysUntilDue > 30;
+                            return !(farOut || isNew);
+                          });
+
+                        if (crewConcerns.length === 0) {
+                          return (
+                            <Typography
+                              variant="caption"
+                              sx={{ color: COLORS.textFaint, textAlign: 'center', width: '100%' }}
+                            >
+                              —
+                            </Typography>
+                          );
+                        }
+
+                        return (
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                            {crewConcerns.map((c) => (
+                              <Box
+                                key={c.id}
+                                sx={{
+                                  p: 1,
+                                  borderRadius: 1,
+                                  overflow: 'hidden',
+
+                                  // 🔥 NEW: Color logic
+                                  backgroundColor:
+                                    c.status === "Work Completed"
+                                      ? "#065f46" // green background
+                                      : "#1f2937",
+
+                                  border:
+                                    c.status === "Work Completed"
+                                      ? "1px solid #10b981" // green
+                                      : c.isOverdue
+                                        ? "1px solid red" // red
+                                        : c.status === "Scheduled"
+                                          ? "1px solid #fbbf24" // yellow
+                                          : `1px solid ${COLORS.border}`, // default
+                                }}
+                              >
+                                {/* Case Number */}
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    fontWeight: "bold",
+                                    color:
+                                      c.status === "Work Completed"
+                                        ? "#34d399" // bright green
+                                        : c.isOverdue
+                                          ? "red"
+                                          : "#fbbf24",
+                                  }}
+                                >
+                                  #{c.caseNumber}
+                                </Typography>
+
+                                {/* Subject */}
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: COLORS.text,
+                                    mt: 0.25,
+                                    fontSize: "0.75rem",
+                                    lineHeight: 1.25,
+                                    whiteSpace: "normal",        // ← FORCE WRAP
+                                    wordBreak: "break-word",     // ← break long words
+                                    overflowWrap: "break-word",  // ← wrap overflow text
+                                  }}
+                                >
+                                  {c.subject}
+                                </Typography>
+
+                                {/* Status */}
+                                <Typography
+                                  variant="caption"
+                                  sx={{
+                                    color: COLORS.textMuted,
+                                    display: "block",
+                                    mt: 0.25,
+                                    fontWeight: "normal",
+                                  }}
+                                >
+                                  {`Status: ${c.status}`}
+                                </Typography>
+
+                                {/* Priority */}
+                                <Typography
+                                  variant="caption"
+                                  sx={{ color: COLORS.textMuted, display: "block" }}
+                                >
+                                  Priority: {c.priority}
+                                </Typography>
+
+                                {/* Days Until Due (Scheduled + not overdue) */}
+                                {c.status === "Scheduled" && !c.isOverdue && typeof c.daysUntilDue === "number" && (
+                                  <Typography
+                                    variant="caption"
+                                    sx={{ color: "#fbbf24", display: "block", mt: 0.25, fontWeight: "bold" }}
+                                  >
+                                    Due in {c.daysUntilDue} {Math.abs(c.daysUntilDue) === 1 ? "day" : "days"}
+                                  </Typography>
+                                )}
+
+                                {/* Due Date */}
+                                {c.dueDate && (
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      color: c.isOverdue && c.status != "Work Completed" ? "red" : COLORS.textMuted,
+                                      display: "block",
+                                    }}
+                                  >
+                                    Due: {c.dueDate}
+                                  </Typography>
+                                )}
+
+                                {/* Days Open */}
+                                <Typography
+                                  variant="caption"
+                                  sx={{ color: COLORS.textMuted, display: "block" }}
+                                >
+                                  Days Open: {c.daysOpen}
+                                </Typography>
+
+                                {/* Overdue tag */}
+                                {c.isOverdue && c.status !== "Work Completed" && (
+                                  <Typography
+                                    variant="caption"
+                                    sx={{
+                                      color: "red",
+                                      fontWeight: "bold",
+                                      display: "block",
+                                      mt: 0.5,
+                                    }}
+                                  >
+                                    ⚠ Overdue
+                                  </Typography>
+                                )}
+                              </Box>
+                            ))}
+                          </Box>
+                        );
+                      })()}
+                    </Paper>
+                  </Box>
                 </Box>
               ))}
             </div>
