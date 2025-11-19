@@ -174,6 +174,8 @@ export default function ProductionReadinessScoreCard() {
             {!loading && !data && (
                 <Box
                     sx={{
+                        width: "100%",
+                        maxWidth: "1200px",
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
@@ -187,7 +189,7 @@ export default function ProductionReadinessScoreCard() {
                         No project selected
                     </Typography>
                     <Typography variant="body2">
-                        Enter a project number above to fetch readiness.
+                        Enter a project number above to fetch readiness score.
                     </Typography>
                 </Box>
             )}
