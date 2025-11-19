@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Box, Typography, Card, CardHeader, CardContent, LinearProgress, Button, Paper, TextField, AccordionSummary, AccordionDetails, Accordion } from "@mui/material";
-import { Upload, CheckCircle, XCircle, Circle } from "lucide-react";
+import { Box, Typography, Card, CardHeader, CardContent, LinearProgress, Button, TextField } from "@mui/material";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { oneDriveApi } from "@/utils/apiClient";
