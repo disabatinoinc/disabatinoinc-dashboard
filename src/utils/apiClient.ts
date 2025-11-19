@@ -16,4 +16,12 @@ const scheduleApi: AxiosInstance = axios.create({
     },
 });
 
-export { api, scheduleApi };
+const oneDriveApi: AxiosInstance = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_ONEDRIVE_API_BASE_URL,
+    headers: {
+        "Content-Type": "application/json",
+        "X-DisabatinoInc-API-Key": process.env.NEXT_PUBLIC_API_KEY,
+    },
+});
+
+export { api, scheduleApi, oneDriveApi };

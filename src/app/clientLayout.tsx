@@ -46,7 +46,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     const isMobile = useMediaQuery("(max-width: 600px)", { noSsr: true });
 
     // Hide all menu/nav when on privacy pages (e.g., /privacy or /privacy/anything)
-    const HIDE_NAV_PREFIXES = ["/legal", "/quickbooks","/fullscreen/weekly-schedule"]; // add "/eula" etc. if needed
+    const HIDE_NAV_PREFIXES = ["/legal", "/quickbooks", "/fullscreen/weekly-schedule"]; // add "/eula" etc. if needed
     const hideNav = HIDE_NAV_PREFIXES.some(
         (p) => pathname === p || pathname.startsWith(`${p}/`)
     );
@@ -89,233 +89,239 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
     return (
         <>
-        {!isFullscreenRoute && (
-  
+            {!isFullscreenRoute && (
 
-            <AppBar
-                position="static"
-                sx={{ backgroundColor: "#030712", boxShadow: "none" }}
-            >
-                <Box sx={{ maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
-                    <Toolbar disableGutters sx={{ paddingX: 0, borderBottom: "2px solid #1f2937" }}>
-                        <Typography variant="h6" sx={{ flexGrow: 1, textTransform: "uppercase" }}>
-                            disabatinoinc dashboard
-                        </Typography>
-                        {!hideNav && (isMobile ? (
-                            <>
-                                <IconButton
-                                    color="inherit"
-                                    onClick={(e) => setMobileAnchorEl(e.currentTarget)}
-                                >
-                                    <MenuIcon />
-                                </IconButton>
-                                <Menu
-                                    anchorEl={mobileAnchorEl}
-                                    open={Boolean(mobileAnchorEl)}
-                                    onClose={() => setMobileAnchorEl(null)}
-                                    sx={menuPaperStyles}
-                                >
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/summary"); }} sx={menuItemStyles}>
-                                        Sales Summary
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/details"); }} sx={menuItemStyles}>
-                                        Sales Details
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
-                                        Sales Snapshots
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/teamup-sync"); }} sx={menuItemStyles}>
-                                        Schedule Teamup Sync
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/teamup-template"); }} sx={menuItemStyles}>
-                                        Schedule Teamup Template
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/weekly-schedule"); }} sx={menuItemStyles}>
-                                        Weekly Schedule
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/summary"); }} sx={menuItemStyles}>
-                                        Projects Summary
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/stage-details"); }} sx={menuItemStyles}>
-                                        Projects Stage Details
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/velocity-details"); }} sx={menuItemStyles}>
-                                        Projects Velocity Details
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/buildertrend-sync"); }} sx={menuItemStyles}>
-                                        Buildertrend Sync
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/summary"); }} sx={menuItemStyles}>
-                                        Collections Summary
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/details"); }} sx={menuItemStyles}>
-                                        Collections Details
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/3ms"); }} sx={menuItemStyles}>
-                                        Collections 3Ms
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/schedule"); }} sx={menuItemStyles}>
-                                        Collections Schedule
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/snapshots"); }} sx={menuItemStyles}>
-                                        Collections Snapshots
-                                    </MenuItem>
-                                    <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/crews/daily-logs"); }} sx={menuItemStyles}>
-                                        Daily Logs
-                                    </MenuItem>
-                                </Menu>
-                            </>
-                        ) : (
-                            <>
-                                <Box>
-                                    <Button
+
+                <AppBar
+                    position="static"
+                    sx={{ backgroundColor: "#030712", boxShadow: "none" }}
+                >
+                    <Box sx={{ maxWidth: "1200px", margin: "0 auto", width: "100%" }}>
+                        <Toolbar disableGutters sx={{ paddingX: 0, borderBottom: "2px solid #1f2937" }}>
+                            <Typography variant="h6" sx={{ flexGrow: 1, textTransform: "uppercase" }}>
+                                disabatinoinc dashboard
+                            </Typography>
+                            {!hideNav && (isMobile ? (
+                                <>
+                                    <IconButton
                                         color="inherit"
-                                        onClick={handleSalesMenuOpen}
-                                        sx={{
-                                            textTransform: "uppercase",
-                                            color: pathname.startsWith("/sales") ? "white" : "#d1d5db",
-                                            "&:hover": { color: "white" },
-                                        }}
+                                        onClick={(e) => setMobileAnchorEl(e.currentTarget)}
                                     >
-                                        Sales
-                                    </Button>
+                                        <MenuIcon />
+                                    </IconButton>
                                     <Menu
-                                        anchorEl={salesAnchorEl}
-                                        open={Boolean(salesAnchorEl)}
-                                        onClose={handleSalesMenuClose}
+                                        anchorEl={mobileAnchorEl}
+                                        open={Boolean(mobileAnchorEl)}
+                                        onClose={() => setMobileAnchorEl(null)}
                                         sx={menuPaperStyles}
                                     >
-                                        <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/summary"); }} sx={menuItemStyles}>
-                                            Summary
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/summary"); }} sx={menuItemStyles}>
+                                            Sales Summary
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/details"); }} sx={menuItemStyles}>
-                                            Details
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/details"); }} sx={menuItemStyles}>
+                                            Sales Details
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
-                                            Snapshots
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
+                                            Sales Snapshots
                                         </MenuItem>
-                                    </Menu>
-                                    <Button
-                                        color="inherit"
-                                        onClick={handleScheduleMenuOpen}
-                                        sx={{
-                                            textTransform: "uppercase",
-                                            color: pathname.startsWith("/schedule") ? "white" : "#d1d5db",
-                                            "&:hover": { color: "white" },
-                                        }}
-                                    >
-                                        Schedule
-                                    </Button>
-                                    <Menu
-                                        anchorEl={scheduleAnchorEl}
-                                        open={Boolean(scheduleAnchorEl)}
-                                        onClose={handleScheduleMenuClose}
-                                        sx={menuPaperStyles}
-                                    >
-                                        <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/teamup-sync"); }} sx={menuItemStyles}>
-                                            Teamup Sync
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/teamup-sync"); }} sx={menuItemStyles}>
+                                            Schedule Teamup Sync
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/teamup-template"); }} sx={menuItemStyles}>
-                                            Teamup Template
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/teamup-template"); }} sx={menuItemStyles}>
+                                            Schedule Teamup Template
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/weekly-schedule"); }} sx={menuItemStyles}>
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/weekly-schedule"); }} sx={menuItemStyles}>
                                             Weekly Schedule
                                         </MenuItem>
-                                    </Menu>
-
-                                    <Button
-                                        color="inherit"
-                                        onClick={handleProjectsMenuOpen}
-                                        sx={{
-                                            textTransform: "uppercase",
-                                            color: pathname.startsWith("/projects") ? "white" : "#d1d5db",
-                                            "&:hover": { color: "white" },
-                                        }}
-                                    >
-                                        Projects
-                                    </Button>
-                                    <Menu
-                                        anchorEl={projectsAnchorEl}
-                                        open={Boolean(projectsAnchorEl)}
-                                        onClose={handleProjectsMenuClose}
-                                        sx={menuPaperStyles}
-                                    >
-                                        <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/summary"); }} sx={menuItemStyles}>
-                                            Summary
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/schedule/production-readiness"); }} sx={menuItemStyles}>
+                                            Production Readiness
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/stage-details"); }} sx={menuItemStyles}>
-                                            Stage Details
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/summary"); }} sx={menuItemStyles}>
+                                            Projects Summary
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/velocity-details"); }} sx={menuItemStyles}>
-                                            Velocity Details
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/stage-details"); }} sx={menuItemStyles}>
+                                            Projects Stage Details
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/buildertrend-sync"); }} sx={menuItemStyles}>
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/velocity-details"); }} sx={menuItemStyles}>
+                                            Projects Velocity Details
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/projects/buildertrend-sync"); }} sx={menuItemStyles}>
                                             Buildertrend Sync
                                         </MenuItem>
-                                    </Menu>
-                                    <Button
-                                        color="inherit"
-                                        onClick={handleCollectionsMenuOpen}
-                                        sx={{
-                                            textTransform: "uppercase",
-                                            color: pathname.startsWith("/collections") ? "white" : "#d1d5db",
-                                            "&:hover": { color: "white" },
-                                        }}
-                                    >
-                                        Collections
-                                    </Button>
-                                    <Menu
-                                        anchorEl={collectionsAnchorEl}
-                                        open={Boolean(collectionsAnchorEl)}
-                                        onClose={handleCollectionsMenuClose}
-                                        sx={menuPaperStyles}
-                                    >
-                                        <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/summary"); }} sx={menuItemStyles}>
-                                            Summary
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/summary"); }} sx={menuItemStyles}>
+                                            Collections Summary
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/details"); }} sx={menuItemStyles}>
-                                            Details
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/details"); }} sx={menuItemStyles}>
+                                            Collections Details
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/3ms"); }} sx={menuItemStyles}>
-                                            3Ms
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/3ms"); }} sx={menuItemStyles}>
+                                            Collections 3Ms
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/schedule"); }} sx={menuItemStyles}>
-                                            Schedule
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/schedule"); }} sx={menuItemStyles}>
+                                            Collections Schedule
                                         </MenuItem>
-                                        <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/snapshots"); }} sx={menuItemStyles}>
-                                            Snapshots
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/collections/snapshots"); }} sx={menuItemStyles}>
+                                            Collections Snapshots
                                         </MenuItem>
-                                    </Menu>
-                                    <Button
-                                        color="inherit"
-                                        onClick={handleCrewsMenuOpen}
-                                        sx={{
-                                            textTransform: "uppercase",
-                                            color: pathname.startsWith("/crews") ? "white" : "#d1d5db",
-                                            "&:hover": { color: "white" },
-                                        }}
-                                    >
-                                        Crews
-                                    </Button>
-                                    <Menu
-                                        anchorEl={crewsAnchorEl}
-                                        open={Boolean(crewsAnchorEl)}
-                                        onClose={handleCrewsMenuClose}
-                                        sx={menuPaperStyles}
-                                    >
-                                        <MenuItem onClick={() => { handleCrewsMenuClose(); router.push("/crews/daily-logs"); }} sx={menuItemStyles}>
+                                        <MenuItem onClick={() => { setMobileAnchorEl(null); router.push("/crews/daily-logs"); }} sx={menuItemStyles}>
                                             Daily Logs
                                         </MenuItem>
                                     </Menu>
-                                </Box>
+                                </>
+                            ) : (
+                                <>
+                                    <Box>
+                                        <Button
+                                            color="inherit"
+                                            onClick={handleSalesMenuOpen}
+                                            sx={{
+                                                textTransform: "uppercase",
+                                                color: pathname.startsWith("/sales") ? "white" : "#d1d5db",
+                                                "&:hover": { color: "white" },
+                                            }}
+                                        >
+                                            Sales
+                                        </Button>
+                                        <Menu
+                                            anchorEl={salesAnchorEl}
+                                            open={Boolean(salesAnchorEl)}
+                                            onClose={handleSalesMenuClose}
+                                            sx={menuPaperStyles}
+                                        >
+                                            <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/summary"); }} sx={menuItemStyles}>
+                                                Summary
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/details"); }} sx={menuItemStyles}>
+                                                Details
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleSalesMenuClose(); router.push("/sales/snapshots"); }} sx={menuItemStyles}>
+                                                Snapshots
+                                            </MenuItem>
+                                        </Menu>
+                                        <Button
+                                            color="inherit"
+                                            onClick={handleScheduleMenuOpen}
+                                            sx={{
+                                                textTransform: "uppercase",
+                                                color: pathname.startsWith("/schedule") ? "white" : "#d1d5db",
+                                                "&:hover": { color: "white" },
+                                            }}
+                                        >
+                                            Schedule
+                                        </Button>
+                                        <Menu
+                                            anchorEl={scheduleAnchorEl}
+                                            open={Boolean(scheduleAnchorEl)}
+                                            onClose={handleScheduleMenuClose}
+                                            sx={menuPaperStyles}
+                                        >
+                                            <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/teamup-sync"); }} sx={menuItemStyles}>
+                                                Teamup Sync
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/teamup-template"); }} sx={menuItemStyles}>
+                                                Teamup Template
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/weekly-schedule"); }} sx={menuItemStyles}>
+                                                Weekly Schedule
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleScheduleMenuClose(); router.push("/schedule/production-readiness"); }} sx={menuItemStyles}>
+                                                Production Readiness
+                                            </MenuItem>
+                                        </Menu>
+
+                                        <Button
+                                            color="inherit"
+                                            onClick={handleProjectsMenuOpen}
+                                            sx={{
+                                                textTransform: "uppercase",
+                                                color: pathname.startsWith("/projects") ? "white" : "#d1d5db",
+                                                "&:hover": { color: "white" },
+                                            }}
+                                        >
+                                            Projects
+                                        </Button>
+                                        <Menu
+                                            anchorEl={projectsAnchorEl}
+                                            open={Boolean(projectsAnchorEl)}
+                                            onClose={handleProjectsMenuClose}
+                                            sx={menuPaperStyles}
+                                        >
+                                            <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/summary"); }} sx={menuItemStyles}>
+                                                Summary
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/stage-details"); }} sx={menuItemStyles}>
+                                                Stage Details
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/velocity-details"); }} sx={menuItemStyles}>
+                                                Velocity Details
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleProjectsMenuClose(); router.push("/projects/buildertrend-sync"); }} sx={menuItemStyles}>
+                                                Buildertrend Sync
+                                            </MenuItem>
+                                        </Menu>
+                                        <Button
+                                            color="inherit"
+                                            onClick={handleCollectionsMenuOpen}
+                                            sx={{
+                                                textTransform: "uppercase",
+                                                color: pathname.startsWith("/collections") ? "white" : "#d1d5db",
+                                                "&:hover": { color: "white" },
+                                            }}
+                                        >
+                                            Collections
+                                        </Button>
+                                        <Menu
+                                            anchorEl={collectionsAnchorEl}
+                                            open={Boolean(collectionsAnchorEl)}
+                                            onClose={handleCollectionsMenuClose}
+                                            sx={menuPaperStyles}
+                                        >
+                                            <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/summary"); }} sx={menuItemStyles}>
+                                                Summary
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/details"); }} sx={menuItemStyles}>
+                                                Details
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/3ms"); }} sx={menuItemStyles}>
+                                                3Ms
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/schedule"); }} sx={menuItemStyles}>
+                                                Schedule
+                                            </MenuItem>
+                                            <MenuItem onClick={() => { handleCollectionsMenuClose(); router.push("/collections/snapshots"); }} sx={menuItemStyles}>
+                                                Snapshots
+                                            </MenuItem>
+                                        </Menu>
+                                        <Button
+                                            color="inherit"
+                                            onClick={handleCrewsMenuOpen}
+                                            sx={{
+                                                textTransform: "uppercase",
+                                                color: pathname.startsWith("/crews") ? "white" : "#d1d5db",
+                                                "&:hover": { color: "white" },
+                                            }}
+                                        >
+                                            Crews
+                                        </Button>
+                                        <Menu
+                                            anchorEl={crewsAnchorEl}
+                                            open={Boolean(crewsAnchorEl)}
+                                            onClose={handleCrewsMenuClose}
+                                            sx={menuPaperStyles}
+                                        >
+                                            <MenuItem onClick={() => { handleCrewsMenuClose(); router.push("/crews/daily-logs"); }} sx={menuItemStyles}>
+                                                Daily Logs
+                                            </MenuItem>
+                                        </Menu>
+                                    </Box>
 
 
 
-                            </>
-                        ))}
-                    </Toolbar>
-                </Box>
-            </AppBar>
+                                </>
+                            ))}
+                        </Toolbar>
+                    </Box>
+                </AppBar>
             )}
             <Box sx={{ padding: 2, maxWidth: "1200px", margin: "0 auto" }}>{children}</Box>
         </>
