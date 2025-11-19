@@ -24,10 +24,6 @@ function FieldSkeleton() {
     );
 }
 
-function SectionHeaderSkeleton({ width = 180 }: { width?: number }) {
-    return <Skeleton variant="text" width={width} height={28} sx={{ bgcolor: "#1f2937" }} />;
-}
-
 function AccordionBarSkeleton() {
     return (
         <Card
