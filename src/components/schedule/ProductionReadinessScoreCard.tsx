@@ -69,36 +69,6 @@ export default function ProductionReadinessScoreCard() {
         }
     }, []);
 
-    async function uploadDocument({
-        projectNo,
-        type,
-        file,
-        version = "0",
-        language = "EN",
-    }: {
-        projectNo: string;
-        type: DocumentType;
-        file: File;
-        version?: string;
-        language?: string;
-    }) {
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("version", version);
-        formData.append("language", language);
-
-        const res = await oneDriveApi.post(
-            `/projects/${projectNo}/documents/${type}/upload`,
-            formData,
-            {
-                headers: { "Content-Type": "multipart/form-data" },
-            }
-        );
-
-        return res.data;
-    }
-
-
     return (
         <Box
             sx={{
