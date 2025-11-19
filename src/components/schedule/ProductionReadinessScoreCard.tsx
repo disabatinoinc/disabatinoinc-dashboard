@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import { oneDriveApi } from "@/utils/apiClient";
 import ProjectSummaryCard from "./ProjectSummaryCard";
-import { ReadinessResponse, DOCUMENT_ORDER, DOCUMENT_LABELS } from "@/types/productionReadiness";
+import { ReadinessResponse, DOCUMENT_ORDER } from "@/types/productionReadiness";
 import DocumentAccordion from "./DocumentAccordion";
 import ProjectReadinessSkeleton from "./ProjectReadinessSkeleton";
 
@@ -67,7 +67,7 @@ export default function ProductionReadinessScoreCard() {
                 setError("Format must be S-###### (e.g., S-007352)");
             }
         }
-    }, []);
+    }, [searchParams, projectNumber, fetchReadiness]);
 
     return (
         <Box
