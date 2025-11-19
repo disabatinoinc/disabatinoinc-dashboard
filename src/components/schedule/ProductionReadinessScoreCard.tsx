@@ -174,8 +174,7 @@ export default function ProductionReadinessScoreCard() {
             {!loading && !data && (
                 <Box
                     sx={{
-                        width: "100%",
-                        maxWidth: "1200px",
+                        width: "1200px",
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
