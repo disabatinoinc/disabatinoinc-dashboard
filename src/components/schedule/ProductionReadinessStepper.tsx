@@ -99,7 +99,15 @@ export default function ProductionReadinessStepper({
                 {/* -------------------------------
                     STEP 1 — CLOSED WON SIGNED
                 -------------------------------- */}
-                <Step completed={closedWonSignedComplete}>
+                <Step completed={closedWonSignedComplete} sx={{
+                    cursor: "pointer",
+                    "&:hover .MuiStepLabel-root": {
+                        cursor: "pointer",
+                    },
+                    "&:hover .MuiStepIcon-root": {
+                        cursor: "pointer",
+                    }
+                }}>
                     <StepLabel
                         StepIconComponent={CustomStepperIcon}
                         onClick={() => toggleStep(0)}
@@ -118,7 +126,16 @@ export default function ProductionReadinessStepper({
                                 justifyContent: "space-between"
                             }}
                         >
-                            <Typography variant="h6" sx={{ color: "#22c55e" }}>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    color: "#cbd5e1", // slate-300
+                                    transition: "color 0.15s ease",
+                                    "&:hover": {
+                                        color: "#ffffff"
+                                    }
+                                }}
+                            >
                                 Project Closed Won Signed
                             </Typography>
 
@@ -145,7 +162,15 @@ export default function ProductionReadinessStepper({
                 {/* -------------------------------
                     STEP 2 — PRODUCTION NOTES
                 -------------------------------- */}
-                <Step completed={productionNotes.notesComplete} >
+                <Step completed={productionNotes.notesComplete} sx={{
+                    cursor: "pointer",
+                    "&:hover .MuiStepLabel-root": {
+                        cursor: "pointer",
+                    },
+                    "&:hover .MuiStepIcon-root": {
+                        cursor: "pointer",
+                    }
+                }}>
                     <StepLabel
                         StepIconComponent={CustomStepperIcon}
                         onClick={() => toggleStep(1)}
@@ -158,7 +183,16 @@ export default function ProductionReadinessStepper({
                                 justifyContent: "space-between"
                             }}
                         >
-                            <Typography variant="h6">
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    color: "#cbd5e1", // slate-300
+                                    transition: "color 0.15s ease",
+                                    "&:hover": {
+                                        color: "#ffffff"
+                                    }
+                                }}
+                            >
                                 Production Notes — {productionNotes.completionPercentage}%
                             </Typography>
 
@@ -184,7 +218,15 @@ export default function ProductionReadinessStepper({
                 {/* -------------------------------
                     STEP 3 — DOCUMENTS
                 -------------------------------- */}
-                <Step completed={documents.readiness.missing.length === 0}>
+                <Step completed={documents.readiness.missing.length === 0} sx={{
+                    cursor: "pointer",
+                    "&:hover .MuiStepLabel-root": {
+                        cursor: "pointer",
+                    },
+                    "&:hover .MuiStepIcon-root": {
+                        cursor: "pointer",
+                    }
+                }}>
                     <StepLabel
                         StepIconComponent={CustomStepperIcon}
                         onClick={() => toggleStep(2)}
@@ -197,7 +239,16 @@ export default function ProductionReadinessStepper({
                                 justifyContent: "space-between"
                             }}
                         >
-                            <Typography variant="h6">
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    color: "#cbd5e1", // slate-300
+                                    transition: "color 0.15s ease",
+                                    "&:hover": {
+                                        color: "#ffffff"
+                                    }
+                                }}
+                            >
                                 Project Documents — {documents.readiness.percentage}%
                             </Typography>
 
