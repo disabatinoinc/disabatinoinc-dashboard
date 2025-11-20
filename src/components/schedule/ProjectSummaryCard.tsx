@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { ExternalLink, FolderOpen } from "lucide-react";
 import { useState } from "react";
 
 function CopyBlock({ label, value }: { label: string; value?: string }) {
@@ -73,6 +74,8 @@ type ProjectSummaryProps = {
     projectManagerEmail: string;
     division: string;
     jobAddress: string;
+    salesforceLink: string;
+    oneDriveLink: string;
 };
 
 export default function ProjectSummaryCard(props: ProjectSummaryProps) {
@@ -86,7 +89,9 @@ export default function ProjectSummaryCard(props: ProjectSummaryProps) {
         salesAssistantEmail,
         projectManagerName,
         projectManagerEmail,
-        jobAddress
+        jobAddress,
+        salesforceLink,
+        oneDriveLink,
     } = props;
 
     return (
@@ -107,11 +112,11 @@ export default function ProjectSummaryCard(props: ProjectSummaryProps) {
                 expandIcon={<ExpandMoreIcon sx={{ color: "#94a3b8" }} />}
                 sx={{
                     backgroundColor: "#111827",
-                    borderBottom: "1px solid #374151",
                     "& .MuiAccordionSummary-content": {
                         display: "flex",
                         alignItems: "center",
                         gap: 2,
+                        width: "100%",
                     },
                 }}
             >
@@ -122,6 +127,35 @@ export default function ProjectSummaryCard(props: ProjectSummaryProps) {
                 <Typography variant="body2" sx={{ opacity: 0.65 }}>
                     ({opportunityName})
                 </Typography>
+
+                {/* push buttons to right */}
+                <Box sx={{ flexGrow: 1 }} />
+
+                <Box sx={{ display: "flex", gap: 1 }}>
+                    <Tooltip title="Open in Salesforce">
+                        <IconButton
+                            onClick={() => window.open(salesforceLink, "_blank")}
+                            sx={{
+                                color: "#60A5FA",
+                                "&:hover": { color: "#93C5FD" }
+                            }}
+                        >
+                            <ExternalLink size={20} />
+                        </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Open in OneDrive">
+                        <IconButton
+                            onClick={() => window.open(oneDriveLink, "_blank")}
+                            sx={{
+                                color: "#FACC15",
+                                "&:hover": { color: "#FDE047" }
+                            }}
+                        >
+                            <FolderOpen size={20} />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
             </AccordionSummary>
 
             {/* DETAILS */}

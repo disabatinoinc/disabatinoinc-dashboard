@@ -196,26 +196,6 @@ export default function ProductionReadinessScoreCard() {
             {/* DATA LOADED */}
             {!loading && data && (
                 <>
-                    {/* PROJECT SUMMARY */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        style={{ width: "100%", maxWidth: "1200px" }}
-                    >
-                        <ProjectSummaryCard
-                            opportunityName={data.opportunityName}
-                            projectNo={data.projectNo}
-                            division={data.division}
-                            ownerName={data.ownerName}
-                            ownerEmail={data.ownerEmail}
-                            salesAssistantName={data.salesAssistantName}
-                            salesAssistantEmail={data.salesAssistantEmail}
-                            projectManagerName={data.projectManagerName}
-                            projectManagerEmail={data.projectManagerEmail}
-                            jobAddress={data.jobAddress}
-                        />
-                    </motion.div>
-
                     {/* SCORE CARD */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -267,7 +247,7 @@ export default function ProductionReadinessScoreCard() {
                                     border: "1px solid #b91c1c",
                                     borderRadius: 3,
                                     p: 3,
-                                    mt: 1,
+                                    mb: 2
                                 }}
                             >
                                 <Typography variant="h6" color="error" mb={2}>
@@ -286,6 +266,30 @@ export default function ProductionReadinessScoreCard() {
                         </motion.div>
                     )}
 
+                    {/* PROJECT SUMMARY */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        style={{ width: "100%", maxWidth: "1200px" }}
+                    >
+                        <ProjectSummaryCard
+                            opportunityName={data.opportunityName}
+                            projectNo={data.projectNo}
+                            division={data.division}
+                            ownerName={data.ownerName}
+                            ownerEmail={data.ownerEmail}
+                            salesAssistantName={data.salesAssistantName}
+                            salesAssistantEmail={data.salesAssistantEmail}
+                            projectManagerName={data.projectManagerName}
+                            projectManagerEmail={data.projectManagerEmail}
+                            jobAddress={data.jobAddress}
+                            salesforceLink={data.salesforceOpportunityLink}
+                            oneDriveLink={data.projectFolderLink}
+                        />
+                    </motion.div>
+
+
+
                     {/* DOCUMENT ACCORDIONS */}
                     <Box
                         sx={{
@@ -294,7 +298,7 @@ export default function ProductionReadinessScoreCard() {
                             display: "flex",
                             flexDirection: "column",
                             gap: 2,
-                            mt: 4,
+                            mt: 2,
                         }}
                     >
                         {data.readiness.details
