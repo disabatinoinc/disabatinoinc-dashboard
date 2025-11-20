@@ -3,12 +3,8 @@
 import {
     Typography,
     Box,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
     LinearProgress,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import React from "react";
 
 import {
@@ -24,9 +20,8 @@ export interface DocumentsCardProps {
     onRefresh: () => void;
 }
 
-export function DocumentsCard({ data, onRefresh }: DocumentsCardProps) {
+export function DocumentsCard({ data }: DocumentsCardProps) {
     const readiness = data.readiness;
-    const documents = data.documents;
     const details = readiness.details;
 
     return (
@@ -93,7 +88,7 @@ export function DocumentsCard({ data, onRefresh }: DocumentsCardProps) {
                         detail={detail}
                         doc={data.documents[detail.type]}
                         projectNo={data.projectNo}
-                        onUploaded={() => fetchReadiness(data.projectNo)}
+                        onUploaded={() => () => { }}
                     />
                 ))}
         </Box>
