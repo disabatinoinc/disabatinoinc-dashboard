@@ -1,12 +1,12 @@
 "use client";
 
-import ProductionReadinessScoreCard from "@/components/schedule/ProductionReadinessScoreCard";
+import ProductionReadiness from "@/components/schedule/ProductionReadiness";
 import { Suspense } from "react";
 
 export default function ProductionReadinessPage() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <ProductionReadinessScoreCard />
+            <ProductionReadiness />
         </Suspense>
     );
 }

@@ -12,7 +12,8 @@ const PUBLIC_PATHS = [
     '/legal/eula',
     "/quickbooks/launch",
     "/quickbooks/disconnect",
-    "/fullscreen/weekly-schedule"
+    "/fullscreen/weekly-schedule",
+    "/schedule/production-readiness"
 ]
 
 function isPublic(pathname: string) {

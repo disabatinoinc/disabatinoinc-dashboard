@@ -10,11 +10,14 @@ import {
     Paper,
     Box,
     LinearProgress,
+    Tooltip,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Upload, CheckCircle, XCircle, Circle } from "lucide-react";
 import { motion } from "framer-motion";
 import { oneDriveApi } from "@/utils/apiClient";
 import { DocumentEntry, FileEntry, ReadinessDetail, DocumentType } from "@/types/productionReadiness";
+import { FolderOpen } from "lucide-react";
 
 const DOCUMENT_LABELS: Record<DocumentType, string> = {
     signedContract: "Contract",
@@ -140,14 +143,11 @@ export default function DocumentAccordion({
                     "&:before": { display: "none" },
                     overflow: "hidden",
                     opacity: uploading ? 1 : (!isRequired && !isDone ? 0.55 : 1),
+                    mb: 2
                 }}
             >
                 <AccordionSummary
-                    expandIcon={
-                        <Typography sx={{ color: "#94a3b8", fontSize: "18px" }}>
-                            ▼
-                        </Typography>
-                    }
+                    expandIcon={<ExpandMoreIcon sx={{ color: "#94a3b8" }} />}
                     sx={{
                         "& .MuiAccordionSummary-content": {
                             display: "flex",
@@ -178,6 +178,29 @@ export default function DocumentAccordion({
                             Optional
                         </Typography>
                     )}
+
+                    {/* RIGHT ACTION BUTTONS */}
+                    <Box sx={{ marginLeft: "auto", display: "flex", alignItems: "center", marginRight: 2 }}>
+                        {doc.folderLink && (
+                            <Tooltip title="Open folder in OneDrive" arrow placement="top">
+                                <Box
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        window.open(doc.folderLink, "_blank");
+                                    }}
+                                    sx={{
+                                        cursor: "pointer",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        "&:hover": { opacity: 0.8 }
+                                    }}
+                                >
+                                    <FolderOpen size={20} color="#eab308" />
+                                </Box>
+                            </Tooltip>
+                        )}
+                    </Box>
+
                 </AccordionSummary>
 
                 <AccordionDetails
