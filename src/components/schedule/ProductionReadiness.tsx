@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { oneDriveApi, api } from "@/utils/apiClient";
 import ProjectReadinessSkeleton from "./ProjectReadinessSkeleton";
 import ProductionReadinessStepper from "./ProductionReadinessStepper";
-import { OpportunitySummary, ProductionNotesResponse, ReadinessResponse } from "@/types/productionReadiness";
+import { ProductionNotesResponse, ReadinessResponse } from "@/types/productionReadiness";
 
 const PROJECT_PATTERN = /^S-\d{1,6}$/;
 
