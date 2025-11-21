@@ -186,7 +186,7 @@ export default function DocumentAccordion({
                                 <Box
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        window.open(doc.folderLink, "_blank");
+                                        window.open(doc.folderLink ?? undefined, "_blank");
                                     }}
                                     sx={{
                                         cursor: "pointer",
