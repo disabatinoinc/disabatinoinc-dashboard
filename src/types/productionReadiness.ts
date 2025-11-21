@@ -12,7 +12,7 @@ export type FileEntry = {
 };
 
 export type DocumentEntry = {
-    folderLink: any;
+    folderLink: string | null;
     exists: boolean;
     count: number;
     files: FileEntry[];
