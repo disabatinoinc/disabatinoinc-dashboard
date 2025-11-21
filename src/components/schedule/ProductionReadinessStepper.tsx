@@ -19,8 +19,10 @@ import { DocumentsCard } from "./DocumentsCard";
 import { ProductionNotesCard } from "./ProductionNotesCard";
 import {
     ReadinessResponse,
-    ProductionNotesResponse
+    ProductionNotesResponse,
+    OpportunitySummary
 } from "@/types/productionReadiness";
+import ProjectSummaryCard from "./ProjectSummaryCard";
 
 
 // ⭐ Custom Step Icon (unchanged)
@@ -61,6 +63,7 @@ function CustomStepperIcon(props: StepIconProps) {
 
 
 export interface ProductionReadinessStepperProps {
+    opportunity: OpportunitySummary;
     documents: ReadinessResponse;
     productionNotes: ProductionNotesResponse;
     closedWonSignedComplete: boolean;
@@ -68,6 +71,7 @@ export interface ProductionReadinessStepperProps {
 }
 
 export default function ProductionReadinessStepper({
+    opportunity,
     documents,
     productionNotes,
     closedWonSignedComplete,
@@ -149,7 +153,22 @@ export default function ProductionReadinessStepper({
 
                     <Collapse in={openStep === 0}>
                         <Box sx={{ ml: 7, mt: 1, mb: 2 }}>
-                            <Typography color="gray">No additional info needed.</Typography>
+                            {opportunity && (
+                                <ProjectSummaryCard
+                                    projectNo={opportunity.projectNo}
+                                    opportunityName={opportunity.opportunityName}
+                                    division={opportunity.division}
+                                    ownerName={opportunity.ownerName}
+                                    ownerEmail={opportunity.ownerEmail}
+                                    salesAssistantName={opportunity.salesAssistantName}
+                                    salesAssistantEmail={opportunity.salesAssistantEmail}
+                                    projectManagerName={opportunity.projectManagerName}
+                                    projectManagerEmail={opportunity.projectManagerEmail}
+                                    jobAddress={opportunity.jobAddress}
+                                    salesforceLink={opportunity.salesforceLink}
+                                    oneDriveLink={opportunity.oneDriveLink}
+                                />
+                            )}
                         </Box>
                     </Collapse>
                 </Step>
