@@ -9,6 +9,7 @@ import {
     Typography,
     Collapse
 } from "@mui/material";
+import { StepIconProps } from "@mui/material";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -31,7 +32,7 @@ import { PurchasingReviewCard } from "./PurchasingReviewCard";
 // ------------------------------------------------------
 // Custom Step Icon
 // ------------------------------------------------------
-function CustomStepperIcon(props: any) {
+function CustomStepperIcon(props: StepIconProps) {
     const { active, completed } = props;
 
     if (completed) {
@@ -106,6 +107,7 @@ export default function ProductionReadinessStepper({
                     <StepLabel
                         icon={
                             <CustomStepperIcon
+                                icon={0}
                                 completed={closedWonSignedComplete}
                                 active={openStep === 0}
                             />
