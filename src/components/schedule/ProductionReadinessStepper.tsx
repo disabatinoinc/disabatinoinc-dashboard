@@ -18,7 +18,6 @@ import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import { DocumentsCard } from "./DocumentsCard";
 import { ProductionNotesCard } from "./ProductionNotesCard";
 import {
-    OpportunitySummary,
     ReadinessResponse,
     ProductionNotesResponse
 } from "@/types/productionReadiness";
@@ -106,13 +105,13 @@ export default function ProductionReadinessStepper({
                     }
                 }}>
                     <StepLabel
-                        StepIconComponent={CustomStepperIcon}
                         onClick={() => toggleStep(0)}
                         sx={{ cursor: "pointer" }}
                         icon={
                             <CustomStepperIcon
                                 completed={closedWonSignedComplete}
                                 active={openStep === 0}
+                                icon={0}
                             />
                         }
                     >
