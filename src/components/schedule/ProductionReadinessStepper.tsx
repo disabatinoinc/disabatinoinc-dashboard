@@ -63,7 +63,7 @@ function CustomStepperIcon(props: StepIconProps) {
 
 
 export interface ProductionReadinessStepperProps {
-    opportunity: OpportunitySummary;
+    opportunity: OpportunitySummary | null;
     documents: ReadinessResponse;
     productionNotes: ProductionNotesResponse;
     closedWonSignedComplete: boolean;
