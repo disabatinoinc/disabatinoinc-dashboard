@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { oneDriveApi, api } from "@/utils/apiClient";
 import ProjectReadinessSkeleton from "./ProjectReadinessSkeleton";
 import ProductionReadinessStepper from "./ProductionReadinessStepper";
-import { OpportunitySummary, ProductionNotesResponse, ReadinessResponse } from "@/types/productionReadiness";
+import { OpportunitySummary, ProductionNotesResponse, ProjectReviewStatusResponse, ReadinessResponse } from "@/types/productionReadiness";
 
 const PROJECT_PATTERN = /^S-\d{1,6}$/;
 
@@ -26,6 +26,8 @@ export default function ProductionReadiness() {
     const [documentsData, setDocumentsData] = useState<ReadinessResponse | null>(null);
     const [notesData, setNotesData] = useState<ProductionNotesResponse | null>(null);
     const [opportunityData, setOpportunityData] = useState<OpportunitySummary | null>(null);
+    const [reviewStatus, setReviewStatus] =
+        useState<ProjectReviewStatusResponse | null>(null);
 
     /**
      * Fetch BOTH:
@@ -57,8 +59,15 @@ export default function ProductionReadiness() {
                     { params: { projectNo: proj } }
                 );
 
+                const reviewRes = await api.get(
+                    "/salesforce/projects/review-status",
+                    { params: { projectNo: proj } }
+                );
+
                 setDocumentsData(docRes.data);
                 setNotesData(notesRes.data.data);
+                setReviewStatus(reviewRes.data.data);
+
 
                 // Summary details for project header
                 setOpportunityData({
@@ -234,6 +243,7 @@ export default function ProductionReadiness() {
                     opportunity={opportunityData}
                     documents={documentsData}
                     productionNotes={notesData}
+                    reviewStatus={reviewStatus}   // ← NEW
                     closedWonSignedComplete={true}
                     onRefresh={() => fetchAllReadiness(projectNumber)}
                 />

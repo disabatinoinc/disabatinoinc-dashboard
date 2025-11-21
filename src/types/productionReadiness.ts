@@ -139,3 +139,21 @@ export interface OpportunitySummary {
     salesforceLink: string;
     oneDriveLink: string;
 }
+
+export interface ProjectReviewStatusResponse {
+    projectNo: string;
+
+    productionReview: {
+        reviewed: boolean;
+        reviewDate: string | null;   // ISO date or null
+        ipmNeeded: boolean;
+        ipmDate: string | null;      // ISO date or null
+    };
+
+    purchasingReview: {
+        reviewed: boolean;
+        reviewDate: string | null;   // ISO date or null
+        selectionsRequired: boolean;
+        selectionsDate: string | null; // ISO date or null
+    };
+}

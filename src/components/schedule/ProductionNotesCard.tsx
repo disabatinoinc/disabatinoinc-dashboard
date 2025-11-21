@@ -7,9 +7,12 @@ import {
     AccordionSummary,
     AccordionDetails,
     LinearProgress,
-    Chip
+    Chip,
+    IconButton,
+    Tooltip
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { ExternalLink, CheckCircle, XCircle, Circle } from "lucide-react";
 import React from "react";
 
 import {
@@ -20,15 +23,60 @@ import {
 
 export interface ProductionNotesCardProps {
     data: ProductionNotesResponse;
+    salesforceLink: string;   // ← NEW PROP
 }
 
-export function ProductionNotesCard({ data }: ProductionNotesCardProps) {
+export function ProductionNotesCard({ data, salesforceLink }: ProductionNotesCardProps) {
+    const isRequired = true;
+    const isDone = data.missingRequiredFields.length === 0;
+
+    let statusIcon;
+    if (isDone && isRequired) {
+        statusIcon = <CheckCircle color="rgb(34,197,94)" size={22} />;
+    } else if (!isDone && isRequired) {
+        statusIcon = <XCircle color="rgb(239,68,68)" size={22} />;
+    } else {
+        statusIcon = <Circle color="#475569" size={18} />;
+    }
+
     return (
         <Box sx={{ p: 2, mb: 3, borderRadius: 2, background: "#111827" }}>
-            <Typography variant="h5" sx={{ mb: 1 }}>
-                Production Notes Readiness
-            </Typography>
 
+            {/* HEADER WITH SF LINK ON RIGHT */}
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mb: 1
+                }}
+            >
+                {/* LEFT SIDE: Status Icon + Title */}
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                    <Box sx={{ mr: 1 }}>{statusIcon}</Box>
+                    <Typography variant="h5">Production Notes</Typography>
+                </Box>
+
+                {/* RIGHT SIDE: ACTION ICONS */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Tooltip title="Open in Salesforce">
+                        <IconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(salesforceLink, "_blank");
+                            }}
+                            sx={{
+                                color: "#60A5FA",
+                                "&:hover": { color: "#93C5FD" }
+                            }}
+                        >
+                            <ExternalLink size={20} />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+            </Box>
+
+            {/* Progress Bar */}
             <LinearProgress
                 variant="determinate"
                 value={data.completionPercentage}
@@ -36,12 +84,12 @@ export function ProductionNotesCard({ data }: ProductionNotesCardProps) {
             />
 
             <Typography sx={{ mb: 2, fontSize: 14, color: "#9ca3af" }}>
-                {data.missingRequiredFields.length === 0
+                {isDone
                     ? "All required items completed"
                     : `${data.missingRequiredFields.length} required items missing`}
             </Typography>
 
-            {/* Missing Required Fields */}
+            {/* Missing Required Items */}
             {data.missingRequiredFields.length > 0 && (
                 <Box
                     sx={{
@@ -67,7 +115,7 @@ export function ProductionNotesCard({ data }: ProductionNotesCardProps) {
                 </Box>
             )}
 
-            {/* Render Sections */}
+            {/* Sections */}
             {data.sections.map((section: ProductionNotesSection) => (
                 <Accordion
                     key={section.label}
