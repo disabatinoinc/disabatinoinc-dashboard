@@ -160,7 +160,7 @@ export default function ProductionReadinessStepper({
                         }}>
                             <Typography variant="h6"
                                 sx={{ color: "#cbd5e1", "&:hover": { color: "#fff" } }}>
-                                Production Notes & Photos — {productionNotes.completionPercentage}%
+                                Production Notes & Photos
                             </Typography>
 
                             <ExpandMoreIcon
@@ -242,7 +242,7 @@ export default function ProductionReadinessStepper({
                         }}>
                             <Typography variant="h6"
                                 sx={{ color: "#cbd5e1", "&:hover": { color: "#fff" } }}>
-                                Project Documents — Pre-IPM ({documents.readiness.percentage}%)
+                                Project Documents
                             </Typography>
 
                             <ExpandMoreIcon
