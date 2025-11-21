@@ -8,6 +8,7 @@ import {
     StepLabel,
     Typography,
     Collapse,
+    StepIconProps
 } from "@mui/material";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -24,7 +25,7 @@ import {
 
 
 // ⭐ Custom Step Icon (unchanged)
-function CustomStepperIcon(props: any) {
+function CustomStepperIcon(props: StepIconProps) {
     const { active, completed } = props;
 
     if (completed) {
@@ -61,8 +62,6 @@ function CustomStepperIcon(props: any) {
 
 
 export interface ProductionReadinessStepperProps {
-    projectNo: string;
-    opportunity: OpportunitySummary | null;
     documents: ReadinessResponse;
     productionNotes: ProductionNotesResponse;
     closedWonSignedComplete: boolean;
@@ -70,8 +69,6 @@ export interface ProductionReadinessStepperProps {
 }
 
 export default function ProductionReadinessStepper({
-    projectNo,
-    opportunity,
     documents,
     productionNotes,
     closedWonSignedComplete,
