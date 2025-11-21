@@ -15,48 +15,6 @@ import { OpportunitySummary, ProductionNotesResponse, ReadinessResponse } from "
 
 const PROJECT_PATTERN = /^S-\d{1,6}$/;
 
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
-
-function CustomStepperIcon(props: any) {
-    const { active, completed } = props;
-
-    // Completed → big green check
-    if (completed) {
-        return (
-            <CheckCircleIcon
-                sx={{
-                    color: "#22c55e",  // Tailwind green-500
-                    fontSize: 32
-                }}
-            />
-        );
-    }
-
-    // Active → slightly larger outlined circle
-    if (active) {
-        return (
-            <RadioButtonUncheckedIcon
-                sx={{
-                    color: "#60a5fa", // Tailwind blue-400
-                    fontSize: 30
-                }}
-            />
-        );
-    }
-
-    // Inactive → muted outlined circle
-    return (
-        <RadioButtonUncheckedIcon
-            sx={{
-                color: "#475569", // slate-600
-                fontSize: 26
-            }}
-        />
-    );
-}
-
-
 export default function ProductionReadiness() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -273,8 +231,6 @@ export default function ProductionReadiness() {
             {/* LOADED */}
             {!loading && documentsData && notesData && (
                 <ProductionReadinessStepper
-                    projectNo={projectNumber}
-                    opportunity={opportunityData}
                     documents={documentsData}
                     productionNotes={notesData}
                     closedWonSignedComplete={true}
