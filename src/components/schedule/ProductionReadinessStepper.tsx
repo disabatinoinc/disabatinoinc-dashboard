@@ -56,12 +56,12 @@ function CustomStepperIcon(props: StepIconProps) {
 // ------------------------------------------------------
 // Stepper Component
 // ------------------------------------------------------
-export interface ProductionReadinessStepperProps {
+interface ProductionReadinessStepperProps {
     opportunity: OpportunitySummary | null;
     documents: ReadinessResponse;
     productionNotes: ProductionNotesResponse;
+    reviewStatus: ProjectReviewStatusResponse | null;   // ❌ NOT nullable
     closedWonSignedComplete: boolean;
-    reviewStatus: ProjectReviewStatusResponse;
     onRefresh: () => void;
 }
 
@@ -220,8 +220,12 @@ export default function ProductionReadinessStepper({
 
                     <Collapse in={openStep === 2}>
                         <Box sx={{ ml: 7, mt: 1 }}>
-                            <ProductionReviewCard review={reviewStatus.productionReview} />
-                            <PurchasingReviewCard review={reviewStatus.purchasingReview} />
+                            {reviewStatus && (
+                                <>
+                                    <ProductionReviewCard review={reviewStatus.productionReview} />
+                                    <PurchasingReviewCard review={reviewStatus.purchasingReview} />
+                                </>
+                            )}
                         </Box>
                     </Collapse>
                 </Step>
