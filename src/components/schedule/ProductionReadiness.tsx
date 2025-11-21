@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { oneDriveApi, api } from "@/utils/apiClient";
 import ProjectReadinessSkeleton from "./ProjectReadinessSkeleton";
 import ProductionReadinessStepper from "./ProductionReadinessStepper";
-import { ProductionNotesResponse, ReadinessResponse } from "@/types/productionReadiness";
+import { OpportunitySummary, ProductionNotesResponse, ReadinessResponse } from "@/types/productionReadiness";
 
 const PROJECT_PATTERN = /^S-\d{1,6}$/;
 
@@ -25,7 +25,7 @@ export default function ProductionReadiness() {
 
     const [documentsData, setDocumentsData] = useState<ReadinessResponse | null>(null);
     const [notesData, setNotesData] = useState<ProductionNotesResponse | null>(null);
-    // const [opportunityData, setOpportunityData] = useState<OpportunitySummary | null>(null);
+    const [opportunityData, setOpportunityData] = useState<OpportunitySummary | null>(null);
 
     /**
      * Fetch BOTH:
@@ -61,20 +61,20 @@ export default function ProductionReadiness() {
                 setNotesData(notesRes.data.data);
 
                 // Summary details for project header
-                // setOpportunityData({
-                //     opportunityName: docRes.data.opportunityName,
-                //     projectNo: docRes.data.projectNo,
-                //     division: docRes.data.division,
-                //     ownerName: docRes.data.ownerName,
-                //     ownerEmail: docRes.data.ownerEmail,
-                //     salesAssistantName: docRes.data.salesAssistantName,
-                //     salesAssistantEmail: docRes.data.salesAssistantEmail,
-                //     projectManagerName: docRes.data.projectManagerName,
-                //     projectManagerEmail: docRes.data.projectManagerEmail,
-                //     jobAddress: docRes.data.jobAddress,
-                //     salesforceLink: docRes.data.salesforceOpportunityLink,
-                //     oneDriveLink: docRes.data.projectFolderLink,
-                // });
+                setOpportunityData({
+                    opportunityName: docRes.data.opportunityName,
+                    projectNo: docRes.data.projectNo,
+                    division: docRes.data.division,
+                    ownerName: docRes.data.ownerName,
+                    ownerEmail: docRes.data.ownerEmail,
+                    salesAssistantName: docRes.data.salesAssistantName,
+                    salesAssistantEmail: docRes.data.salesAssistantEmail,
+                    projectManagerName: docRes.data.projectManagerName,
+                    projectManagerEmail: docRes.data.projectManagerEmail,
+                    jobAddress: docRes.data.jobAddress,
+                    salesforceLink: docRes.data.salesforceOpportunityLink,
+                    oneDriveLink: docRes.data.projectFolderLink,
+                });
 
                 setProjectNumber(proj);
                 setError("");
@@ -231,6 +231,7 @@ export default function ProductionReadiness() {
             {/* LOADED */}
             {!loading && documentsData && notesData && (
                 <ProductionReadinessStepper
+                    opportunity={opportunityData}
                     documents={documentsData}
                     productionNotes={notesData}
                     closedWonSignedComplete={true}
