@@ -25,7 +25,6 @@ export default function ProductionReadiness() {
 
     const [documentsData, setDocumentsData] = useState<ReadinessResponse | null>(null);
     const [notesData, setNotesData] = useState<ProductionNotesResponse | null>(null);
-    const [opportunityData, setOpportunityData] = useState<OpportunitySummary | null>(null);
 
     /**
      * Fetch BOTH:
