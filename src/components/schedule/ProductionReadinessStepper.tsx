@@ -88,11 +88,17 @@ export default function ProductionReadinessStepper({
     const reviewStepComplete = productionReviewed && purchasingReviewed;
 
     // --- PRE-IPM Required Document Types ---
-    const PRE_IPM_REQUIRED_DOCS: string[] = [
-        "signedContract",
-        "designsRenders",
-        "photos"
-    ];
+    const BASE_REQUIRED = ["signedContract"];
+
+    // Add any others marked required in readiness metadata
+    const dynamicRequiredDocs = documents.readiness.details
+        .filter(d =>
+            ["designsRenders", "photos"].includes(d.type) &&
+            d.required === true
+        )
+        .map(d => d.type);
+
+    const PRE_IPM_REQUIRED_DOCS = [...BASE_REQUIRED, ...dynamicRequiredDocs];
 
     // Compute Pre-IPM documents readiness
     const preIpmMissing = PRE_IPM_REQUIRED_DOCS.filter((type) => {
