@@ -94,11 +94,6 @@ export default function ProductionReadinessStepper({
         "photos"
     ];
 
-    // Extract only the readiness entries matching the Pre-IPM list
-    const preIpmDocs = documents.readiness.details.filter(d =>
-        PRE_IPM_REQUIRED_DOCS.includes(d.type)
-    );
-
     // Compute Pre-IPM documents readiness
     const preIpmMissing = PRE_IPM_REQUIRED_DOCS.filter((type) => {
         const detail = documents.readiness.details.find(d => d.type === type);
