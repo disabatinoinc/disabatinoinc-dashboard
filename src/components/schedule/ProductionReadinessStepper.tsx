@@ -267,7 +267,7 @@ export default function ProductionReadinessStepper({
                         }}>
                             <Typography variant="h6"
                                 sx={{ color: "#cbd5e1", "&:hover": { color: "#fff" } }}>
-                                Project Documents
+                                Project Documents — Pre-IPM ({PRE_IPM_REQUIRED_DOCS.length - preIpmMissing.length}/{PRE_IPM_REQUIRED_DOCS.length})
                             </Typography>
 
                             <ExpandMoreIcon
