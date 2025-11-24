@@ -28,6 +28,7 @@ import {
 import { PicturesCard } from "./PicturesCard";
 import { ProductionReviewCard } from "./ProductionReviewCard";
 import { PurchasingReviewCard } from "./PurchasingReviewCard";
+import { IPMCard } from "./IPMCard";
 
 // ------------------------------------------------------
 // Custom Step Icon
@@ -86,7 +87,23 @@ export default function ProductionReadinessStepper({
 
     const reviewStepComplete = productionReviewed && purchasingReviewed;
 
+    // --- PRE-IPM Required Document Types ---
+    const PRE_IPM_REQUIRED_DOCS: string[] = [
+        "signedContract",
+        "designsRenders",
+        "photos"
+    ];
 
+    // Extract only the readiness entries matching the Pre-IPM list
+    const preIpmDocs = documents.readiness.details.filter(d =>
+        PRE_IPM_REQUIRED_DOCS.includes(d.type)
+    );
+
+    // Identify missing required Pre-IPM docs
+    const preIpmMissing = preIpmDocs.filter(d => d.required && !d.exists);
+
+    // Step is completed only if all Pre-IPM docs exist
+    const preIpmComplete = preIpmMissing.length === 0;
 
     return (
         <Box sx={{ width: "1200px", color: "#e5e7eb" }}>
@@ -235,7 +252,7 @@ export default function ProductionReadinessStepper({
                 {/* ------------------------------------------------------
                     STEP 4 — DOCUMENTS — PRE-IPM
                 ------------------------------------------------------ */}
-                <Step completed={documents.readiness.missing.length === 0}>
+                <Step completed={preIpmComplete}>
                     <StepLabel
                         StepIconComponent={CustomStepperIcon}
                         sx={{ cursor: "pointer" }}
@@ -273,7 +290,7 @@ export default function ProductionReadinessStepper({
                 {/* ------------------------------------------------------
                     STEP 5 — IPM
                 ------------------------------------------------------ */}
-                <Step completed={false}>
+                <Step completed={reviewStatus?.productionReview?.ipmNeeded === false || !!reviewStatus?.productionReview?.ipmDate}>
                     <StepLabel
                         StepIconComponent={CustomStepperIcon}
                         sx={{ cursor: "pointer" }}
@@ -301,9 +318,9 @@ export default function ProductionReadinessStepper({
 
                     <Collapse in={openStep === 4}>
                         <Box sx={{ ml: 7, mt: 1 }}>
-                            <Typography sx={{ color: "#94a3b8", fontStyle: "italic" }}>
-                                (IPM details will go here)
-                            </Typography>
+                            {reviewStatus && (
+                                <IPMCard review={reviewStatus} />
+                            )}
                         </Box>
                     </Collapse>
                 </Step>

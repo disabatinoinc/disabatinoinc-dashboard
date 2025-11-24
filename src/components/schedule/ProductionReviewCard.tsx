@@ -12,16 +12,15 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { CheckCircle, XCircle } from "lucide-react";
 
+import { ProjectReviewStatusResponse } from "@/types/productionReadiness";
+
+interface ProductionReviewCardProps {
+    review: ProjectReviewStatusResponse["productionReview"];
+}
+
 export function ProductionReviewCard({
     review
-}: {
-    review: {
-        reviewed: boolean;
-        reviewDate: string | null;
-        ipmNeeded: boolean;
-        ipmDate: string | null;
-    };
-}) {
+}: ProductionReviewCardProps) {
     const isDone = review.reviewed;
 
     const statusIcon = isDone

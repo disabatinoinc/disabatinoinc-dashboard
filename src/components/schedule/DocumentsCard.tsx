@@ -20,9 +20,30 @@ export interface DocumentsCardProps {
     onRefresh: () => void;
 }
 
+const PRE_IPM_REQUIRED: DocumentType[] = [
+    "signedContract",
+    "photos",
+    "designsRenders"
+];
+
+
 export function DocumentsCard({ data }: DocumentsCardProps) {
     const readiness = data.readiness;
     const details = readiness.details;
+    const preIpmDetails = details.map((d) => ({
+        ...d,
+        required: PRE_IPM_REQUIRED.includes(d.type)
+    }));
+    const preIpmMissing = preIpmDetails.filter(d => d.required && !d.exists);
+    const preIpmCompleted = preIpmDetails.filter(d => d.required && d.exists).length;
+
+    const preIpmPercentage = Math.round(
+        (preIpmCompleted / PRE_IPM_REQUIRED.length) * 100
+    );
+
+    function onRefresh(): void {
+        throw new Error("Function not implemented.");
+    }
 
     return (
         <Box sx={{ p: 2, mb: 3, borderRadius: 2, background: "#111827" }}>
@@ -32,12 +53,12 @@ export function DocumentsCard({ data }: DocumentsCardProps) {
 
             <LinearProgress
                 variant="determinate"
-                value={readiness.percentage}
+                value={preIpmPercentage}
                 sx={{ height: 10, borderRadius: 2, mb: 1 }}
             />
 
             <Typography sx={{ mb: 2, fontSize: 14, color: "#9ca3af" }}>
-                {readiness.completed}/{readiness.required.length} required items uploaded
+                {preIpmCompleted}/{PRE_IPM_REQUIRED.length} required items uploaded
             </Typography>
 
             {/* DOCUMENT ACCORDIONS */}
@@ -51,7 +72,7 @@ export function DocumentsCard({ data }: DocumentsCardProps) {
                     mt: 2,
                 }}
             ></Box>
-            {readiness.missing.length > 0 && (
+            {preIpmMissing.length > 0 && (
                 <Box
                     sx={{
                         background: "rgba(127,29,29,0.35)",
@@ -65,30 +86,29 @@ export function DocumentsCard({ data }: DocumentsCardProps) {
                         Missing Required Items
                     </Typography>
 
-                    {readiness.missing.map((m: DocumentType) => (
+                    {preIpmMissing.map((m) => (
                         <Typography
-                            key={m}
+                            key={m.type}
                             sx={{ color: "#fecaca", textTransform: "capitalize" }}
                         >
-                            • {m.replace(/([A-Z])/g, " $1").toLowerCase()}
+                            • {m.type.replace(/([A-Z])/g, " $1").toLowerCase()}
                         </Typography>
                     ))}
                 </Box>
             )}
 
-            {details
-                .sort(
-                    (a: ReadinessDetail, b: ReadinessDetail) =>
-                        DOCUMENT_ORDER.indexOf(a.type) -
-                        DOCUMENT_ORDER.indexOf(b.type)
+            {preIpmDetails
+                .sort((a, b) =>
+                    DOCUMENT_ORDER.indexOf(a.type) -
+                    DOCUMENT_ORDER.indexOf(b.type)
                 )
-                .map((detail: ReadinessDetail) => (
+                .map((detail) => (
                     <DocumentAccordion
                         key={detail.type}
                         detail={detail}
                         doc={data.documents[detail.type]}
                         projectNo={data.projectNo}
-                        onUploaded={() => () => { }}
+                        onUploaded={onRefresh}
                     />
                 ))}
         </Box>
