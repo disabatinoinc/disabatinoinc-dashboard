@@ -2,7 +2,7 @@
 
 import { Box, Typography, Accordion, AccordionSummary, AccordionDetails, LinearProgress, Chip } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { CheckCircle, XCircle, Circle } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import { ProjectReviewStatusResponse } from "@/types/productionReadiness";
 
 interface IPMCardProps {

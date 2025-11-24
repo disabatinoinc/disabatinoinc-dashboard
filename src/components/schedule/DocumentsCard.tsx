@@ -10,7 +10,6 @@ import React from "react";
 import {
     ReadinessResponse,
     DocumentType,
-    ReadinessDetail,
     DOCUMENT_ORDER,
 } from "@/types/productionReadiness";
 import DocumentAccordion from "./DocumentAccordion";
