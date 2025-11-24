@@ -99,10 +99,12 @@ export default function ProductionReadinessStepper({
         PRE_IPM_REQUIRED_DOCS.includes(d.type)
     );
 
-    // Identify missing required Pre-IPM docs
-    const preIpmMissing = preIpmDocs.filter(d => d.required && !d.exists);
+    // Compute Pre-IPM documents readiness
+    const preIpmMissing = PRE_IPM_REQUIRED_DOCS.filter((type) => {
+        const detail = documents.readiness.details.find(d => d.type === type);
+        return !detail || !detail.exists; // missing or empty
+    });
 
-    // Step is completed only if all Pre-IPM docs exist
     const preIpmComplete = preIpmMissing.length === 0;
 
     return (
@@ -207,8 +209,8 @@ export default function ProductionReadinessStepper({
 
 
                 {/* ------------------------------------------------------
-    STEP 3 — PRODUCTION / PURCHASING REVIEW
------------------------------------------------------- */}
+                    STEP 3 — PRODUCTION / PURCHASING REVIEW
+                ------------------------------------------------------ */}
                 <Step completed={reviewStepComplete}>
                     <StepLabel
                         StepIconComponent={CustomStepperIcon}
@@ -265,7 +267,7 @@ export default function ProductionReadinessStepper({
                         }}>
                             <Typography variant="h6"
                                 sx={{ color: "#cbd5e1", "&:hover": { color: "#fff" } }}>
-                                Project Documents
+                                Project Documents — Pre-IPM ({PRE_IPM_REQUIRED_DOCS.length - preIpmMissing.length}/{PRE_IPM_REQUIRED_DOCS.length})
                             </Typography>
 
                             <ExpandMoreIcon
